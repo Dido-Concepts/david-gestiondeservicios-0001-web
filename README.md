@@ -27,7 +27,19 @@ Aquí se encuentra un registro de las dependencias adicionales que se han instal
 | **Axios**          | 13/10/2024           | Cliente HTTP para realizar peticiones a APIs.           | Esteban, Jeffry |
 | **drag-and-drop**  | 13/10/2024           | facilita la funcionalidad de arrastrar y soltar.        | Jeffry          |
 
+### Dev Dependencias adicionales
 
+Son dependencias para calidad de código, pruebas, documentación, etc.
+
+| Dev Dependencia        | Fecha de instalación | Utilidad                                               | Responsable |
+|--------------------|----------------------|--------------------------------------------------------|-------------|
+| **ESLint**         | 13/10/2024          | Herramienta de análisis de código estático para identificar patrones problemáticos. | Esteban, Jeffry |
+| **commitlint**     | 13/10/2024          | Verifica si los mensajes de confirmación cumplen con el formato convencional. | Esteban, Jeffry |
+
+
+## Commilint Docs para los mensajes de commit
+
+Toda la referencia se encuentra en el siguiente link [commitlint](https://commitlint.js.org/reference/prompt.html)
 
 ## Instalación
 
