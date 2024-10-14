@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
+# Gestor de Servicios David
 
-First, run the development server:
+![Bun](https://img.shields.io/badge/Bun-1.1.20-ffcc00?logo=bun)
+![Node.js](https://img.shields.io/badge/Node.js-20.18.0-339933?logo=node.js)
+![Next.js](https://img.shields.io/badge/Next.js-14-000000?logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
+![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3-38B2AC?logo=tailwindcss)
+
+## Descripción
+
+Este proyecto **Gestor de Servicios David** es una aplicación web que implementa Next.js 14, TypeScript 5, React 18 y Tailwind CSS 3. Es una solución modular y escalable que sigue los principios de Clean Architecture con una estructura basada en DDD y Scream Architecture, utilizando Inversify.js para inyección de dependencias.
+
+### Dependencias adicionales
+
+Aquí se encuentra un registro de las dependencias adicionales que se han instalado, incluyendo la fecha, su utilidad y el responsable:
+
+| Dependencia        | Fecha de instalación | Utilidad                                               | Responsable |
+|--------------------|----------------------|--------------------------------------------------------|-------------|
+| **Zod**            | 13/10/2024           | Validación de esquemas y tipos en TypeScript.           | Esteban, Jeffry |
+| **React Hook Form**| 13/10/2024           | Manejo de formularios reactivos en React.               | Esteban, Jeffry |
+| **Shadcn**         | 13/10/2024           | Componentes estilizados para interfaces con Tailwind.   | Esteban, Jeffry |
+| **Inversify**      | 13/10/2024           | Inyección de dependencias para aplicaciones JavaScript. | Esteban, Jeffry |
+| **Tanstack Query** | 13/10/2024           | Gestión de estado del servidor y caché de datos.        | Esteban, Jeffry |
+| **Tanstack Table** | 13/10/2024           | Creación de tablas con funcionalidades avanzadas.       | Esteban, Jeffry |
+| **Axios**          | 13/10/2024           | Cliente HTTP para realizar peticiones a APIs.           | Esteban, Jeffry |
+| **drag-and-drop**  | 13/10/2024           | facilita la funcionalidad de arrastrar y soltar.        | Jeffry          |
+
+
+
+## Instalación
+
+Para instalar las dependencias del proyecto, ejecuta:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
+
+
+## Uso
+
+Inicia el servidor de desarrollo:
+
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+El proyecto estará disponible en [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Estructura del proyecto
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Next.js 14**: Framework para construir aplicaciones web con renderizado híbrido.
+- **TypeScript 5**: Lenguaje de programación tipado para desarrollo JavaScript robusto.
+- **React 18**: Biblioteca para construir interfaces de usuario de forma declarativa.
+- **Tailwind CSS 3**: Framework de estilos utilitarios para diseño rápido y eficiente.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Licencia
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
