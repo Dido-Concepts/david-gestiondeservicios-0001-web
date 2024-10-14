@@ -35,7 +35,7 @@ Para instalar las dependencias del proyecto, ejecuta:
 
 ```bash
 bun install
-
+```
 
 ## Uso
 
