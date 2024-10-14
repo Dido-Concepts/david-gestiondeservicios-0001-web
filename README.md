@@ -39,7 +39,7 @@ Son dependencias para calidad de código, pruebas, documentación, etc.
 
 ## Commilint Docs para los mensajes de commit
 
-Toda la referencia se encuentra en el siguiente link [commitlint](https://commitlint.js.org/reference/prompt.html#questions)
+Toda la referencia se encuentra en el siguiente <a href="https://commitlint.js.org/reference/prompt.html#questions" target="_blank">link </a>
 
 ejemplo de un mensaje de commit
 
