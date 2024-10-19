@@ -25,7 +25,9 @@ Aquí se encuentra un registro de las dependencias adicionales que se han instal
 | **Tanstack Query** | 13/10/2024           | Gestión de estado del servidor y caché de datos.        | Esteban, Jeffry |
 | **Tanstack Table** | 13/10/2024           | Creación de tablas con funcionalidades avanzadas.       | Esteban, Jeffry |
 | **Axios**          | 13/10/2024           | Cliente HTTP para realizar peticiones a APIs.           | Esteban, Jeffry |
-| **drag-and-drop**  | 13/10/2024           | facilita la funcionalidad de arrastrar y soltar.        | Jeffry          |
+| **drag-and-drop**  | 13/10/2024           | Facilita la funcionalidad de arrastrar y soltar.        | Jeffry          |
+| **zustand**        | 13/10/2024           | Gestor de estados globales.                             | Esteban         |
+| **authjs**         | 14/10/2024           | Authentication para la web con google.                  | Esteban         |
 
 ### Dev Dependencias adicionales
 
