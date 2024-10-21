@@ -1,8 +1,9 @@
 import { Mapper } from '@/modules/share/domain/mapper'
-import { UserEntity } from '@/modules/user/infra/repositories/entities/user.entity'
+import { UserCreateEntity, UserEntity } from '@/modules/user/infra/repositories/entities/user.entity'
 import { UserModel } from '@/modules/user/domain/models/user.model'
 import { PaginatedItemsViewModel } from '@/modules/share/domain/models/paginate/paginated-items-view.model'
 import { PaginatedItemsViewEntity } from '@/modules/share/infra/entities/paginate/paginated-items-view.entity'
+import { CreateUserCommand } from '@/modules/user/application/use-cases/command/create-user/create-user.command'
 
 export class UserMapper extends Mapper<PaginatedItemsViewEntity<UserEntity>, PaginatedItemsViewModel<UserModel>> {
   mapFrom (param: PaginatedItemsViewEntity<UserEntity>): PaginatedItemsViewModel<UserModel> {
@@ -40,6 +41,14 @@ export class UserMapper extends Mapper<PaginatedItemsViewEntity<UserEntity>, Pag
         page_size: param.meta.pageSize,
         total: param.meta.total
       }
+    }
+  }
+
+  mapCreateEntity (param: CreateUserCommand) : UserCreateEntity {
+    return {
+      user_name: param.name,
+      email: param.email,
+      id_rol: param.idRole
     }
   }
 }

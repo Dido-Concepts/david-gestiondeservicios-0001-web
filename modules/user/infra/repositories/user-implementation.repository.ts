@@ -36,4 +36,15 @@ export class UserImplementationRepository implements UserRepository {
 
     return response.data
   }
+
+  async createUser (params: { name: string; email: string; idRole: number }): Promise<boolean> {
+    const userCreateEntity = this.userMapper.mapCreateEntity(params)
+
+    const response = await axiosApiInterna.post(
+      '/api/v1/user',
+      userCreateEntity
+    )
+
+    return response.data
+  }
 }

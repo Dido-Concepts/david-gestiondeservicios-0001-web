@@ -11,4 +11,10 @@ export abstract class UserRepository {
     idUser: number;
     status: UserStatus;
   }): Promise<boolean>;
+
+  abstract createUser(params: {
+    name: string;
+    email: string;
+    idRole: number;
+  }): Promise<boolean>;
 }
