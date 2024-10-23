@@ -24,7 +24,7 @@ const formUserManagementSchema = z.object({
 })
 
 export function ModalUserFormData () {
-  const { isModalOpen, toggleModal } = useModalUserForm()
+  const { isModalOpen, user, toggleModal } = useModalUserForm()
 
   const { mutate } = useMutation({
     mutationFn: createUser,
@@ -68,9 +68,10 @@ export function ModalUserFormData () {
     <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px] bg-app-primary text-white">
         <DialogHeader>
-          <DialogTitle className="text-white">Editar Usuario</DialogTitle>
+          <DialogTitle className="text-white">{user ? 'Editar' : 'Añadir'} usuario</DialogTitle>
           <DialogDescription className="text-gray-300">
-            Haz cambios en la información del usuario
+            {user ? 'Haz cambios en la información del usuario' : 'Completa los campos para crear el usuario '}
+            <br />
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
