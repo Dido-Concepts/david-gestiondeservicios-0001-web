@@ -71,7 +71,6 @@ export function ModalUserFormData () {
           <DialogTitle className="text-white">{user ? 'Editar' : 'Añadir'} usuario</DialogTitle>
           <DialogDescription className="text-gray-300">
             {user ? 'Haz cambios en la información del usuario' : 'Completa los campos para crear el usuario '}
-            <br />
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">

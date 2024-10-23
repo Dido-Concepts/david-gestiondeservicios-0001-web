@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { ListUsersResponse } from '../../application/use-cases/query/list-users/list-users.response'
+import { ListUsersResponse } from '@/modules/user/application/use-cases/query/list-users/list-users.response'
 
 interface ModalUserFormState {
   isModalOpen: boolean;

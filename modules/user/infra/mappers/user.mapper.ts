@@ -4,7 +4,7 @@ import { UserModel } from '@/modules/user/domain/models/user.model'
 import { PaginatedItemsViewModel } from '@/modules/share/domain/models/paginate/paginated-items-view.model'
 import { PaginatedItemsViewEntity } from '@/modules/share/infra/entities/paginate/paginated-items-view.entity'
 import { CreateUserCommand } from '@/modules/user/application/use-cases/command/create-user/create-user.command'
-import { EditUserCommand } from '../../application/use-cases/command/edit-user/edit-user.command'
+import { EditUserCommand } from '@/modules/user/application/use-cases/command/edit-user/edit-user.command'
 
 export class UserMapper extends Mapper<PaginatedItemsViewEntity<UserEntity>, PaginatedItemsViewModel<UserModel>> {
   mapFrom (param: PaginatedItemsViewEntity<UserEntity>): PaginatedItemsViewModel<UserModel> {
