@@ -13,7 +13,7 @@ export default function LoginPage () {
         >
           <div className="flex items-center justify-center">
             <Image
-              src="/login/logo.webp"
+              src="/aldonatelogo.webp"
               width={436}
               height={542}
               alt="Lima 21 Barber Shop"
@@ -26,7 +26,7 @@ export default function LoginPage () {
         {/* Sección Derecha: Formulario de Inicio de Sesión */}
         <div className="lg:w-1/2 w-full flex flex-col items-center justify-center bg-white p-8">
           <div className='flex flex-col gap-6 sm:gap-8 px-4 md:px-8 lg:px-12 xl:px-20'>
-            <h1 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center underline'>Lima 21</h1>
+            <h1 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-center underline'>Inicia sesión</h1>
 
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 text-center lg:text-left">
               Inicia sesión fácilmente con tu cuenta de Google para una experiencia rápida y segura.

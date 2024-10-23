@@ -8,6 +8,9 @@ const nextConfig = {
         permanent: true
       }
     ]
+  },
+  images: {
+    domains: ['lh3.googleusercontent.com'] // Permite este dominio de imagen
   }
 }
 
