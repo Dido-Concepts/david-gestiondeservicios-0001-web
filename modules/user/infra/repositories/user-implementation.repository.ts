@@ -15,10 +15,15 @@ export class UserImplementationRepository implements UserRepository {
   async getListUsers (param: {
     pageIndex: number;
     pageSize: number;
+    query?: string;
   }): Promise<PaginatedItemsViewModel<UserModel>> {
-    const response = await axiosApiInterna.get(
-      `/api/v1/user?page_index=${param.pageIndex}&page_size=${param.pageSize}`
-    )
+    let url = `/api/v1/user?page_index=${param.pageIndex}&page_size=${param.pageSize}`
+
+    if (param.query && param.query.trim() !== '') {
+      url += `&query=${encodeURIComponent(param.query)}`
+    }
+
+    const response = await axiosApiInterna.get(url)
 
     const paginatedItemsEntity: PaginatedItemsViewEntity<UserEntity> =
       response.data
