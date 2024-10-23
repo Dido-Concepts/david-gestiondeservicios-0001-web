@@ -18,4 +18,10 @@ export abstract class UserRepository {
     email: string;
     idRole: number;
   }): Promise<boolean>;
+
+  abstract editUser(params: {
+    userName: string;
+    idUser: number;
+    idRole: number;
+  }): Promise<boolean>;
 }

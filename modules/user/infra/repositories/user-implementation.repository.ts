@@ -52,4 +52,15 @@ export class UserImplementationRepository implements UserRepository {
 
     return response.data
   }
+
+  async editUser (params: { userName: string; idUser: number; idRole: number }): Promise<boolean> {
+    const userEditEntity = this.userMapper.mapEditEntity(params)
+
+    const response = await axiosApiInterna.put(
+      '/api/v1/user',
+      userEditEntity
+    )
+
+    return response.data
+  }
 }

@@ -64,7 +64,7 @@ export function ActionMenu ({ row }: { row: Row<ListUsersResponse> }) {
       <DropdownMenuContent align="end" >
         <DropdownMenuLabel>Acciones</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className='cursor-pointer' onClick={toggleModal}>
+        <DropdownMenuItem className='cursor-pointer' onClick={() => toggleModal(row.original)}>
           <IconComponent name="pencil" className='text-blue-500' />
           Editar Usuario
         </DropdownMenuItem>

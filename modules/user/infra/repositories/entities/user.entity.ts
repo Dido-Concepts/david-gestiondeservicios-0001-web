@@ -16,7 +16,7 @@ export type UserCreateEntity = {
     id_rol: number
 }
 
-export type UserUpdateEntity = {
+export type UserEditEntity = {
     id_rol: number
     id_user: number
     user_name: string
