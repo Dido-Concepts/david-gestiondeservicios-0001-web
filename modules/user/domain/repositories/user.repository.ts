@@ -5,6 +5,7 @@ export abstract class UserRepository {
   abstract getListUsers(param: {
     pageIndex: number;
     pageSize: number;
+    query?: string;
   }): Promise<PaginatedItemsViewModel<UserModel>>;
 
   abstract changeStatus(param: {
