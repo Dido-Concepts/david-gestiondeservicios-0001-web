@@ -19,7 +19,12 @@ export function ActionMenu ({ row }: { row: Row<ListUsersResponse> }) {
 
   const { toast } = useToast()
 
-  const { toggleModal } = useModalUserForm()
+  const { setUser, toggleModal } = useModalUserForm()
+
+  const handleEditUser = () => {
+    setUser(row.original)
+    toggleModal()
+  }
 
   const { mutate, isPending } = useMutation({
     mutationFn: changeStatus,
@@ -64,7 +69,7 @@ export function ActionMenu ({ row }: { row: Row<ListUsersResponse> }) {
       <DropdownMenuContent align="end" >
         <DropdownMenuLabel>Acciones</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className='cursor-pointer' onClick={() => toggleModal(row.original)}>
+        <DropdownMenuItem className='cursor-pointer' onClick={handleEditUser}>
           <IconComponent name="pencil" className='text-blue-500' />
           Editar Usuario
         </DropdownMenuItem>

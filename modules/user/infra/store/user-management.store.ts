@@ -4,18 +4,19 @@ import { ListUsersResponse } from '@/modules/user/application/use-cases/query/li
 interface ModalUserFormState {
   isModalOpen: boolean;
   user: ListUsersResponse | null;
-  toggleModal: (user?: ListUsersResponse | null) => void;
+  setUser: (user: ListUsersResponse | null) => void;
+  toggleModal: () => void;
 }
 
 export const useModalUserForm = create<ModalUserFormState>((set) => ({
   isModalOpen: false,
   user: null,
-  toggleModal: (user: ListUsersResponse | null = null) =>
+  setUser: (userChange: ListUsersResponse | null) =>
+    set(() => ({
+      user: userChange
+    })),
+  toggleModal: () =>
     set((state) => ({
-      isModalOpen: !state.isModalOpen,
-      user
+      isModalOpen: !state.isModalOpen
     }))
-
 }))
-
-//

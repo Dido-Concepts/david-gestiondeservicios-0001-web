@@ -6,6 +6,8 @@ import { ChangeStatusUseCase } from '@/modules/user/application/use-cases/comman
 import { ChangeStatusCommand } from '@/modules/user/application/use-cases/command/change-status/change-status.command'
 import { CreateUserUseCase } from '@/modules/user/application/use-cases/command/create-user/create-user.usecase'
 import { CreateUserCommand } from '@/modules/user/application/use-cases/command/create-user/create-user.command'
+import { EditUserCommand } from '../../application/use-cases/command/edit-user/edit-user.command'
+import { EditUserUseCase } from '../../application/use-cases/command/edit-user/edit-user.usecase'
 
 export async function getListUsers () {
   const getMainTableUseCase = container.get<ListUsersUseCase>(ListUsersUseCase)
@@ -21,4 +23,9 @@ export async function changeStatus ({ idUser, status }: ChangeStatusCommand) {
 export async function createUser (params: CreateUserCommand) {
   const createUser = container.get<CreateUserUseCase>(CreateUserUseCase)
   return await createUser.execute(params)
+}
+
+export async function editUser (params: EditUserCommand) {
+  const editUser = container.get<EditUserUseCase>(EditUserUseCase)
+  return await editUser.execute(params)
 }
