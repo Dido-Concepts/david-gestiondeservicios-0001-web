@@ -19,7 +19,7 @@ export default async function EditLocationPage (props: {
   return (
     <main className="container mx-auto p-6 space-y-6">
       {/* Botón de atrás */}
-      <Link className="flex items-center min-w-min px-4 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-100" href="/dashboard/location-management" passHref>
+      <Link className="flex items-center w-min px-4 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-100" href="/dashboard/location-management" passHref>
           <IconComponent name="arrow" width={20} height={20} className="w-6 h-6 mr-2" />
           Atrás
       </Link>
