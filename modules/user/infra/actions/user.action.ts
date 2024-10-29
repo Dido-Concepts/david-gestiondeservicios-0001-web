@@ -6,8 +6,8 @@ import { ChangeStatusUseCase } from '@/modules/user/application/use-cases/comman
 import { ChangeStatusCommand } from '@/modules/user/application/use-cases/command/change-status/change-status.command'
 import { CreateUserUseCase } from '@/modules/user/application/use-cases/command/create-user/create-user.usecase'
 import { CreateUserCommand } from '@/modules/user/application/use-cases/command/create-user/create-user.command'
-import { EditUserCommand } from '../../application/use-cases/command/edit-user/edit-user.command'
-import { EditUserUseCase } from '../../application/use-cases/command/edit-user/edit-user.usecase'
+import { EditUserCommand } from '@/modules/user/application/use-cases/command/edit-user/edit-user.command'
+import { EditUserUseCase } from '@/modules/user/application/use-cases/command/edit-user/edit-user.usecase'
 
 export async function getListUsers (params: { pageIndex: number, pageSize: number, query?: string }) {
   const getMainTableUseCase = container.get<ListUsersUseCase>(ListUsersUseCase)

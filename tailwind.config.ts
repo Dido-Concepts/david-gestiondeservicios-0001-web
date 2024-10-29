@@ -53,7 +53,8 @@ const config: Config = {
         },
         'app-primary': '#414141',
         'app-secondary': '#BF0413',
-        'app-terciary': '#FFFFFF'
+        'app-terciary': '#FFFFFF',
+        'app-quaternary': '#18181B'
       },
       borderRadius: {
         lg: 'var(--radius)',

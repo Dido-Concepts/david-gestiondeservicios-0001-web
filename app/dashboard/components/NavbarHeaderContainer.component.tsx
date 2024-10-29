@@ -12,7 +12,7 @@ export function NavbarHeaderContainer (param: { userName: string }) {
       <div className="flex items-center justify-between p-2">
         {/* Navbar left */}
         <div className="flex items-center space-x-3 ">
-          <span className="p-2 text-xl font-bold tracking-wider uppercase lg:hidden text-app-terciary">Lima 21</span>
+          <span className="p-2 text-xl font-bold tracking-wider lg:hidden text-app-terciary">Aldonate</span>
           {/* Toggle sidebar button */}
           <button onClick={toggleDashboard} className="p-2 rounded-md focus:outline-none focus:ring">
             <IconComponent name="back" width={20} height={20} className={`w-6 h-6 text-app-terciary ${isDashboardOpen ? 'transform transition-transform -rotate-180' : ''}`} />
