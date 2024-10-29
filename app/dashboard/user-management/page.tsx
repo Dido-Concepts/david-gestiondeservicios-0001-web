@@ -26,11 +26,11 @@ export default async function UserManagementPage (props: {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <main className="container mx-auto py-6">
+      <main className="container mx-auto p-4 space-y-6">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-app-secondary mb-2">Gestionar equipo</h1>
-            <p className="text-app-primary text-2xl">Añada, edite o elimine miembros del equipo</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-app-quaternary mb-2">Gestionar equipo</h1>
+            <p className="text-app-primary ">Añada, edite o elimine miembros del equipo</p>
           </div>
 
           <AddButtonUser />

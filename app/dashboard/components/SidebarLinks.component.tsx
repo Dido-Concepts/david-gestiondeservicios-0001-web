@@ -5,7 +5,7 @@ import { KEY_ROLES } from '@/modules/auth/constants/auth.constants'
 const LINKS: LinkSidebarProps[] = [
   { href: '/dashboard', icon: 'house', text: 'Inicio', isAdmin: false },
   { href: '/dashboard/user-management', icon: 'group', text: 'Equipo', isAdmin: true },
-  { href: '/dashboard/sedes', icon: 'store', text: 'Sedes', isAdmin: false },
+  { href: '/dashboard/location-management', icon: 'store', text: 'Sedes', isAdmin: false },
   { href: '/dashboard/servicios', icon: 'scissors', text: 'Servicios', isAdmin: false }
 ]
 

@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 
 import { useFormUserManagement } from '@/modules/user/infra/hooks/useFormUserManagement'
 import { useModalUserForm } from '@/modules/user/infra/store/user-management.store'
-import { SelectRole } from './SelectRole.component'
 
 export function ModalUserFormData () {
   const { isModalOpen, toggleModal, user } = useModalUserForm() // Extrae `user`
@@ -40,8 +39,6 @@ export function ModalUserFormData () {
                 <FormMessage />
               </FormItem>
             )} />
-
-            <SelectRole control={form.control} name="idRole" />
 
             <FormField name="email" control={form.control} render={({ field }) => (
               <FormItem>
