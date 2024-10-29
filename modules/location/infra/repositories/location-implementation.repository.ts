@@ -1,35 +1,47 @@
-import { axiosApiInterna } from '@/config/axiosApiInterna'
-import { LocationModel } from '@/modules/location/domain/models/location.model'
+import { LocationModel, LocationStatus } from '@/modules/location/domain/models/location.model'
 import { LocationRepository } from '@/modules/location/domain/repositories/location.repository'
-import { LocationMapper } from '@/modules/location/infra/mappers/location.mapper'
-import { LocationEntity } from '@/modules/location/infra/repositories/entities/location.entity'
+import { mockLocationData } from '@/modules/location/infra/mock/location.mock'
 import { PaginatedItemsViewModel } from '@/modules/share/domain/models/paginate/paginated-items-view.model'
-import { PaginatedItemsViewEntity } from '@/modules/share/infra/entities/paginate/paginated-items-view.entity'
 import { injectable } from 'inversify'
 import 'reflect-metadata'
 
 @injectable()
 export class LocationImplementationRepository implements LocationRepository {
-  public locationMapper = new LocationMapper()
-
   async getListLocations (param: {
     pageIndex: number;
     pageSize: number;
-    query?: string;
   }): Promise<PaginatedItemsViewModel<LocationModel>> {
-    // Construir la URL con parámetros de paginación y búsqueda
-    let url = `/api/v1/location?page_index=${param.pageIndex}&page_size=${param.pageSize}`
+    const { pageIndex, pageSize } = param
 
-    if (param.query && param.query.trim() !== '') {
-      url += `&query=${encodeURIComponent(param.query)}`
+    // Total de locaciones disponibles en el mock
+    const totalLocations = mockLocationData.locations.length
+
+    // Calcular los índices de paginación
+    const startIndex = pageIndex * pageSize
+    const endIndex = startIndex + pageSize
+
+    // Obtener la página actual de locaciones
+    const paginatedLocations = mockLocationData.locations.slice(startIndex, endIndex).map((location) => ({
+      id: location.id,
+      name: location.name,
+      address: location.address,
+      city: location.city,
+      province: location.province,
+      phone: location.phone,
+      imageUrl: location.imageUrl,
+      registrationDate: location.registrationDate,
+      status: LocationStatus.ACTIVE, // Estado por defecto
+      openingHours: location.openingHours
+    }))
+
+    return {
+      data: paginatedLocations,
+      meta: {
+        page: pageIndex,
+        pageSize,
+        pageCount: Math.ceil(totalLocations / pageSize),
+        total: totalLocations
+      }
     }
-
-    // Realizar la solicitud a la API
-    const response = await axiosApiInterna.get(url)
-
-    // Mapear la entidad paginada desde la API a un modelo de dominio usando LocationMapper
-    const paginatedItemsEntity: PaginatedItemsViewEntity<LocationEntity> = response.data
-
-    return this.locationMapper.mapFrom(paginatedItemsEntity)
   }
 }
