@@ -55,7 +55,9 @@ export function ModalUserFormData () {
 
         <DialogFooter>
           <Button type="submit" form="UserFormData" className="bg-slate-200 hover:bg-slate-400 text-app-primary hover:text-slate-200">
-            Guardar cambios
+             {isEdit
+               ? 'Guardar cambios'
+               : 'Guardar'}
           </Button>
         </DialogFooter>
       </DialogContent>

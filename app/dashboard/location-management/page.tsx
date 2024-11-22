@@ -1,7 +1,4 @@
-'use client'
-
-import { AddButtonLocation } from '@/app/dashboard/location-management/components/AddButtonLocation.component'
-import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 import {
   Card,
   CardContent,
@@ -16,8 +13,9 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { mockLocationData } from '@/modules/location/infra/mock/location.mock'
+import { Button } from '@/components/ui/button'
 import { MoreHorizontal } from 'lucide-react'
-import Link from 'next/link'
+import { AddButtonAndModalLocation } from '@/app/dashboard/location-management/components/AddButtonAndModalLocation.component'
 
 export default function SedesManagementPage () {
   return (
@@ -34,7 +32,7 @@ export default function SedesManagementPage () {
           </p>
         </div>
         <div className="flex space-x-2">
-          <AddButtonLocation />
+          <AddButtonAndModalLocation />
         </div>
       </div>
 
@@ -50,7 +48,11 @@ export default function SedesManagementPage () {
               <div className="w-full md:w-1/3 h-24 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
                 {location.imageUrl
                   ? (
-                    <img src={location.imageUrl} alt={location.name} className="w-full h-full object-cover" />
+                  <img
+                    src={location.imageUrl}
+                    alt={location.name}
+                    className="w-full h-full object-cover"
+                  />
                     )
                   : (
                   <svg
@@ -71,9 +73,7 @@ export default function SedesManagementPage () {
 
               <CardContent className="w-full md:w-2/3">
                 <CardHeader className="p-0">
-                  <CardTitle className="text-lg font-bold">
-                    {location.name}
-                  </CardTitle>
+                  <CardTitle className="text-lg font-bold">{location.name}</CardTitle>
                 </CardHeader>
                 <p className="text-gray-600">
                   {location.address}, {location.city}, {location.province}

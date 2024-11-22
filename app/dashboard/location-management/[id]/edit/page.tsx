@@ -3,11 +3,15 @@ import Link from 'next/link'
 import { mockLocationData } from '@/modules/location/infra/mock/location.mock'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { IconComponent } from '@/app/components'
+import { EditButtonAndModalLocationDetails } from '@/app/dashboard/location-management/[id]/edit/components/EditButtonAndModalLocationDetails.component'
+import { EditButtonAndModalLocationOpeningHours } from '@/app/dashboard/location-management/[id]/edit/components/EditButtonAndModalLocationOpeningHours.component'
 
-export default async function EditLocationPage (props: {
-  params: Promise<{ id: string }>;
+export default function EditLocationPage ({
+  params
+}: {
+  params: { id: string }
 }) {
-  const { id } = await props.params
+  const { id } = params
   const location = mockLocationData.locations.find(
     (location) => location.id === id
   )
@@ -19,32 +23,39 @@ export default async function EditLocationPage (props: {
   return (
     <main className="container mx-auto p-6 space-y-6">
       {/* Botón de atrás */}
-      <Link className="flex items-center w-min px-4 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-100" href="/dashboard/location-management" passHref>
-          <IconComponent name="arrow" width={20} height={20} className="w-6 h-6 mr-2" />
-          Atrás
+      <Link
+        className="flex items-center w-min px-4 py-2 border border-gray-300 rounded-full text-gray-700 hover:bg-gray-100"
+        href="/dashboard/location-management"
+        passHref
+      >
+        <IconComponent
+          name="arrow"
+          width={20}
+          height={20}
+          className="w-6 h-6 mr-2"
+        />
+        Atrás
       </Link>
 
       <h1 className="text-3xl font-bold text-gray-800">{location.name}</h1>
 
       {/* Datos de Contacto */}
       <Card className="p-4">
-        <CardHeader className="flex justify-between items-start">
+        <CardHeader className="flex justify-between items-start relative">
           <CardTitle className="text-2xl font-bold text-gray-800">
-            Datos de contacto
+            Datos de la sede
           </CardTitle>
-          <Link
-            href="#"
-            className="text-app-secondary font-medium hover:underline"
-          >
-            Editar
-          </Link>
+          <div className="absolute right-6 top-6">
+            <EditButtonAndModalLocationDetails />
+          </div>
         </CardHeader>
+
         <CardContent>
           <div className="space-y-4">
             <div className="flex items-center space-x-4">
               <Avatar className="w-24 h-24">
                 <AvatarImage
-                  src={location.imageUrl} // Usamos la URL de la imagen de la locación
+                  src={location.imageUrl}
                   alt={`Imagen de ${location.name}`}
                 />
                 <AvatarFallback>IC</AvatarFallback>
@@ -79,16 +90,13 @@ export default async function EditLocationPage (props: {
 
       {/* Horario de Atención */}
       <Card className="p-4">
-        <CardHeader className="flex justify-between items-start">
+        <CardHeader className="flex justify-between items-start relative">
           <CardTitle className="text-2xl font-bold text-gray-800">
             Horario de atención
           </CardTitle>
-          <Link
-            href="#"
-            className="text-app-secondary font-medium hover:underline"
-          >
-            Editar
-          </Link>
+          <div className="absolute right-6 top-6">
+            <EditButtonAndModalLocationOpeningHours />
+          </div>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-500 mb-4">
