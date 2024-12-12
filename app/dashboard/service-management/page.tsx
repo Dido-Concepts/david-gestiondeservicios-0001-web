@@ -1,58 +1,26 @@
-import React, { useState } from 'react'
+import React from 'react'
+import DynamicTable from '@/app/components/table/DynamicTable.component'
 import AddButtonService from '@/app/dashboard/service-management/components/AddButtonService.component'
-import ServiceModal from '@/app/dashboard/service-management/components/ServiceModal.component'
-import DynamicTable from '@/app/components/table/dynamicTable.component'
-import { data } from './mock/servicio.mock'
 
-export default function ServicioManagementPage () {
-  const [servicios, setServicios] = useState(data)
-  const [modalOpen, setModalOpen] = useState(false)
-  const [selectedService, setSelectedService] = useState(null)
-
-  const handleAddService = () => {
-    setModalOpen(true)
-    setSelectedService(null)
-  }
-
-  const handleEditService = (service: any) => {
-    setModalOpen(true)
-    setSelectedService(service)
-  }
-
-  const handleModalSubmit = (newService: any) => {
-    setServicios((prev) => [...prev, newService])
-    setModalOpen(false)
-  }
-
+export default function Page () {
   return (
-    <div className="container mx-auto py-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold">Gestionar Servicios</h1>
-        <AddButtonService onAddService={handleAddService} onAddCategory={() => console.log('Añadir Categoría')} />
+  <main className="container mx-auto p-4 space-y-6">
+    {/* Header */}
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+      <div>
+        <h1 className="text-3xl md:text-4xl font-bold text-app-quaternary mb-2">
+          Gestionar categorías y servicios
+        </h1>
+        <p className="text-app-primary">
+           Añade, edita o elimina las categorías y los servicios de su negocio
+        </p>
       </div>
-
-      <DynamicTable
-        droppableId="servicios"
-        group="servicios"
-        headerData={[
-          { label: 'Servicio', key: 'servicio' },
-          { label: 'Duración', key: 'duracion' },
-          { label: 'Precio', key: 'precio' }
-        ]}
-        data={servicios}
-        onAction={(type, item) => {
-          if (type === 'edit') handleEditService(item)
-          else console.log('Delete', item)
-        }}
-        onDragUpdate={(updatedData) => setServicios(updatedData)}
-      />
-
-      <ServiceModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSubmit={handleModalSubmit}
-        serviceData={selectedService}
-      />
+      <div className="flex space-x-2">
+        <AddButtonService />
+      </div>
     </div>
+
+    <DynamicTable />
+  </main>
   )
 }
