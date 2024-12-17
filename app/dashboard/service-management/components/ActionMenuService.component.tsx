@@ -4,9 +4,11 @@ import { IconComponent } from '@/app/components/Icon.component'
 const ActionMenuService = () => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <button
-          className="p-1 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2"
+      {/* Usa un <div> en lugar de <button> */}
+      <DropdownMenuTrigger asChild>
+        <div
+          className="p-1 rounded-md hover:bg-gray-300 cursor-pointer focus:outline-none focus:ring-2"
+          role="button"
           aria-label="Action Menu"
         >
           <IconComponent
@@ -15,18 +17,19 @@ const ActionMenuService = () => {
             height={20}
             className="w-5 h-5 ml-2"
           />
-        </button>
+        </div>
       </DropdownMenuTrigger>
 
+      {/* Contenido del menú */}
       <DropdownMenuContent
         align="end"
         sideOffset={5}
         className="bg-white border border-gray-200 rounded-md shadow-md w-40"
       >
-        <DropdownMenuItem onClick={() => console.log('Editar')}>
+        <DropdownMenuItem onSelect={() => console.log('Editar')}>
           Editar
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => console.log('Cambiar estado')}>
+        <DropdownMenuItem onSelect={() => console.log('Cambiar estado')}>
           Cambiar estado
         </DropdownMenuItem>
       </DropdownMenuContent>
