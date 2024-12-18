@@ -3,9 +3,11 @@ import React, { useState } from 'react'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { IconComponent } from '@/app/components/Icon.component'
 import EditModalService from '@/app/dashboard/service-management/components/EditModalService.component'
+import DeleteModalService from '@/app/dashboard/service-management/components/DeleteModalService.component'
 
 const ActionMenuService = () => {
   const [editModalOpen, setEditModalOpen] = useState(false)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
 
   // Datos iniciales del servicio (pueden venir de props o de una API)
   const [serviceData, setServiceData] = useState({
@@ -15,14 +17,24 @@ const ActionMenuService = () => {
     category: 'cabello'
   })
 
-  // Lógica para guardar cambios del modal
+  // Lógica para guardar cambios del modal de edición
   const handleSave = (updatedData: typeof serviceData) => {
     console.log('Servicio Actualizado:', updatedData)
     setServiceData(updatedData)
   }
 
+  // Lógica para confirmar eliminación
+  const handleDelete = () => {
+    console.log('Servicio eliminado:', serviceData.serviceName)
+    setDeleteModalOpen(false)
+  }
+
   const handleEdit = () => {
-    setEditModalOpen(true) // Abre el modal al seleccionar "Editar"
+    setEditModalOpen(true) // Abre el modal de edición
+  }
+
+  const handleDeleteModal = () => {
+    setDeleteModalOpen(true) // Abre el modal de eliminación
   }
 
   return (
@@ -53,7 +65,7 @@ const ActionMenuService = () => {
           <DropdownMenuItem onSelect={handleEdit}>
             Editar
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => console.log('Cambiar estado')}>
+          <DropdownMenuItem onSelect={handleDeleteModal}>
             Eliminar
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -65,6 +77,13 @@ const ActionMenuService = () => {
         onOpenChange={setEditModalOpen}
         serviceData={serviceData}
         onSave={handleSave}
+      />
+
+      {/* Modal de eliminación */}
+      <DeleteModalService
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        onConfirm={handleDelete}
       />
     </>
   )
