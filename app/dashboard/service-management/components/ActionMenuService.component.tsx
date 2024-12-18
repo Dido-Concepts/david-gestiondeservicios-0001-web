@@ -1,3 +1,4 @@
+'use client'
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { IconComponent } from '@/app/components/Icon.component'
 
