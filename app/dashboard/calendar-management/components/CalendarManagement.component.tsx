@@ -11,6 +11,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import esLocale from '@fullcalendar/core/locales/es'
 import {
   Dialog,
   DialogContent,
@@ -135,6 +136,7 @@ const Calendar: React.FC = () => {
             selectable={true} // Allow dates to be selectable.
             selectMirror={true} // Mirror selections visually.
             dayMaxEvents={true} // Limit the number of events displayed per day.
+            locale={esLocale} // Set the calendar to Spanish.
             select={handleDateClick} // Handle date selection to create new events.
             eventClick={handleEventClick} // Handle clicking on events (e.g., to delete them).
             eventsSet={(events) => setCurrentEvents(events)} // Update state with current events whenever they change.
@@ -153,22 +155,95 @@ const Calendar: React.FC = () => {
           <DialogHeader>
             <DialogTitle>Añadir cita</DialogTitle>
           </DialogHeader>
-          <form className="space-x-5 mb-4" onSubmit={handleAddEvent}>
-            <input
-              type="text"
-              placeholder="Event Title"
-              value={newEventTitle}
-              onChange={(e) => setNewEventTitle(e.target.value)} // Update new event title as the user types.
-              required
-              className="border border-gray-200 p-3 rounded-md text-lg"
-            />
-            <button
-              className="bg-green-500 text-white p-3 mt-5 rounded-md"
-              type="submit"
-            >
-              Guardar
-            </button>{' '}
-            {/* Button to submit new event */}
+          <form className="space-x-5 mb-4 gap-2" onSubmit={handleAddEvent}>
+            {/* Seleccionar cliente */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Seleccionar cliente
+              </label>
+              <select className="border border-gray-200 p-3 rounded-md w-full">
+                <option value="">Sin cita</option>
+                <option value="cliente1">Cliente 1</option>
+                <option value="cliente2">Cliente 2</option>
+                <option value="añadir">Añadir cliente</option>
+              </select>
+            </div>
+
+            {/* Seleccionar servicios */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Seleccionar servicios
+              </label>
+              <div className="space-y-2">
+                <div>
+                  <input type="checkbox" id="servicio1" className="mr-2" />
+                  <label htmlFor="servicio1">Servicio 1</label>
+                </div>
+                <div>
+                  <input type="checkbox" id="servicio2" className="mr-2" />
+                  <label htmlFor="servicio2">Servicio 2</label>
+                </div>
+                <div>
+                  <input type="checkbox" id="servicio3" className="mr-2" />
+                  <label htmlFor="servicio3">Servicio 3</label>
+                </div>
+              </div>
+            </div>
+
+            {/* Seleccionar barbero */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Seleccionar barbero
+              </label>
+              <div className="space-y-2">
+                <div>
+                  <input type="checkbox" id="servicio1" className="mr-2" />
+                  <label htmlFor="servicio1">David</label>
+                </div>
+                <div>
+                  <input type="checkbox" id="servicio2" className="mr-2" />
+                  <label htmlFor="servicio2">Julio</label>
+                </div>
+                <div>
+                  <input type="checkbox" id="servicio3" className="mr-2" />
+                  <label htmlFor="servicio3">Pedro</label>
+                </div>
+              </div>
+            </div>
+
+            {/* Agregar descripción */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Agregar descripción
+              </label>
+              <input
+                type="text"
+                placeholder="Descripción de la cita"
+                value={newEventTitle}
+                onChange={(e) => setNewEventTitle(e.target.value)} // Actualice el título del nuevo evento a medida que el usuario escribe.
+                required
+                className="border border-gray-200 p-3 rounded-md text-lg"
+              />
+            </div>
+
+            {/* Botones para cancelar y guardar */}
+            <div className="flex justify-end space-x-4 mt-6">
+              <button
+                type="button"
+                className="bg-gray-300 text-gray-700 p-3 rounded-md"
+                onClick={handleCloseDialog}
+              >
+                Cancelar
+              </button>
+
+              {/* Button to submit new event */}
+              <button
+                type="submit"
+                className="bg-app-quaternary text-white p-3 rounded-md"
+              >
+                Guardar
+              </button>
+            </div>
           </form>
         </DialogContent>
       </Dialog>
@@ -177,3 +252,4 @@ const Calendar: React.FC = () => {
 }
 
 export default Calendar // Export the Calendar component for use in other parts of the application.
+//
