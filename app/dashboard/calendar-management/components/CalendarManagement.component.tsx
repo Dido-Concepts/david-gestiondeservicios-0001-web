@@ -21,17 +21,26 @@ import {
 
 const Calendar: React.FC = () => {
   // ESTADOS DEL COMPONENTE
-  // Lista de eventos actualmente en el calendario
+
+  // Eventos actuales en el calendario.
   const [currentEvents, setCurrentEvents] = useState<EventApi[]>([])
-  // Estado para controlar si el modal para agregar eventos está abierto
+  // Estado para el dialog de agregar eventos.
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
-  // Título del nuevo evento que el usuario desea agregar.
+  // Título del nuevo evento a agregar.
   const [newEventTitle, setNewEventTitle] = useState<string>('')
   // Fecha seleccionada para agregar un evento.
   const [selectedDate, setSelectedDate] = useState<DateSelectArg | null>(null)
 
+  // Estados para el diálogo de edición
+  // Evento seleccionado para editar.
+  const [selectedEventForEditing, setSelectedEventForEditing] = useState<EventApi | null>(null)
+  // Título del evento en edición.
+  const [editEventTitle, setEditEventTitle] = useState<string>('')
+  // Estado para controlar si se muestra el diálogo de edición.
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false)
+
+  // Cargar eventos desde el localStorage al montar el componente.
   useEffect(() => {
-    // Cargar eventos desde el almacenamiento local cuando se monta el componente
     if (typeof window !== 'undefined') {
       const savedEvents = localStorage.getItem('events')
       if (savedEvents) {
@@ -40,39 +49,46 @@ const Calendar: React.FC = () => {
     }
   }, [])
 
+  // Guardar eventos en localStorage cada vez que currentEvents cambie.
   useEffect(() => {
-    // Guardar eventos en el almacenamiento local siempre que cambien
     if (typeof window !== 'undefined') {
       localStorage.setItem('events', JSON.stringify(currentEvents))
     }
   }, [currentEvents])
 
+  // Manejador para agregar un nuevo evento.
   const handleDateClick = (selected: DateSelectArg) => {
     setSelectedDate(selected)
     setIsDialogOpen(true)
   }
 
+  // Manejador para editar un evento al hacer clic.
   const handleEventClick = (selected: EventClickArg) => {
-    // Solicitar confirmación al usuario antes de eliminar un evento
-    if (
-      window.confirm(
-        `¿Estás seguro de que quieres eliminar la cita "${selected.event.title}"?`
-      )
-    ) {
-      selected.event.remove()
-    }
+    // En vez de eliminar, abrimos el dialog de edición.
+    setSelectedEventForEditing(selected.event)
+    setEditEventTitle(selected.event.title)
+    setIsEditDialogOpen(true)
   }
 
+  // Función para cerrar el diálogo de agregar evento.
   const handleCloseDialog = () => {
     setIsDialogOpen(false)
     setNewEventTitle('')
   }
 
+  // Función para cerrar el diálogo de edición.
+  const handleCloseEditDialog = () => {
+    setIsEditDialogOpen(false)
+    setSelectedEventForEditing(null)
+    setEditEventTitle('')
+  }
+
+  // Manejador para agregar un evento nuevo.
   const handleAddEvent = (e: React.FormEvent) => {
     e.preventDefault()
     if (newEventTitle && selectedDate) {
-      const calendarApi = selectedDate.view.calendar // Obtener la instancia de API del calendario
-      calendarApi.unselect() // Deseleccionar el rango de fechas
+      const calendarApi = selectedDate.view.calendar
+      calendarApi.unselect() // Deselecciona el rango
 
       const newEvent = {
         id: `${selectedDate.start.toISOString()}-${newEventTitle}`,
@@ -84,6 +100,17 @@ const Calendar: React.FC = () => {
 
       calendarApi.addEvent(newEvent)
       handleCloseDialog()
+    }
+  }
+
+  // Manejador para guardar los cambios en la edición del evento.
+  const handleEditEvent = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (selectedEventForEditing) {
+      // Actualizamos la propiedad 'title' del evento.
+      selectedEventForEditing.setProp('title', editEventTitle)
+      // Si fuera necesario, se pueden actualizar otras propiedades.
+      handleCloseEditDialog()
     }
   }
 
@@ -100,7 +127,6 @@ const Calendar: React.FC = () => {
                 No hay citas presentes
               </div>
             )}
-
             {currentEvents.length > 0 &&
               currentEvents.map((event: EventApi) => (
                 <li
@@ -114,8 +140,7 @@ const Calendar: React.FC = () => {
                       year: 'numeric',
                       month: 'short',
                       day: 'numeric'
-                    })}{' '}
-                    {/* Formato de fecha de inicio del evento */}
+                    })}
                   </label>
                 </li>
               ))}
@@ -125,31 +150,31 @@ const Calendar: React.FC = () => {
         <div className="w-9/12 mt-8">
           <FullCalendar
             height={'85vh'}
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]} // Initialize calendar with required plugins.
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             headerToolbar={{
               left: 'prev,next today',
               center: 'title',
               right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-            }} // Establecer las opciones de la barra de herramientas del encabezado
-            initialView="dayGridMonth" // Initial view mode of the calendar.
-            editable={true} // Allow events to be edited.
-            selectable={true} // Allow dates to be selectable.
-            selectMirror={true} // Mirror selections visually.
-            dayMaxEvents={true} // Limit the number of events displayed per day.
-            locale={esLocale} // Set the calendar to Spanish.
-            select={handleDateClick} // Handle date selection to create new events.
-            eventClick={handleEventClick} // Handle clicking on events (e.g., to delete them).
-            eventsSet={(events) => setCurrentEvents(events)} // Update state with current events whenever they change.
+            }}
+            initialView="dayGridMonth"
+            editable={true}
+            selectable={true}
+            selectMirror={true}
+            dayMaxEvents={true}
+            locale={esLocale}
+            select={handleDateClick}
+            eventClick={handleEventClick}
+            eventsSet={(events) => setCurrentEvents(events)}
             initialEvents={
               typeof window !== 'undefined'
                 ? JSON.parse(localStorage.getItem('events') || '[]')
                 : []
-            } // Initial events loaded from local storage.
+            }
           />
         </div>
       </div>
 
-      {/* Dialog for adding new events */}
+      {/* Dialog para agregar un nuevo evento */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -197,16 +222,16 @@ const Calendar: React.FC = () => {
               </label>
               <div className="space-y-2">
                 <div>
-                  <input type="checkbox" id="servicio1" className="mr-2" />
-                  <label htmlFor="servicio1">David</label>
+                  <input type="checkbox" id="barbero1" className="mr-2" />
+                  <label htmlFor="barbero1">David</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="servicio2" className="mr-2" />
-                  <label htmlFor="servicio2">Julio</label>
+                  <input type="checkbox" id="barbero2" className="mr-2" />
+                  <label htmlFor="barbero2">Julio</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="servicio3" className="mr-2" />
-                  <label htmlFor="servicio3">Pedro</label>
+                  <input type="checkbox" id="barbero3" className="mr-2" />
+                  <label htmlFor="barbero3">Pedro</label>
                 </div>
               </div>
             </div>
@@ -220,7 +245,7 @@ const Calendar: React.FC = () => {
                 type="text"
                 placeholder="Descripción de la cita"
                 value={newEventTitle}
-                onChange={(e) => setNewEventTitle(e.target.value)} // Actualice el título del nuevo evento a medida que el usuario escribe.
+                onChange={(e) => setNewEventTitle(e.target.value)}
                 required
                 className="border border-gray-200 p-3 rounded-md text-lg"
               />
@@ -235,8 +260,6 @@ const Calendar: React.FC = () => {
               >
                 Cancelar
               </button>
-
-              {/* Button to submit new event */}
               <button
                 type="submit"
                 className="bg-app-quaternary text-white p-3 rounded-md"
@@ -247,9 +270,51 @@ const Calendar: React.FC = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Dialog para editar un evento existente */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar cita</DialogTitle>
+          </DialogHeader>
+          <form className="space-x-5 mb-4 gap-2" onSubmit={handleEditEvent}>
+            {/* Aquí puedes incluir otros campos si fuera necesario (cliente, servicios, barbero) */}
+            {/* En este ejemplo, únicamente editaremos la descripción (title) */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Editar descripción
+              </label>
+              <input
+                type="text"
+                placeholder="Nueva descripción de la cita"
+                value={editEventTitle}
+                onChange={(e) => setEditEventTitle(e.target.value)}
+                required
+                className="border border-gray-200 p-3 rounded-md text-lg"
+              />
+            </div>
+
+            {/* Botones para cancelar y guardar la edición */}
+            <div className="flex justify-end space-x-4 mt-6">
+              <button
+                type="button"
+                className="bg-gray-300 text-gray-700 p-3 rounded-md"
+                onClick={handleCloseEditDialog}
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="bg-app-quaternary text-white p-3 rounded-md"
+              >
+                Guardar cambios
+              </button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
 
-export default Calendar // Export the Calendar component for use in other parts of the application.
-//
+export default Calendar
