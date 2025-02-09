@@ -20,26 +20,30 @@ import {
 } from '@/components/ui/dialog'
 
 const Calendar: React.FC = () => {
-  // ESTADOS DEL COMPONENTE
-
-  // Eventos actuales en el calendario.
+  // ============================
+  // ESTADOS GENERALES
+  // ============================
   const [currentEvents, setCurrentEvents] = useState<EventApi[]>([])
-  // Estado para el dialog de agregar eventos.
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
-  // Título del nuevo evento a agregar.
-  const [newEventTitle, setNewEventTitle] = useState<string>('')
-  // Fecha seleccionada para agregar un evento.
   const [selectedDate, setSelectedDate] = useState<DateSelectArg | null>(null)
 
-  // Estados para el diálogo de edición
-  // Evento seleccionado para editar.
+  // Estados para el diálogo de agregar cita
+  const [newEventTitle, setNewEventTitle] = useState<string>('')
+  const [newEventClient, setNewEventClient] = useState<string>('')
+  const [newEventServices, setNewEventServices] = useState<string[]>([])
+  const [newEventBarbers, setNewEventBarbers] = useState<string[]>([])
+
+  // Estados para el diálogo de editar cita
   const [selectedEventForEditing, setSelectedEventForEditing] = useState<EventApi | null>(null)
-  // Título del evento en edición.
   const [editEventTitle, setEditEventTitle] = useState<string>('')
-  // Estado para controlar si se muestra el diálogo de edición.
+  const [editEventClient, setEditEventClient] = useState<string>('')
+  const [editEventServices, setEditEventServices] = useState<string[]>([])
+  const [editEventBarbers, setEditEventBarbers] = useState<string[]>([])
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false)
 
-  // Cargar eventos desde el localStorage al montar el componente.
+  // ============================
+  // CARGA Y ALMACENAMIENTO
+  // ============================
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const savedEvents = localStorage.getItem('events')
@@ -49,53 +53,40 @@ const Calendar: React.FC = () => {
     }
   }, [])
 
-  // Guardar eventos en localStorage cada vez que currentEvents cambie.
   useEffect(() => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('events', JSON.stringify(currentEvents))
     }
   }, [currentEvents])
 
-  // Manejador para agregar un nuevo evento.
+  // ============================
+  // MANEJADORES DE EVENTOS
+  // ============================
+
+  // --- Agregar evento ---
   const handleDateClick = (selected: DateSelectArg) => {
     setSelectedDate(selected)
     setIsDialogOpen(true)
   }
 
-  // Manejador para editar un evento al hacer clic.
-  const handleEventClick = (selected: EventClickArg) => {
-    // En vez de eliminar, abrimos el dialog de edición.
-    setSelectedEventForEditing(selected.event)
-    setEditEventTitle(selected.event.title)
-    setIsEditDialogOpen(true)
-  }
-
-  // Función para cerrar el diálogo de agregar evento.
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false)
-    setNewEventTitle('')
-  }
-
-  // Función para cerrar el diálogo de edición.
-  const handleCloseEditDialog = () => {
-    setIsEditDialogOpen(false)
-    setSelectedEventForEditing(null)
-    setEditEventTitle('')
-  }
-
-  // Manejador para agregar un evento nuevo.
   const handleAddEvent = (e: React.FormEvent) => {
     e.preventDefault()
     if (newEventTitle && selectedDate) {
       const calendarApi = selectedDate.view.calendar
-      calendarApi.unselect() // Deselecciona el rango
+      calendarApi.unselect()
 
       const newEvent = {
         id: `${selectedDate.start.toISOString()}-${newEventTitle}`,
         title: newEventTitle,
         start: selectedDate.start,
         end: selectedDate.end,
-        allDay: selectedDate.allDay
+        allDay: selectedDate.allDay,
+        // Se guardan datos adicionales en extendedProps:
+        extendedProps: {
+          client: newEventClient,
+          services: newEventServices,
+          barbers: newEventBarbers
+        }
       }
 
       calendarApi.addEvent(newEvent)
@@ -103,20 +94,91 @@ const Calendar: React.FC = () => {
     }
   }
 
-  // Manejador para guardar los cambios en la edición del evento.
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false)
+    setNewEventTitle('')
+    setNewEventClient('')
+    setNewEventServices([])
+    setNewEventBarbers([])
+  }
+
+  // --- Editar evento ---
+  const handleEventClick = (selected: EventClickArg) => {
+    const event = selected.event
+    setSelectedEventForEditing(event)
+    setEditEventTitle(event.title)
+    // Se cargan los datos adicionales (si existen) desde extendedProps:
+    const ext = event.extendedProps
+    setEditEventClient(ext.client || '')
+    setEditEventServices(ext.services || [])
+    setEditEventBarbers(ext.barbers || [])
+    setIsEditDialogOpen(true)
+  }
+
   const handleEditEvent = (e: React.FormEvent) => {
     e.preventDefault()
     if (selectedEventForEditing) {
-      // Actualizamos la propiedad 'title' del evento.
+      // Actualizamos la descripción (title)
       selectedEventForEditing.setProp('title', editEventTitle)
-      // Si fuera necesario, se pueden actualizar otras propiedades.
+      // Actualizamos cada propiedad extendida individualmente
+      selectedEventForEditing.setExtendedProp('client', editEventClient)
+      selectedEventForEditing.setExtendedProp('services', editEventServices)
+      selectedEventForEditing.setExtendedProp('barbers', editEventBarbers)
       handleCloseEditDialog()
     }
   }
 
+  const handleCloseEditDialog = () => {
+    setIsEditDialogOpen(false)
+    setSelectedEventForEditing(null)
+    setEditEventTitle('')
+    setEditEventClient('')
+    setEditEventServices([])
+    setEditEventBarbers([])
+  }
+
+  // ============================
+  // MANEJADORES PARA CHECKBOXES
+  // ============================
+  const handleNewServiceChange = (e: React.ChangeEvent<HTMLInputElement>, service: string) => {
+    if (e.target.checked) {
+      setNewEventServices((prev) => [...prev, service])
+    } else {
+      setNewEventServices((prev) => prev.filter((s) => s !== service))
+    }
+  }
+
+  const handleNewBarberChange = (e: React.ChangeEvent<HTMLInputElement>, barber: string) => {
+    if (e.target.checked) {
+      setNewEventBarbers((prev) => [...prev, barber])
+    } else {
+      setNewEventBarbers((prev) => prev.filter((b) => b !== barber))
+    }
+  }
+
+  const handleEditServiceChange = (e: React.ChangeEvent<HTMLInputElement>, service: string) => {
+    if (e.target.checked) {
+      setEditEventServices((prev) => [...prev, service])
+    } else {
+      setEditEventServices((prev) => prev.filter((s) => s !== service))
+    }
+  }
+
+  const handleEditBarberChange = (e: React.ChangeEvent<HTMLInputElement>, barber: string) => {
+    if (e.target.checked) {
+      setEditEventBarbers((prev) => [...prev, barber])
+    } else {
+      setEditEventBarbers((prev) => prev.filter((b) => b !== barber))
+    }
+  }
+
+  // ============================
+  // RENDERIZADO DEL COMPONENTE
+  // ============================
   return (
     <div>
       <div className="flex w-full px-3 justify-start items-start gap-8">
+        {/* Lista de citas */}
         <div className="w-3/12">
           <div className="py-10 text-2xl font-bold px-5">
             Citas del calendario
@@ -147,6 +209,7 @@ const Calendar: React.FC = () => {
           </ul>
         </div>
 
+        {/* Calendario */}
         <div className="w-9/12 mt-8">
           <FullCalendar
             height={'85vh'}
@@ -174,19 +237,23 @@ const Calendar: React.FC = () => {
         </div>
       </div>
 
-      {/* Dialog para agregar un nuevo evento */}
+      {/* Dialog para agregar cita */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Añadir cita</DialogTitle>
           </DialogHeader>
-          <form className="space-x-5 mb-4 gap-2" onSubmit={handleAddEvent}>
+          <form className="space-y-5 mb-4" onSubmit={handleAddEvent}>
             {/* Seleccionar cliente */}
             <div>
               <label className="block text-gray-700 font-medium mb-2">
                 Seleccionar cliente
               </label>
-              <select className="border border-gray-200 p-3 rounded-md w-full">
+              <select
+                value={newEventClient}
+                onChange={(e) => setNewEventClient(e.target.value)}
+                className="border border-gray-200 p-3 rounded-md w-full"
+              >
                 <option value="">Sin cita</option>
                 <option value="cliente1">Cliente 1</option>
                 <option value="cliente2">Cliente 2</option>
@@ -201,15 +268,33 @@ const Calendar: React.FC = () => {
               </label>
               <div className="space-y-2">
                 <div>
-                  <input type="checkbox" id="servicio1" className="mr-2" />
+                  <input
+                    type="checkbox"
+                    id="servicio1"
+                    checked={newEventServices.includes('Servicio 1')}
+                    onChange={(e) => handleNewServiceChange(e, 'Servicio 1')}
+                    className="mr-2"
+                  />
                   <label htmlFor="servicio1">Servicio 1</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="servicio2" className="mr-2" />
+                  <input
+                    type="checkbox"
+                    id="servicio2"
+                    checked={newEventServices.includes('Servicio 2')}
+                    onChange={(e) => handleNewServiceChange(e, 'Servicio 2')}
+                    className="mr-2"
+                  />
                   <label htmlFor="servicio2">Servicio 2</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="servicio3" className="mr-2" />
+                  <input
+                    type="checkbox"
+                    id="servicio3"
+                    checked={newEventServices.includes('Servicio 3')}
+                    onChange={(e) => handleNewServiceChange(e, 'Servicio 3')}
+                    className="mr-2"
+                  />
                   <label htmlFor="servicio3">Servicio 3</label>
                 </div>
               </div>
@@ -222,15 +307,33 @@ const Calendar: React.FC = () => {
               </label>
               <div className="space-y-2">
                 <div>
-                  <input type="checkbox" id="barbero1" className="mr-2" />
+                  <input
+                    type="checkbox"
+                    id="barbero1"
+                    checked={newEventBarbers.includes('David')}
+                    onChange={(e) => handleNewBarberChange(e, 'David')}
+                    className="mr-2"
+                  />
                   <label htmlFor="barbero1">David</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="barbero2" className="mr-2" />
+                  <input
+                    type="checkbox"
+                    id="barbero2"
+                    checked={newEventBarbers.includes('Julio')}
+                    onChange={(e) => handleNewBarberChange(e, 'Julio')}
+                    className="mr-2"
+                  />
                   <label htmlFor="barbero2">Julio</label>
                 </div>
                 <div>
-                  <input type="checkbox" id="barbero3" className="mr-2" />
+                  <input
+                    type="checkbox"
+                    id="barbero3"
+                    checked={newEventBarbers.includes('Pedro')}
+                    onChange={(e) => handleNewBarberChange(e, 'Pedro')}
+                    className="mr-2"
+                  />
                   <label htmlFor="barbero3">Pedro</label>
                 </div>
               </div>
@@ -247,11 +350,11 @@ const Calendar: React.FC = () => {
                 value={newEventTitle}
                 onChange={(e) => setNewEventTitle(e.target.value)}
                 required
-                className="border border-gray-200 p-3 rounded-md text-lg"
+                className="border border-gray-200 p-3 rounded-md text-lg w-full"
               />
             </div>
 
-            {/* Botones para cancelar y guardar */}
+            {/* Botones */}
             <div className="flex justify-end space-x-4 mt-6">
               <button
                 type="button"
@@ -271,30 +374,124 @@ const Calendar: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog para editar un evento existente */}
+      {/* Dialog para editar cita */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Editar cita</DialogTitle>
           </DialogHeader>
-          <form className="space-x-5 mb-4 gap-2" onSubmit={handleEditEvent}>
-            {/* Aquí puedes incluir otros campos si fuera necesario (cliente, servicios, barbero) */}
-            {/* En este ejemplo, únicamente editaremos la descripción (title) */}
+          <form className="space-y-5 mb-4" onSubmit={handleEditEvent}>
+            {/* Seleccionar cliente */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Seleccionar cliente
+              </label>
+              <select
+                value={editEventClient}
+                onChange={(e) => setEditEventClient(e.target.value)}
+                className="border border-gray-200 p-3 rounded-md w-full"
+              >
+                <option value="">Sin cita</option>
+                <option value="cliente1">Cliente 1</option>
+                <option value="cliente2">Cliente 2</option>
+                <option value="añadir">Añadir cliente</option>
+              </select>
+            </div>
+
+            {/* Seleccionar servicios */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Seleccionar servicios
+              </label>
+              <div className="space-y-2">
+                <div>
+                  <input
+                    type="checkbox"
+                    id="edit-servicio1"
+                    checked={editEventServices.includes('Servicio 1')}
+                    onChange={(e) => handleEditServiceChange(e, 'Servicio 1')}
+                    className="mr-2"
+                  />
+                  <label htmlFor="edit-servicio1">Servicio 1</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="edit-servicio2"
+                    checked={editEventServices.includes('Servicio 2')}
+                    onChange={(e) => handleEditServiceChange(e, 'Servicio 2')}
+                    className="mr-2"
+                  />
+                  <label htmlFor="edit-servicio2">Servicio 2</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="edit-servicio3"
+                    checked={editEventServices.includes('Servicio 3')}
+                    onChange={(e) => handleEditServiceChange(e, 'Servicio 3')}
+                    className="mr-2"
+                  />
+                  <label htmlFor="edit-servicio3">Servicio 3</label>
+                </div>
+              </div>
+            </div>
+
+            {/* Seleccionar barbero */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Seleccionar barbero
+              </label>
+              <div className="space-y-2">
+                <div>
+                  <input
+                    type="checkbox"
+                    id="edit-barbero1"
+                    checked={editEventBarbers.includes('David')}
+                    onChange={(e) => handleEditBarberChange(e, 'David')}
+                    className="mr-2"
+                  />
+                  <label htmlFor="edit-barbero1">David</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="edit-barbero2"
+                    checked={editEventBarbers.includes('Julio')}
+                    onChange={(e) => handleEditBarberChange(e, 'Julio')}
+                    className="mr-2"
+                  />
+                  <label htmlFor="edit-barbero2">Julio</label>
+                </div>
+                <div>
+                  <input
+                    type="checkbox"
+                    id="edit-barbero3"
+                    checked={editEventBarbers.includes('Pedro')}
+                    onChange={(e) => handleEditBarberChange(e, 'Pedro')}
+                    className="mr-2"
+                  />
+                  <label htmlFor="edit-barbero3">Pedro</label>
+                </div>
+              </div>
+            </div>
+
+            {/* Editar descripción */}
             <div>
               <label className="block text-gray-700 font-medium mb-2">
                 Editar descripción
               </label>
               <input
                 type="text"
-                placeholder="Nueva descripción de la cita"
+                placeholder="Descripción de la cita"
                 value={editEventTitle}
                 onChange={(e) => setEditEventTitle(e.target.value)}
                 required
-                className="border border-gray-200 p-3 rounded-md text-lg"
+                className="border border-gray-200 p-3 rounded-md text-lg w-full"
               />
             </div>
 
-            {/* Botones para cancelar y guardar la edición */}
+            {/* Botones */}
             <div className="flex justify-end space-x-4 mt-6">
               <button
                 type="button"
