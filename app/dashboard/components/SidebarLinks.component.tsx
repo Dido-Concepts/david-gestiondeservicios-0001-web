@@ -4,9 +4,12 @@ import { KEY_ROLES } from '@/modules/auth/constants/auth.constants'
 
 const LINKS: LinkSidebarProps[] = [
   { href: '/dashboard', icon: 'house', text: 'Inicio', isAdmin: false },
-  { href: '/dashboard/user-management', icon: 'group', text: 'Equipo', isAdmin: true },
+  { href: '/dashboard/user-management/team-management', icon: 'group', text: 'Equipo', isAdmin: true },
   { href: '/dashboard/location-management', icon: 'store', text: 'Sedes', isAdmin: false },
-  { href: '/dashboard/servicios', icon: 'scissors', text: 'Servicios', isAdmin: false }
+  { href: '/dashboard/service-management', icon: 'scissors', text: 'Servicios', isAdmin: false },
+  { href: '/dashboard/customer-management', icon: 'customer', text: 'Clientes', isAdmin: false },
+  { href: '/dashboard/calendar-management', icon: 'calendar', text: 'Calendario', isAdmin: false },
+  { href: '/dashboard/notification-management', icon: 'notification', text: 'Recordatorios', isAdmin: false }
 ]
 
 export async function SidebarLinks () {

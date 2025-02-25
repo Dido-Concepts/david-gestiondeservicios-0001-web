@@ -16,6 +16,8 @@ export function LinkSidebar (params: LinkSidebarProps) {
   return (
         <Link
             href={params.href}
+            aria-label={params.text}
+            title={params.text}
             className={`font-extrabold text-app-terciary  flex items-center p-2 space-x-2 rounded-md hover:bg-app-terciary hover:text-app-primary ${!isDashboardOpen ? 'justify-center' : ''}`}
         >
             <span>
