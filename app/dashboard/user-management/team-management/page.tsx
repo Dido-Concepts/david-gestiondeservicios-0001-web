@@ -6,7 +6,7 @@ import { getListUsers } from '@/modules/user/infra/actions/user.action'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { Suspense } from 'react'
 
-export default async function UserManagementPage (props: {
+export default async function TeamManagementPage (props: {
   searchParams?: Promise<{
     query?: string;
     pageIndex?: string;
@@ -26,27 +26,23 @@ export default async function UserManagementPage (props: {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <main className="container mx-auto p-4 space-y-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-app-quaternary mb-2">Gestionar equipo</h1>
-            <p className="text-app-primary ">Añada, edite o elimine miembros del equipo</p>
+
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-app-quaternary mb-2">Gestionar equipo</h1>
+              <p className="text-app-primary ">Añada, edite o elimine miembros del equipo</p>
+            </div>
+            <AddButtonUser />
           </div>
 
-          <AddButtonUser />
-        </div>
-
-        <div className="container mx-auto py-10 flex flex-col gap-8">
-          <InputSearch />
-          <Suspense key={query + pageIndex + pageSize} fallback={<DataTableSkeleton columnCount={6} />}>
-            <TableUserManagement pageIndex={pageIndex} pageSize={pageSize} query={query} />
-          </Suspense>
-        </div>
-      </main>
+          <div className="container mx-auto py-10 flex flex-col gap-8">
+            <InputSearch />
+            <Suspense key={query + pageIndex + pageSize} fallback={<DataTableSkeleton columnCount={6} />}>
+              <TableUserManagement pageIndex={pageIndex} pageSize={pageSize} query={query} />
+            </Suspense>
+          </div>
 
       <ModalUserFormData />
     </HydrationBoundary>
-
   )
 }
-//

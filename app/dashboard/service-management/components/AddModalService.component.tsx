@@ -30,7 +30,7 @@ export default function AddModalService () {
     <>
       <Button
         variant="ghost"
-        className="w-full text-left pl-0 hover:bg-gray-100  py-1.5"
+        className="w-full text-left pl-0 hover:bg-gray-100"
         onClick={handleOpenModal}
       >
         Servicio

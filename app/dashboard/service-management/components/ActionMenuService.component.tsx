@@ -1,6 +1,12 @@
 'use client'
 import React, { useState } from 'react'
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuPortal,
+  DropdownMenuContent,
+  DropdownMenuItem
+} from '@/components/ui/dropdown-menu'
 import { IconComponent } from '@/app/components/Icon.component'
 import EditModalService from '@/app/dashboard/service-management/components/EditModalService.component'
 import DeleteModalService from '@/app/dashboard/service-management/components/DeleteModalService.component'
@@ -40,11 +46,14 @@ const ActionMenuService = () => {
   return (
     <>
       <DropdownMenu>
-        {/* Botón de ícono */}
         <DropdownMenuTrigger asChild>
-          <div
-            className="p-1 rounded-md hover:bg-gray-300 cursor-pointer focus:outline-none focus:ring-2"
-            role="button"
+          <button
+            type="button"
+            draggable={false} // Evita que el botón inicie un drag
+            onDragStart={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
+            className="p-1 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2"
             aria-label="Action Menu"
           >
             <IconComponent
@@ -53,22 +62,23 @@ const ActionMenuService = () => {
               height={20}
               className="w-5 h-5 ml-2"
             />
-          </div>
+          </button>
         </DropdownMenuTrigger>
 
-        {/* Opciones del menú */}
-        <DropdownMenuContent
-          align="end"
-          sideOffset={5}
-          className="bg-white border border-gray-200 rounded-md shadow-md w-40"
-        >
-          <DropdownMenuItem onSelect={handleEdit}>
-            Editar
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={handleDeleteModal}>
-            Eliminar
-          </DropdownMenuItem>
-        </DropdownMenuContent>
+        <DropdownMenuPortal>
+          <DropdownMenuContent
+            align="end"
+            sideOffset={5}
+            className="bg-white border border-gray-200 rounded-md shadow-md w-40"
+          >
+            <DropdownMenuItem onSelect={handleEdit}>
+              Editar
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={handleDeleteModal}>
+              Eliminar
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenuPortal>
       </DropdownMenu>
 
       {/* Modal de edición */}
@@ -90,4 +100,3 @@ const ActionMenuService = () => {
 }
 
 export default ActionMenuService
-//

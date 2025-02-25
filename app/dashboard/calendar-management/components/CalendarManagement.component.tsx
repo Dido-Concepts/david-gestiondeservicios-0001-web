@@ -32,6 +32,7 @@ const Calendar: React.FC = () => {
   const [newEventClient, setNewEventClient] = useState<string>('')
   const [newEventServices, setNewEventServices] = useState<string[]>([])
   const [newEventBarbers, setNewEventBarbers] = useState<string[]>([])
+  const [newEventStatus, setNewEventStatus] = useState<string>('reservada') // Nuevo estado
 
   // Estados para el diálogo de editar cita
   const [selectedEventForEditing, setSelectedEventForEditing] = useState<EventApi | null>(null)
@@ -39,6 +40,7 @@ const Calendar: React.FC = () => {
   const [editEventClient, setEditEventClient] = useState<string>('')
   const [editEventServices, setEditEventServices] = useState<string[]>([])
   const [editEventBarbers, setEditEventBarbers] = useState<string[]>([])
+  const [editEventStatus, setEditEventStatus] = useState<string>('reservada') // Nuevo estado
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false)
 
   // ============================
@@ -81,11 +83,12 @@ const Calendar: React.FC = () => {
         start: selectedDate.start,
         end: selectedDate.end,
         allDay: selectedDate.allDay,
-        // Se guardan datos adicionales en extendedProps:
+        // Datos adicionales en extendedProps:
         extendedProps: {
           client: newEventClient,
           services: newEventServices,
-          barbers: newEventBarbers
+          barbers: newEventBarbers,
+          status: newEventStatus
         }
       }
 
@@ -100,6 +103,7 @@ const Calendar: React.FC = () => {
     setNewEventClient('')
     setNewEventServices([])
     setNewEventBarbers([])
+    setNewEventStatus('reservada')
   }
 
   // --- Editar evento ---
@@ -107,23 +111,24 @@ const Calendar: React.FC = () => {
     const event = selected.event
     setSelectedEventForEditing(event)
     setEditEventTitle(event.title)
-    // Se cargan los datos adicionales (si existen) desde extendedProps:
     const ext = event.extendedProps
     setEditEventClient(ext.client || '')
     setEditEventServices(ext.services || [])
     setEditEventBarbers(ext.barbers || [])
+    setEditEventStatus(ext.status || 'reservada')
     setIsEditDialogOpen(true)
   }
 
   const handleEditEvent = (e: React.FormEvent) => {
     e.preventDefault()
     if (selectedEventForEditing) {
-      // Actualizamos la descripción (title)
+      // Actualizar el título (descripción)
       selectedEventForEditing.setProp('title', editEventTitle)
-      // Actualizamos cada propiedad extendida individualmente
+      // Actualizar cada propiedad extendida individualmente
       selectedEventForEditing.setExtendedProp('client', editEventClient)
       selectedEventForEditing.setExtendedProp('services', editEventServices)
       selectedEventForEditing.setExtendedProp('barbers', editEventBarbers)
+      selectedEventForEditing.setExtendedProp('status', editEventStatus)
       handleCloseEditDialog()
     }
   }
@@ -135,6 +140,7 @@ const Calendar: React.FC = () => {
     setEditEventClient('')
     setEditEventServices([])
     setEditEventBarbers([])
+    setEditEventStatus('reservada')
   }
 
   // ============================
@@ -354,6 +360,23 @@ const Calendar: React.FC = () => {
               />
             </div>
 
+            {/* Seleccionar estado de la cita */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Seleccionar estado
+              </label>
+              <select
+                value={newEventStatus}
+                onChange={(e) => setNewEventStatus(e.target.value)}
+                className="border border-gray-200 p-3 rounded-md w-full"
+              >
+                <option value="reservada">reservada</option>
+                <option value="confirmada">confirmada</option>
+                <option value="finalizado">finalizado</option>
+                <option value="cancelar">cancelar</option>
+              </select>
+            </div>
+
             {/* Botones */}
             <div className="flex justify-end space-x-4 mt-6">
               <button
@@ -489,6 +512,23 @@ const Calendar: React.FC = () => {
                 required
                 className="border border-gray-200 p-3 rounded-md text-lg w-full"
               />
+            </div>
+
+            {/* Seleccionar estado de la cita */}
+            <div>
+              <label className="block text-gray-700 font-medium mb-2">
+                Seleccionar estado
+              </label>
+              <select
+                value={editEventStatus}
+                onChange={(e) => setEditEventStatus(e.target.value)}
+                className="border border-gray-200 p-3 rounded-md w-full"
+              >
+                <option value="reservada">reservada</option>
+                <option value="confirmada">confirmada</option>
+                <option value="finalizado">finalizado</option>
+                <option value="cancelar">cancelar</option>
+              </select>
             </div>
 
             {/* Botones */}

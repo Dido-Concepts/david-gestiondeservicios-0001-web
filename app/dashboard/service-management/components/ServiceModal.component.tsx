@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Servicio } from '@/app/dashboard/service-management/mock/servicio.mock'
+import { Servicio } from '@/app/dashboard/service-management/mock/service.mock'
 
 interface ServiceModalProps {
   isOpen: boolean;

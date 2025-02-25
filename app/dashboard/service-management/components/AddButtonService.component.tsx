@@ -25,7 +25,7 @@ export default function AddButtonService () {
           />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className="w-40">
         <DropdownMenuItem>
           <AddModalService />
         </DropdownMenuItem>

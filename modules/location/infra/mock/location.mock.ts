@@ -35,7 +35,7 @@ export const mockLocationData: LocationData = {
       city: 'Ayacucho',
       province: 'Ayacucho',
       phone: '931561797',
-      imageUrl: 'https://images.fresha.com/locations/location-profile-images/1201584/1549899/48d80761-b27d-443b-a0fd-6cc6debbcdcf-MrJacobsSanIsidro-PE-ProvinciaDeLima-Lima-SanIsidro-Fresha.jpg?class=width-small',
+      imageUrl: 'https://www.barbershopvalencia.com/cdn/shop/articles/Barberia_Valencia_68e3ff54-1e86-4250-bc2c-25c757084047.png?v=1647723537',
       registrationDate: '12/08/2024',
       openingHours: [
         { day: 'sunday', open: 36000, close: 61200 },
@@ -92,7 +92,7 @@ export const mockLocationData: LocationData = {
       city: 'Arequipa',
       province: 'Arequipa',
       phone: '923456789',
-      imageUrl: 'https://images.fresha.com/locations/location-profile-images/1201584/1549899/48d80761-b27d-443b-a0fd-6cc6debbcdcf-MrJacobsSanIsidro-PE-ProvinciaDeLima-Lima-SanIsidro-Fresha.jpg?class=width-small',
+      imageUrl: 'https://thebarbeer.co/wp-content/uploads/2018/05/barberia_06.jpg',
       registrationDate: '20/10/2024',
       openingHours: [
         { day: 'sunday', open: 36000, close: 61200 },

@@ -14,7 +14,7 @@ export function SidebarContainer ({
   const { isDashboardOpen, toggleDashboard } = useDashboardStore()
   return (
         <aside
-            className={`fixed inset-y-0 z-10 flex flex-col flex-shrink-0 w-64 max-h-screen overflow-hidden transition-all transform bg-app-terciary border-r shadow-lg lg:z-auto lg:static lg:shadow-none ${!isDashboardOpen ? '-translate-x-full lg:translate-x-0 lg:w-20' : ''}`}
+            className={`fixed inset-y-0 z-10 flex flex-col flex-shrink-0 w-48 max-h-screen overflow-hidden transition-all transform bg-app-terciary border-r shadow-lg lg:z-auto lg:static lg:shadow-none ${!isDashboardOpen ? '-translate-x-full lg:translate-x-0 lg:w-20' : ''}`}
         >
             <div className={`py-4 relative bg-app-primary flex items-center justify-center flex-shrink-0  ${!isDashboardOpen ? 'lg:justify-center' : ''}`}>
                 <span className="text-xl font-semibold leading-8 tracking-wider uppercase whitespace-nowrap">
