@@ -2,6 +2,8 @@ import { auth } from '@/config/auth'
 import { NextResponse } from 'next/server'
 
 const authRoutes = ['/login']
+const publicRoutes = ['/public']
+
 const apiAuthPrefix = '/api/auth'
 
 export default auth((req) => {
@@ -14,6 +16,13 @@ export default auth((req) => {
 
   if (isLoggedIn && authRoutes.includes(nextUrl.pathname)) {
     return NextResponse.redirect(new URL('/dashboard', nextUrl))
+  }
+
+  if (
+    publicRoutes.includes(nextUrl.pathname) ||
+    nextUrl.pathname.startsWith('/public')
+  ) {
+    return NextResponse.next()
   }
 
   if (!isLoggedIn && !authRoutes.includes(nextUrl.pathname)) {

@@ -2,13 +2,19 @@
 
 import React, { useState } from 'react'
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
+import { useRouter } from 'next/navigation' // Importamos useRouter
 
 const DatePage = () => {
-  // Estado para manejar el mes y el día seleccionados
+  const router = useRouter() // Obtenemos la instancia del router
+
+  // Estados existentes para mes y día
   const [selectedMonth, setSelectedMonth] = useState('Marzo 2025')
   const [selectedDay, setSelectedDay] = useState(12)
 
-  // Lista de días simulada (basada en la imagen)
+  // Nuevo estado para la hora seleccionada
+  const [selectedTime, setSelectedTime] = useState<string | null>(null)
+
+  // Lista de días simulada
   const days = [
     { number: 11, label: 'mar' },
     { number: 12, label: 'mié' },
@@ -22,24 +28,27 @@ const DatePage = () => {
   ]
 
   // Lista de franjas horarias simulada
-  const timeSlots = ['17:00', '17:30', '18:00', '18:30']
+  const timeSlots = ['11:00', '11:15', '11:30']
 
-  // Funciones para navegar entre meses (simulación)
+  // Funciones para navegar entre meses
   const handlePrevMonth = () => {
-    // Aquí iría la lógica para retroceder el mes
     console.log('Mes anterior')
   }
 
   const handleNextMonth = () => {
-    // Aquí iría la lógica para avanzar el mes
     console.log('Mes siguiente')
+  }
+
+  // Función para manejar la redirección al pulsar "Continuar"
+  const handleContinue = () => {
+    router.push('/public/login') // Redirige a la página de login
   }
 
   return (
     <div className="bg-white min-h-screen p-8">
       {/* Cabecera */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Selecciona hora</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Selecciona la fecha y la hora</h1>
         <Calendar className="w-6 h-6 text-gray-600" />
       </div>
 
@@ -77,8 +86,12 @@ const DatePage = () => {
         {timeSlots.map((time) => (
           <button
             key={time}
-            className="w-full p-3 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200 transition-colors"
-            onClick={() => console.log(`Hora seleccionada: ${time}`)}
+            className={`w-full p-3 rounded-lg transition-colors ${
+              selectedTime === time
+                ? 'bg-gray-100 text-gray-900 border-2 border-purple-600 shadow-lg'
+                : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+            }`}
+            onClick={() => setSelectedTime(time)} // Actualiza el estado al pulsar
           >
             {time}
           </button>
@@ -87,7 +100,10 @@ const DatePage = () => {
 
       {/* Botón "Continuar" al final */}
       <div className="flex justify-center mt-8">
-        <button className="bg-black text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors">
+        <button
+          className="bg-black text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors"
+          onClick={handleContinue} // Evento para redirigir a /login
+        >
           Continuar
         </button>
       </div>

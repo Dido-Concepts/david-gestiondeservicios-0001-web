@@ -9,7 +9,8 @@ const LINKS: LinkSidebarProps[] = [
   { href: '/dashboard/service-management', icon: 'scissors', text: 'Servicios', isAdmin: false },
   { href: '/dashboard/customer-management', icon: 'customer', text: 'Clientes', isAdmin: false },
   { href: '/dashboard/calendar-management', icon: 'calendar', text: 'Calendario', isAdmin: false },
-  { href: '/dashboard/notification-management', icon: 'notification', text: 'Recordatorios', isAdmin: false }
+  { href: '/dashboard/notification-management', icon: 'notification', text: 'Recordatorios', isAdmin: false },
+  { href: '/dashboard/report-management', icon: 'report', text: 'Reportes', isAdmin: false }
 ]
 
 export async function SidebarLinks () {

@@ -1,5 +1,6 @@
 import { IconComponent } from '@/app/components/Icon.component'
 import { mockReportData } from './mock/report.mock'
+import Link from 'next/link'
 
 export default function Page () {
   return (
@@ -11,14 +12,20 @@ export default function Page () {
 
       {/* Sección de reportes */}
       <div className="w-full grid grid-cols-3 gap-6 px-5">
-        {mockReportData.reports.map((report) => (
-          <div key={report.id} className="bg-white p-5 rounded-lg shadow flex items-start space-x-4">
-            <IconComponent name="calendar" className="text-purple-600" />
-            <div>
-              <h3 className="font-semibold text-lg">{report.title}</h3>
-              <p className="text-gray-600 text-sm">{report.description}</p>
+        {mockReportData.reports.map((report, index) => (
+          <Link
+            key={report.id}
+            href={index === 0 ? '/dashboard/report-management/report-quotes' : '#'}
+            passHref
+          >
+            <div className="bg-white p-5 rounded-lg shadow flex items-start space-x-4 cursor-pointer">
+              <IconComponent name="calendar" className="text-purple-600" />
+              <div>
+                <h3 className="font-semibold text-lg">{report.title}</h3>
+                <p className="text-gray-600 text-sm">{report.description}</p>
+              </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </main>
