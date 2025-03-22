@@ -19,6 +19,17 @@ import {
   DialogTitle
 } from '@/components/ui/dialog'
 
+// Definir el tipo para las claves de estado
+type Status = 'reservada' | 'confirmada' | 'finalizado' | 'cancelar'
+
+// Tipar el objeto statusColors
+const statusColors: Record<Status, string> = {
+  reservada: 'blue',
+  confirmada: 'green',
+  finalizado: 'gray',
+  cancelar: 'red'
+}
+
 const Calendar: React.FC = () => {
   // ============================
   // ESTADOS GENERALES
@@ -32,7 +43,7 @@ const Calendar: React.FC = () => {
   const [newEventClient, setNewEventClient] = useState<string>('')
   const [newEventServices, setNewEventServices] = useState<string[]>([])
   const [newEventBarbers, setNewEventBarbers] = useState<string[]>([])
-  const [newEventStatus, setNewEventStatus] = useState<string>('reservada') // Nuevo estado
+  const [newEventStatus, setNewEventStatus] = useState<Status>('reservada')
 
   // Estados para el diálogo de editar cita
   const [selectedEventForEditing, setSelectedEventForEditing] = useState<EventApi | null>(null)
@@ -40,7 +51,7 @@ const Calendar: React.FC = () => {
   const [editEventClient, setEditEventClient] = useState<string>('')
   const [editEventServices, setEditEventServices] = useState<string[]>([])
   const [editEventBarbers, setEditEventBarbers] = useState<string[]>([])
-  const [editEventStatus, setEditEventStatus] = useState<string>('reservada') // Nuevo estado
+  const [editEventStatus, setEditEventStatus] = useState<Status>('reservada')
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false)
 
   // ============================
@@ -83,7 +94,8 @@ const Calendar: React.FC = () => {
         start: selectedDate.start,
         end: selectedDate.end,
         allDay: selectedDate.allDay,
-        // Datos adicionales en extendedProps:
+        backgroundColor: statusColors[newEventStatus],
+        borderColor: statusColors[newEventStatus],
         extendedProps: {
           client: newEventClient,
           services: newEventServices,
@@ -115,16 +127,16 @@ const Calendar: React.FC = () => {
     setEditEventClient(ext.client || '')
     setEditEventServices(ext.services || [])
     setEditEventBarbers(ext.barbers || [])
-    setEditEventStatus(ext.status || 'reservada')
+    setEditEventStatus((ext.status as Status) || 'reservada')
     setIsEditDialogOpen(true)
   }
 
   const handleEditEvent = (e: React.FormEvent) => {
     e.preventDefault()
     if (selectedEventForEditing) {
-      // Actualizar el título (descripción)
       selectedEventForEditing.setProp('title', editEventTitle)
-      // Actualizar cada propiedad extendida individualmente
+      selectedEventForEditing.setProp('backgroundColor', statusColors[editEventStatus])
+      selectedEventForEditing.setProp('borderColor', statusColors[editEventStatus])
       selectedEventForEditing.setExtendedProp('client', editEventClient)
       selectedEventForEditing.setExtendedProp('services', editEventServices)
       selectedEventForEditing.setExtendedProp('barbers', editEventBarbers)
@@ -239,6 +251,29 @@ const Calendar: React.FC = () => {
                 ? JSON.parse(localStorage.getItem('events') || '[]')
                 : []
             }
+            eventContent={(eventInfo) => {
+              const { event } = eventInfo
+              const status = event.extendedProps.status
+
+              // Si el estado es "cancelar", no mostramos el evento
+              if (status === 'cancelar') {
+                return null
+              }
+
+              // Mostramos los detalles para otros estados
+              const services = event.extendedProps.services || []
+              const serviceNames = services.join(', ')
+              const barbers = event.extendedProps.barbers || []
+              const barberNames = barbers.join(', ')
+
+              return (
+                <div>
+                  <b>{serviceNames}</b>
+                  <br />
+                  <i>{barberNames}</i>
+                </div>
+              )
+            }}
           />
         </div>
       </div>
@@ -367,7 +402,7 @@ const Calendar: React.FC = () => {
               </label>
               <select
                 value={newEventStatus}
-                onChange={(e) => setNewEventStatus(e.target.value)}
+                onChange={(e) => setNewEventStatus(e.target.value as Status)}
                 className="border border-gray-200 p-3 rounded-md w-full"
               >
                 <option value="reservada">reservada</option>
@@ -521,7 +556,7 @@ const Calendar: React.FC = () => {
               </label>
               <select
                 value={editEventStatus}
-                onChange={(e) => setEditEventStatus(e.target.value)}
+                onChange={(e) => setEditEventStatus(e.target.value as Status)}
                 className="border border-gray-200 p-3 rounded-md w-full"
               >
                 <option value="reservada">reservada</option>
