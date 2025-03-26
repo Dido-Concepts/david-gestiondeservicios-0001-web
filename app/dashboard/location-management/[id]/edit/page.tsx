@@ -64,12 +64,12 @@ export default function EditLocationPage ({
                 <p className="text-sm font-medium text-gray-500">
                   Imagen del centro
                 </p>
-                <Link
+                {/* <Link
                   href="#"
                   className="text-sm text-app-secondary hover:underline"
                 >
                   Cambiar imagen
-                </Link>
+                </Link> */}
               </div>
             </div>
             <div className="space-y-2 text-gray-700">
