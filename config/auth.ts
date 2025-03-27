@@ -47,7 +47,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt ({ token, account }) {
       // ? Este comentario es para ver el token que se recibe en la consola
       // ? Esto se mostrara en la consola del servidor o VSCode
-      // console.log({ token: token.id_token })
+      console.log({ token: token.id_token })
       if (account) {
         const res = await fetch(
           `${process.env.API_SERVICE_URL}/api/v1/get-user-info`,
