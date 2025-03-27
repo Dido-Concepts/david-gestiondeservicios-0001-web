@@ -1,18 +1,18 @@
 'use client'
 
-import { useState } from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Plus } from 'lucide-react'
 import { IconComponent } from '@/app/components'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useState } from 'react'
+import { ListOfSchedules } from './ListOfSchedules.component'
 
 export function AddButtonAndModalLocation () {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('datos-de-la-sede')
   const [isHorarioDisabled, setIsHorarioDisabled] = useState(true)
+  // const { form, onSubmit, isEdit } = useFormUserManagement(toggleModal, user)
 
   const handleModalOpen = () => setIsModalOpen(true)
 
@@ -34,7 +34,7 @@ export function AddButtonAndModalLocation () {
 
       {/* Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="px-12 max-h-[80vh] overflow-y-auto">
           <Tabs className="pt-4" value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="mb-4 w-full">
               <TabsTrigger value="datos-de-la-sede" className="w-1/2 font-semibold text-base">
@@ -71,6 +71,10 @@ export function AddButtonAndModalLocation () {
                   <Input defaultValue="" placeholder="Ingrese la dirección" />
                 </div>
                 <div>
+                  <label>Referencia</label>
+                  <Input defaultValue="" placeholder="Ingrese la referencia de la dirección" />
+                </div>
+                <div>
                   <label>Imagen del centro</label>
                   <Input type="file" accept="image/png, image/jpeg" />
                 </div>
@@ -82,27 +86,7 @@ export function AddButtonAndModalLocation () {
 
             {/* Horario de Atención Tab */}
             <TabsContent value="horario-de-atencion" className="px-8">
-              <DialogHeader className="mb-4">
-                <DialogTitle className="text-2xl font-bold">Añadir horario de atención</DialogTitle>
-                <DialogDescription className="text-gray-500 font-bold">
-                  Completa los horarios de atención para cada día
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                {['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'].map((day) => (
-                  <div key={day} className="flex items-center space-x-4">
-                    <Checkbox />
-                    <span className="w-20">{day}</span>
-                    <Input type="time" defaultValue="09:00" className="w-24" />
-                    <span>-</span>
-                    <Input type="time" defaultValue="19:00" className="w-24" />
-                    <Button variant="outline" size="icon" className="ml-2">
-                      <Plus />
-                    </Button>
-                  </div>
-                ))}
-                <Button className="mt-4 w-full">Guardar</Button>
-              </div>
+               <ListOfSchedules title='Añadir horario de atención' description='Completa los horarios de atención para cada día' />
             </TabsContent>
           </Tabs>
         </DialogContent>

@@ -5,6 +5,15 @@
     "eslint-config-standard"
   ],
   "rules": {
-    "no-useless-constructor": "off"
-  }
+    "no-useless-constructor": "off",
+    "@next/next/no-img-element": "off"
+  },
+  "overrides": [
+    {
+      "files": ["*.entity.ts", "*.model.ts"],
+      "rules": {
+        "no-use-before-define": "off"
+      }
+    }
+  ]
 }
