@@ -1,47 +1,40 @@
-import { LocationModel, LocationStatus } from '@/modules/location/domain/models/location.model'
+import { axiosApiInterna } from '@/config/axiosApiInterna'
+import { LocationModel } from '@/modules/location/domain/models/location.model'
 import { LocationRepository } from '@/modules/location/domain/repositories/location.repository'
-import { mockLocationData } from '@/modules/location/infra/mock/location.mock'
 import { PaginatedItemsViewModel } from '@/modules/share/domain/models/paginate/paginated-items-view.model'
+import { PaginatedItemsViewEntity } from '@/modules/share/infra/entities/paginate/paginated-items-view.entity'
 import { injectable } from 'inversify'
 import 'reflect-metadata'
+import { LocationMapper } from '../mappers/location.mapper'
+import { LocationByIdEntity, LocationsEntity } from './entities/location.entity'
 
 @injectable()
 export class LocationImplementationRepository implements LocationRepository {
+  public locationMapper = new LocationMapper()
+
   async getListLocations (param: {
     pageIndex: number;
     pageSize: number;
-  }): Promise<PaginatedItemsViewModel<LocationModel>> {
+  }): Promise<PaginatedItemsViewModel<Omit<LocationModel, 'openingHours'>>> {
     const { pageIndex, pageSize } = param
 
-    // Total de locaciones disponibles en el mock
-    const totalLocations = mockLocationData.locations.length
+    const url = `/api/v1/locations?page_index=${pageIndex}&page_size=${pageSize}`
 
-    // Calcular los índices de paginación
-    const startIndex = pageIndex * pageSize
-    const endIndex = startIndex + pageSize
+    const response = await axiosApiInterna.get(url)
 
-    // Obtener la página actual de locaciones
-    const paginatedLocations = mockLocationData.locations.slice(startIndex, endIndex).map((location) => ({
-      id: location.id,
-      name: location.name,
-      address: location.address,
-      city: location.city,
-      province: location.province,
-      phone: location.phone,
-      imageUrl: location.imageUrl,
-      registrationDate: location.registrationDate,
-      status: LocationStatus.ACTIVE, // Estado por defecto
-      openingHours: location.openingHours
-    }))
+    const paginatedItemsEntity: PaginatedItemsViewEntity<LocationsEntity> =
+          response.data
 
-    return {
-      data: paginatedLocations,
-      meta: {
-        page: pageIndex,
-        pageSize,
-        pageCount: Math.ceil(totalLocations / pageSize),
-        total: totalLocations
-      }
-    }
+    return this.locationMapper.mapFrom(paginatedItemsEntity)
+  }
+
+  async getLocationById (id: string): Promise<LocationModel> {
+    const url = `/api/v1/location/${id}`
+
+    const response = await axiosApiInterna.get(url)
+
+    const locationEntity: LocationByIdEntity = response.data
+
+    return this.locationMapper.mapFromForId(locationEntity)
   }
 }

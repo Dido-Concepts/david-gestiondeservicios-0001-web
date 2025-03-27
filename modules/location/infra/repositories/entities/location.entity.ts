@@ -1,38 +1,33 @@
-import { LocationStatus, OpeningHour } from '@/modules/location/domain/models/location.model'
+import { FileApiEntity } from '@/modules/share/infra/entities/file/file.entity'
 
-export type LocationEntity = {
-    id: number; // ID de la locación
-    name: string; // Nombre de la locación
-    address: string; // Dirección de la locación
-    city: string; // Ciudad donde se encuentra la locación
-    province: string; // Provincia donde se encuentra la locación
-    phone: string; // Número de teléfono de la locación
-    image_url: string; // URL de la imagen de la locación
-    registration_date: string; // Fecha de registro en formato "DD/MM/YYYY"
-    status: LocationStatus; // Estado de la locación (Open, Closed)
-    opening_hours: OpeningHour[]; // Horarios de apertura y cierre
+export type LocationsEntity = {
+    id: number
+    name_location: string
+    phone_location: string
+    address_location: string
+    location_review: string
+    insert_date: Date
+    annulled: boolean
+    url: string
+    filename: string
+    content_type: string
+    size: number
 };
 
-// Tipo para definir las propiedades necesarias para crear una nueva locación
-export type LocationCreateEntity = {
-    name: string;
-    address: string;
-    city: string;
-    province: string;
-    phone: string;
-    image_url: string;
-    registration_date: string;
-    opening_hours: OpeningHour[];
-};
+export interface LocationByIdEntity {
+    id: number;
+    name_location: string;
+    phone_location: string;
+    address_location: string;
+    insert_date: Date;
+    file: FileApiEntity;
+    location_review: string;
+    schedules: ScheduleEntity[];
+}
 
-// Tipo para definir las propiedades necesarias para editar una locación existente
-export type LocationEditEntity = {
-    id: string;
-    name?: string;
-    address?: string;
-    city?: string;
-    province?: string;
-    phone?: string;
-    image_url?: string;
-    opening_hours?: OpeningHour[];
-};
+export interface ScheduleEntity {
+    id: number;
+    day: string;
+    start_time: string;
+    end_time: string;
+}

@@ -7,5 +7,7 @@ export abstract class LocationRepository {
   abstract getListLocations(param: {
     pageIndex: number;
     pageSize: number;
-  }): Promise<PaginatedItemsViewModel<LocationModel>>;
+  }): Promise<PaginatedItemsViewModel<Omit<LocationModel, 'openingHours'>>>;
+
+  abstract getLocationById(id: string): Promise<LocationModel>;
 }
