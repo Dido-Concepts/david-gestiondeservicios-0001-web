@@ -6,7 +6,10 @@ import { PaginatedItemsViewEntity } from '@/modules/share/infra/entities/paginat
 import { injectable } from 'inversify'
 import 'reflect-metadata'
 import { LocationMapper } from '../mappers/location.mapper'
-import { LocationByIdEntity, LocationsEntity } from './entities/location.entity'
+import {
+  LocationByIdEntity,
+  LocationsEntity
+} from './entities/location.entity'
 
 @injectable()
 export class LocationImplementationRepository implements LocationRepository {
@@ -23,7 +26,7 @@ export class LocationImplementationRepository implements LocationRepository {
     const response = await axiosApiInterna.get(url)
 
     const paginatedItemsEntity: PaginatedItemsViewEntity<LocationsEntity> =
-          response.data
+      response.data
 
     return this.locationMapper.mapFrom(paginatedItemsEntity)
   }
@@ -36,5 +39,34 @@ export class LocationImplementationRepository implements LocationRepository {
     const locationEntity: LocationByIdEntity = response.data
 
     return this.locationMapper.mapFromForId(locationEntity)
+  }
+
+  async createLocation (location: {
+    nameLocation: string;
+    phoneLocation: string;
+    addressLocation: string;
+    reviewLocation: string;
+    imgLocation: File;
+    schedule: {
+      day: string;
+      ranges: {
+        start: string;
+        end: string;
+      }[];
+    }[];
+  }): Promise<number> {
+    const formData = new FormData()
+    formData.append('name_location', location.nameLocation)
+    formData.append('phone', location.phoneLocation)
+    formData.append('address', location.addressLocation)
+    formData.append('location_review', location.reviewLocation)
+    formData.append('schedule', JSON.stringify(location.schedule))
+    formData.append('img_file', location.imgLocation)
+
+    const url = '/api/v1/location'
+
+    const response = await axiosApiInterna.post(url, formData)
+
+    return response.data.id
   }
 }

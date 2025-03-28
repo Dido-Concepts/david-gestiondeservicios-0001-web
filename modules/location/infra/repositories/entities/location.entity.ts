@@ -22,12 +22,13 @@ export interface LocationByIdEntity {
     insert_date: Date;
     file: FileApiEntity;
     location_review: string;
-    schedules: ScheduleEntity[];
+    schedules: ScheduleDayEntity[];
 }
 
-export interface ScheduleEntity {
-    id: number;
+export interface ScheduleDayEntity {
     day: string;
-    start_time: string;
-    end_time: string;
-}
+    ranges: {
+      start: string;
+      end: string;
+    }[];
+  }

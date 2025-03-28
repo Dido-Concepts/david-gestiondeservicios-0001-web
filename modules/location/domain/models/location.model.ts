@@ -1,8 +1,9 @@
-export type OpeningHour = {
-  id_OpeningHour: number;
+export type ScheduleDayModel = {
   day: string;
-  open: string;
-  close: string;
+  ranges: {
+    start: string;
+    end: string;
+  }[];
 }
 
 export type LocationModel = {
@@ -14,5 +15,5 @@ export type LocationModel = {
   review: string;
   registrationDate: Date;
   status: boolean;
-  openingHours: OpeningHour[];
+  openingHours: ScheduleDayModel[];
 };

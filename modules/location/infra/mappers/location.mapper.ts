@@ -63,11 +63,12 @@ export class LocationMapper extends Mapper<
       registrationDate: param.insert_date,
       review: param.location_review,
       status: true,
-      openingHours: param.schedules.map((item) => ({
-        id_OpeningHour: item.id,
-        day: item.day,
-        open: item.start_time,
-        close: item.end_time
+      openingHours: param.schedules.map((schedule) => ({
+        day: schedule.day,
+        ranges: schedule.ranges.map((range) => ({
+          start: range.start,
+          end: range.end
+        }))
       }))
     }
   }
