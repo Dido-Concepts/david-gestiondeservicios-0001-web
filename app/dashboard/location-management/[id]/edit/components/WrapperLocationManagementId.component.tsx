@@ -35,90 +35,92 @@ export function WrapperLocationManagementId (param: { id: string }) {
         Atrás
       </Link>
 
-    <h1 className="text-3xl font-bold text-gray-800">{data.name}</h1>
+      <h1 className="text-3xl font-bold text-gray-800">{data.name}</h1>
 
-    {/* Datos de Contacto */}
-    <Card className="p-4">
-      <CardHeader className="flex justify-between items-start relative">
-        <CardTitle className="text-2xl font-bold text-gray-800">
-          Datos de la sede
-        </CardTitle>
-        <div className="absolute right-6 top-6">
-          <EditButtonAndModalLocationDetails />
-        </div>
-      </CardHeader>
+      {/* Datos de Contacto */}
+      <Card className="p-4">
+        <CardHeader className="flex justify-between items-start relative">
+          <CardTitle className="text-2xl font-bold text-gray-800">
+            Datos de la sede
+          </CardTitle>
+          <div className="absolute right-6 top-6">
+            <EditButtonAndModalLocationDetails />
+          </div>
+        </CardHeader>
 
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-4">
-            <Avatar className="w-24 h-24">
-              <AvatarImage
-                src={data.imageUrl}
-                alt={`Imagen de ${data.name}`}
-              />
-              <AvatarFallback>IC</AvatarFallback>
-            </Avatar>
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-gray-500">
-                Imagen del centro
-              </p>
-              {/* <Link
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-4">
+              <Avatar className="w-24 h-24">
+                <AvatarImage
+                  src={data.imageUrl}
+                  alt={`Imagen de ${data.name}`}
+                />
+                <AvatarFallback>IC</AvatarFallback>
+              </Avatar>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-gray-500">
+                  Imagen del centro
+                </p>
+                {/* <Link
                 href="#"
                 className="text-sm text-app-secondary hover:underline"
               >
                 Cambiar imagen
               </Link> */}
+              </div>
+            </div>
+            <div className="space-y-2 text-gray-700">
+              <p>
+                <strong>Teléfono del centro:</strong> {data.phone}
+              </p>
+              <p>
+                <strong>Fecha de registro:</strong> {data.registrationDate.toString()}
+              </p>
             </div>
           </div>
-          <div className="space-y-2 text-gray-700">
-            <p>
-              <strong>Teléfono del centro:</strong> {data.phone}
-            </p>
-            <p>
-              <strong>Fecha de registro:</strong> {data.registrationDate.toString()}
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
 
-    {/* Horario de Atención */}
-    <Card className="p-4">
-      <CardHeader className="flex justify-between items-start relative">
-        <CardTitle className="text-2xl font-bold text-gray-800">
-          Horario de atención
-        </CardTitle>
-        <div className="absolute right-6 top-6">
-          <EditButtonAndModalLocationOpeningHours />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <p className="text-sm text-gray-500 mb-4">
-          El horario de atención de estos centros es, por defecto, el horario
-          laboral de tu equipo y tus clientes podrán verlo. Puedes modificar
-          las fechas de cierre para los días festivos, entre otros, en{' '}
-          <Link href="#" className="text-app-secondary underline">
-            Ajustes
-          </Link>
-          .
-        </p>
-        <div className="grid grid-cols-2 md:grid-cols-7 gap-2">
-          {data.openingHours.map((hour) => (
-            <div
-              key={hour.day}
-              className="flex flex-col items-center p-3 bg-purple-100 text-app-secondary rounded-md"
-            >
-              <span className="font-medium capitalize">{hour.day}</span>
-              <span className="text-sm">
-                {hour.open && hour.close
-                  ? `${hour.open} - ${hour.close}`
-                  : 'Cerrado'}
-              </span>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  </main>
+      {/* Horario de Atención */}
+      <Card className="p-4">
+        <CardHeader className="flex justify-between items-start relative">
+          <CardTitle className="text-2xl font-bold text-gray-800">
+            Horario de atención
+          </CardTitle>
+          <div className="absolute right-6 top-6">
+            <EditButtonAndModalLocationOpeningHours />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-gray-500 mb-4">
+            El horario de atención de estos centros es, por defecto, el horario
+            laboral de tu equipo y tus clientes podrán verlo. Puedes modificar
+            las fechas de cierre para los días festivos, entre otros, en{' '}
+            <Link href="#" className="text-app-secondary underline">
+              Ajustes
+            </Link>
+            .
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-7 gap-2">
+            {data.openingHours.map((hour) => (
+
+              <div key={hour.day} className="flex flex-col items-center p-3 bg-purple-100 text-app-secondary rounded-md">
+                <span className="font-medium capitalize">{hour.day}</span>
+                {
+                  hour.ranges.length > 0
+                    ? hour.ranges.map((range) => (
+                      <span key={range.start} className="text-sm">
+                        {range.start} - {range.end}
+                      </span>
+                    ))
+                    : 'No registrado aún'
+                }
+              </div >
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </main>
   )
 }

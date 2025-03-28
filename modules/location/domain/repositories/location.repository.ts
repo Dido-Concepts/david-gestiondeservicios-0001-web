@@ -10,4 +10,19 @@ export abstract class LocationRepository {
   }): Promise<PaginatedItemsViewModel<Omit<LocationModel, 'openingHours'>>>;
 
   abstract getLocationById(id: string): Promise<LocationModel>;
+
+  abstract createLocation(location: {
+    nameLocation: string;
+    phoneLocation: string;
+    addressLocation: string;
+    reviewLocation: string | undefined;
+    imgLocation: File;
+    schedule: {
+      day: string;
+      ranges: {
+        start: string;
+        end: string;
+      }[];
+    }[];
+  }): Promise<number>;
 }
