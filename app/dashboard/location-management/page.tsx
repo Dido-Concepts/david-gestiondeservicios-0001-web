@@ -15,7 +15,7 @@ export default async function SedesManagementPage (props: {
 }) {
   const searchParams = await props.searchParams
   const pageIndex = Number(searchParams?.pageIndex) || 1
-  const pageSize = Number(searchParams?.pageSize) || 10
+  const pageSize = Number(searchParams?.pageSize) || 100
 
   const queryClient = getQueryClient()
   queryClient.prefetchQuery({
