@@ -3,22 +3,29 @@
 import { IconComponent } from '@/app/components'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useState } from 'react'
-import { ListOfSchedules } from './ListOfSchedules.component'
-import { useFormCreateLocation } from '@/modules/location/infra/hooks/useFormLocationManagement'
-import { Form, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
-import { Controller } from 'react-hook-form'
 import { cn } from '@/lib/utils'
+import { useFormCreateLocation } from '@/modules/location/infra/hooks/useFormLocationManagement'
+import { useState } from 'react'
+import { Controller } from 'react-hook-form'
+import { ListOfSchedules } from './ListOfSchedules.component'
+import { useRouter } from 'next/navigation'
+import { LocationCreateResponse } from '@/modules/location/infra/hooks/useCreateLocationMutation'
 
 export function AddButtonAndModalLocation () {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('datos-de-la-sede')
 
-  const { form, onSubmit } = useFormCreateLocation()
+  const router = useRouter()
 
-  const handleModalOpen = () => setIsModalOpen(true)
+  const handleModalOpen = () => setIsModalOpen(prev => !prev)
+
+  const { form, onSubmit, isPending } = useFormCreateLocation({
+    handleModalOpen,
+    onSuccessHandler: (data: LocationCreateResponse) => router.push(`/dashboard/location-management/${data.idLocation}/edit`)
+  })
 
   // Verifica si hay errores en los campos de "Datos de la sede"
   const hasDatosErrors = !!(
@@ -82,7 +89,7 @@ export function AddButtonAndModalLocation () {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Nombre de Sede</FormLabel>
-                          <Input placeholder="Mi Ubicación 123" {...field} />
+                          <Input disabled={isPending} placeholder="Mi Ubicación 123" {...field} />
                           <FormMessage />
                         </FormItem>
                       )}
@@ -93,7 +100,7 @@ export function AddButtonAndModalLocation () {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Teléfono</FormLabel>
-                          <Input maxLength={9} placeholder="912345678" {...field} />
+                          <Input disabled={isPending} maxLength={9} placeholder="912345678" {...field} />
                           <FormMessage />
                         </FormItem>
                       )}
@@ -104,7 +111,7 @@ export function AddButtonAndModalLocation () {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Dirección</FormLabel>
-                          <Input placeholder="Av. Principal 123" {...field} />
+                          <Input disabled={isPending} placeholder="Av. Principal 123" {...field} />
                           <FormMessage />
                         </FormItem>
                       )}
@@ -115,7 +122,7 @@ export function AddButtonAndModalLocation () {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Referencia</FormLabel>
-                          <Input placeholder="Al lado de la tienda X" {...field} />
+                          <Input disabled={isPending} placeholder="Al lado de la tienda X" {...field} />
                           <FormMessage />
                         </FormItem>
                       )}
@@ -128,6 +135,7 @@ export function AddButtonAndModalLocation () {
                           <FormLabel>Imagen del Local</FormLabel>
                           <Input
                             multiple={false}
+                            disabled={isPending}
                             accept="image/*"
                             type="file"
                             onChange={(e) => {
@@ -161,6 +169,7 @@ export function AddButtonAndModalLocation () {
                         schedule={field.value}
                         onScheduleChange={field.onChange}
                         errors={form.formState.errors.schedule}
+                        isPending={isPending}
                       />
                     )}
                   />
@@ -171,8 +180,21 @@ export function AddButtonAndModalLocation () {
                   )}
                 </TabsContent>
               </Tabs>
-              <Button type="submit" className="mt-4 w-full font-bold">
-                Guardar
+              <Button
+                type="submit"
+                className="mt-4 w-full font-bold"
+                disabled={isPending}
+              >
+                {isPending
+                  ? (
+                    <div className="flex items-center gap-4">
+                      <IconComponent name="spinner" className="animate-spin h-4 w-4" />
+                      Guardando...
+                    </div>
+                    )
+                  : (
+                      'Guardar'
+                    )}
               </Button>
             </form>
           </Form>
