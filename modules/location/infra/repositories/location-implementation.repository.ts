@@ -65,8 +65,12 @@ export class LocationImplementationRepository implements LocationRepository {
 
     const url = '/api/v1/location'
 
-    const response = await axiosApiInterna.post(url, formData)
+    const response = await axiosApiInterna.post(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
 
-    return response.data.id
+    return response.data
   }
 }
