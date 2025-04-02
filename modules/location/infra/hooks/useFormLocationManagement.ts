@@ -1,8 +1,11 @@
-import { z } from 'zod'
+import { getQueryClient } from '@/app/providers/GetQueryClient'
+import { toast } from '@/hooks/use-toast'
+import { QUERY_KEYS_LOCATION_MANAGEMENT } from '@/modules/share/infra/constants/query-keys.constant'
 import { createRegex } from '@/modules/share/infra/constants/regex.constant'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useCreateLocationMutation } from './useCreateLocationMutation'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { LocationCreateResponse, useCreateLocationMutation } from './useCreateLocationMutation'
 
 // Enum para los días de la semana
 const daysOfWeek = [
@@ -112,7 +115,13 @@ export type formLocationManagementInputs = z.infer<
 >;
 
 // Hook del formulario actualizado
-export function useFormCreateLocation () {
+export function useFormCreateLocation ({
+  handleModalOpen,
+  onSuccessHandler
+}: {
+  handleModalOpen: () => void;
+  onSuccessHandler?: (data: LocationCreateResponse) => void;
+}) {
   const defaultSchedule = daysOfWeek.map((day) => ({
     day,
     ranges: [{ start: '09:00', end: '19:00' }]
@@ -132,12 +141,47 @@ export function useFormCreateLocation () {
   })
 
   const { reset } = form
-  const { mutate } = useCreateLocationMutation()
+  const { mutate, isPending } = useCreateLocationMutation()
 
   const onSubmit = (values: formLocationManagementInputs) => {
-    mutate(values)
-    reset()
+    const formData = new FormData()
+    formData.append('nameLocation', values.nameLocation)
+    formData.append('phoneLocation', values.phoneLocation)
+    formData.append('addressLocation', values.addressLocation)
+    if (values.reviewLocation) {
+      formData.append('reviewLocation', values.reviewLocation)
+    }
+    formData.append('imgLocation', values.imgLocation)
+    formData.append('schedule', JSON.stringify(values.schedule))
+
+    mutate(formData, {
+      onError: (error) => {
+        console.log(error)
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: error.message || 'Failed to create location'
+        })
+        reset()
+        handleModalOpen()
+      },
+      onSuccess: (data) => {
+        const queryClient = getQueryClient()
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS_LOCATION_MANAGEMENT.LMListLocations]
+        })
+        toast({
+          title: 'Sede creada',
+          description: `Ubicación ${data.name} creada`
+        })
+        reset()
+        handleModalOpen()
+        if (onSuccessHandler) {
+          onSuccessHandler(data)
+        }
+      }
+    })
   }
 
-  return { form, onSubmit }
+  return { form, onSubmit, isPending }
 }

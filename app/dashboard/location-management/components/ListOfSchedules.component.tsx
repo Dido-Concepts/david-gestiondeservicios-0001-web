@@ -21,9 +21,10 @@ interface ListOfSchedulesProps {
   schedule: ScheduleDay[];
   onScheduleChange: (newSchedule: ScheduleDay[]) => void;
   errors?: FieldErrors<formLocationManagementInputs>['schedule'];
+  isPending?: boolean;
 }
 
-export function ListOfSchedules ({ title, description, schedule, onScheduleChange, errors }: ListOfSchedulesProps) {
+export function ListOfSchedules ({ title, description, schedule, onScheduleChange, errors, isPending }: ListOfSchedulesProps) {
   const addRange = (dayIndex: number) => {
     const newSchedule = [...schedule]
     newSchedule[dayIndex] = {
@@ -63,6 +64,7 @@ export function ListOfSchedules ({ title, description, schedule, onScheduleChang
           <div key={daySchedule.day} className="flex flex-col space-y-2">
             <div className="flex items-center space-x-4">
               <Checkbox
+                disabled={isPending}
                 checked={daySchedule.ranges.length > 0}
                 onCheckedChange={(checked) => {
                   const newSchedule = [...schedule]
@@ -93,6 +95,7 @@ export function ListOfSchedules ({ title, description, schedule, onScheduleChang
                       <Input
                         type="time"
                         value={range.start}
+                        disabled={isPending}
                         onChange={(e) => handleTimeChange(dayIndex, rangeIndex, 'start', e.target.value)}
                         className="flex-1"
                       />
@@ -100,12 +103,14 @@ export function ListOfSchedules ({ title, description, schedule, onScheduleChang
                       <Input
                         type="time"
                         value={range.end}
+                        disabled={isPending}
                         onChange={(e) => handleTimeChange(dayIndex, rangeIndex, 'end', e.target.value)}
                         className="flex-1"
                       />
                       <Button
                         variant="outline"
                         size="icon"
+                        disabled={isPending}
                         onClick={() => removeRange(dayIndex, rangeIndex)}
                       >
                         <X className="h-4 w-4" />
@@ -115,8 +120,8 @@ export function ListOfSchedules ({ title, description, schedule, onScheduleChang
                     {errors && errors[dayIndex]?.ranges?.[rangeIndex] && (
                       <p className="text-red-500 text-sm">
                         {errors[dayIndex].ranges[rangeIndex].start?.message ||
-                         errors[dayIndex].ranges[rangeIndex].end?.message ||
-                         errors[dayIndex].ranges[rangeIndex].message}
+                          errors[dayIndex].ranges[rangeIndex].end?.message ||
+                          errors[dayIndex].ranges[rangeIndex].message}
                       </p>
                     )}
                   </div>
@@ -124,6 +129,7 @@ export function ListOfSchedules ({ title, description, schedule, onScheduleChang
                 <Button
                   variant="outline"
                   size="icon"
+                  disabled={isPending}
                   className="ml-8"
                   onClick={() => addRange(dayIndex)}
                 >
