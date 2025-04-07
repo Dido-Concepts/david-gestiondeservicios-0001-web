@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@formkit/drag-and-drop": "0.2.5",
+    "@formkit/tempo": "^0.1.2",
     "@fullcalendar/core": "6.1.15",
     "@fullcalendar/daygrid": "6.1.15",
     "@fullcalendar/interaction": "6.1.15",

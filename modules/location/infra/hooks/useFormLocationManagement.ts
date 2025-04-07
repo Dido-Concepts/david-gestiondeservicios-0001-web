@@ -6,6 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { LocationCreateResponse, useCreateLocationMutation } from './useCreateLocationMutation'
+import { useUpdateDetailsLocationMutation } from './useUpdateDetailsLocationMutation'
+import { useUpdateScheduleLocationMutation } from './useUpdateScheduleLocationMutation'
 
 // Enum para los días de la semana
 const daysOfWeek = [
@@ -114,7 +116,6 @@ export type formLocationManagementInputs = z.infer<
   typeof formLocationManagementSchema
 >;
 
-// Hook del formulario actualizado
 export function useFormCreateLocation ({
   handleModalOpen,
   onSuccessHandler
@@ -179,6 +180,153 @@ export function useFormCreateLocation ({
         if (onSuccessHandler) {
           onSuccessHandler(data)
         }
+      }
+    })
+  }
+
+  return { form, onSubmit, isPending }
+}
+
+const formUpdateDetailsSchemaBase = formLocationManagementSchema.pick({
+  nameLocation: true,
+  phoneLocation: true,
+  addressLocation: true
+})
+
+// Extend the picked schema to make imgLocation optional specifically for updates
+const formUpdateDetailsSchema = formUpdateDetailsSchemaBase.extend({
+  reviewLocation: z
+    .string() // It must be a string
+    .min(10, 'La reseña debe tener entre 10 y 100 caracteres') // Min length implies required
+    .max(100, 'La reseña debe tener como máximo 100 caracteres') // Max length
+    .regex( // Regex validation
+      createRegex(',.#'),
+      "La reseña solo debe contener letras, números, espacios, ',', '#' o '.'"
+    ),
+  imgLocation: z
+    .instanceof(File)
+    .refine(
+      (file) => file.type.startsWith('image/'),
+      'La imagen debe ser un archivo de imagen válido'
+    )
+    .optional()
+})
+export type formUpdateDetailsInputs = z.infer<typeof formUpdateDetailsSchema>;
+export function useFormUpdateDetails ({
+  handleModalOpen,
+  idLocation
+}: {
+  handleModalOpen: () => void;
+  idLocation: string;
+}) {
+  const form = useForm<formUpdateDetailsInputs>({
+    resolver: zodResolver(formUpdateDetailsSchema),
+    mode: 'onChange',
+    defaultValues: {
+      nameLocation: '',
+      phoneLocation: '',
+      addressLocation: '',
+      reviewLocation: '',
+      imgLocation: undefined
+    }
+  })
+
+  const { reset } = form
+  const { mutate, isPending } = useUpdateDetailsLocationMutation()
+
+  const onSubmit = (values: formUpdateDetailsInputs) => {
+    const formData = new FormData()
+    formData.append('idLocation', idLocation)
+    formData.append('nameLocation', values.nameLocation)
+    formData.append('phoneLocation', values.phoneLocation)
+    formData.append('addressLocation', values.addressLocation)
+    if (values.reviewLocation) {
+      formData.append('reviewLocation', values.reviewLocation)
+    }
+    if (values.imgLocation instanceof File) {
+      formData.append('imgLocation', values.imgLocation)
+    }
+
+    mutate(formData, {
+      onError: (error) => {
+        console.log(error)
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: error.message || 'Failed to update location'
+        })
+        reset()
+        handleModalOpen()
+      },
+      onSuccess: (data) => {
+        const queryClient = getQueryClient()
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS_LOCATION_MANAGEMENT.LMGetLocation]
+        })
+        toast({
+          title: 'Sede Actualizada',
+          description: `Ubicación ${data.name} actualizada ${data.message}`
+        })
+        reset()
+        handleModalOpen()
+      }
+    })
+  }
+
+  return { form, onSubmit, isPending }
+}
+
+export const formUpdateScheduleSchema = formLocationManagementSchema.pick({
+  schedule: true
+})
+
+export type formUpdateScheduleInputs = z.infer<typeof formUpdateScheduleSchema>;
+export function useFormUpdateSchedule ({
+  handleModalOpen,
+  idLocation
+}: {
+  handleModalOpen: () => void;
+  idLocation: string;
+}) {
+  const defaultSchedule = daysOfWeek.map((day) => ({
+    day,
+    ranges: [{ start: '09:00', end: '19:00' }]
+  }))
+
+  const form = useForm<formUpdateScheduleInputs>({
+    resolver: zodResolver(formUpdateScheduleSchema),
+    mode: 'onChange',
+    defaultValues: {
+      schedule: defaultSchedule
+    }
+  })
+
+  const { reset } = form
+  const { mutate, isPending } = useUpdateScheduleLocationMutation(idLocation)
+
+  const onSubmit = (values: formUpdateScheduleInputs) => {
+    mutate({ schedule: values.schedule }, {
+      onError: (error) => {
+        console.log(error)
+        toast({
+          variant: 'destructive',
+          title: 'Error',
+          description: error.message || 'Failed to update horario'
+        })
+        reset()
+        handleModalOpen()
+      },
+      onSuccess: (data) => {
+        const queryClient = getQueryClient()
+        queryClient.invalidateQueries({
+          queryKey: [QUERY_KEYS_LOCATION_MANAGEMENT.LMGetLocation]
+        })
+        toast({
+          title: 'Sede Actualizada',
+          description: `Horario actualizada ${data.message}`
+        })
+        reset()
+        handleModalOpen()
       }
     })
   }

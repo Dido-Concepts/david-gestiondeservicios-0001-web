@@ -6,6 +6,7 @@ import { getLocationById } from '@/modules/location/application/actions/location
 import { QUERY_KEYS_LOCATION_MANAGEMENT } from '@/modules/share/infra/constants/query-keys.constant'
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar'
 import { useSuspenseQuery } from '@tanstack/react-query'
+import { format } from '@formkit/tempo'
 
 import Link from 'next/link'
 import { EditButtonAndModalLocationDetails } from './EditButtonAndModalLocationDetails.component'
@@ -44,19 +45,19 @@ export function WrapperLocationManagementId (param: { id: string }) {
             Datos de la sede
           </CardTitle>
           <div className="absolute right-6 top-6">
-            <EditButtonAndModalLocationDetails />
+            <EditButtonAndModalLocationDetails location={data} />
           </div>
         </CardHeader>
 
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 ">
               <Avatar className="w-24 h-24">
                 <AvatarImage
                   src={data.imageUrl}
                   alt={`Imagen de ${data.name}`}
                 />
-                <AvatarFallback>IC</AvatarFallback>
+                <AvatarFallback>Imagen del Local</AvatarFallback>
               </Avatar>
               <div className="space-y-1">
                 <p className="text-sm font-medium text-gray-500">
@@ -72,10 +73,16 @@ export function WrapperLocationManagementId (param: { id: string }) {
             </div>
             <div className="space-y-2 text-gray-700">
               <p>
-                <strong>Teléfono del centro:</strong> {data.phone}
+                <strong>Teléfono del centro:</strong> &nbsp; {data.phone}
               </p>
               <p>
-                <strong>Fecha de registro:</strong> {data.registrationDate.toString()}
+                <strong>Fecha de registro:</strong> &nbsp; {format(data.registrationDate, { date: 'full' })}
+              </p>
+              <p>
+                <strong>Direccion del local:</strong> &nbsp; {data.address}
+              </p>
+              <p>
+                <strong>Referencia del local:</strong> &nbsp; {data.review}
               </p>
             </div>
           </div>
@@ -89,7 +96,7 @@ export function WrapperLocationManagementId (param: { id: string }) {
             Horario de atención
           </CardTitle>
           <div className="absolute right-6 top-6">
-            <EditButtonAndModalLocationOpeningHours />
+            <EditButtonAndModalLocationOpeningHours schedule={data.openingHours} />
           </div>
         </CardHeader>
         <CardContent>

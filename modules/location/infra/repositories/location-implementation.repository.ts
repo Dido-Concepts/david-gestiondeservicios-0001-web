@@ -73,4 +73,64 @@ export class LocationImplementationRepository implements LocationRepository {
 
     return response.data
   }
+
+  async changeStatusLocation (id: string): Promise<string> {
+    const url = `/api/v1/location/${id}/status`
+    const response = await axiosApiInterna.put(url)
+
+    return response.data
+  }
+
+  async updateDetailsLocation (location: {
+    idLocation: string;
+    nameLocation: string;
+    phoneLocation: string;
+    addressLocation: string;
+    reviewLocation: string ;
+    imgLocation: File | null;
+  }) : Promise<string> {
+    const formData = new FormData()
+    formData.append('name_location', location.nameLocation)
+    formData.append('phone', location.phoneLocation)
+    formData.append('address', location.addressLocation)
+    formData.append('location_review', location.reviewLocation)
+
+    if (location.imgLocation) {
+      formData.append('img_file', location.imgLocation)
+    }
+
+    const url = `/api/v1/location/${location.idLocation}/details`
+
+    const response = await axiosApiInterna.put(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    return response.data
+  }
+
+  async updateScheduleLocation (location: {
+    idLocation: string;
+    schedule: {
+      day: string;
+      ranges: {
+        start: string;
+        end: string;
+      }[];
+    }[];
+  }): Promise<string> {
+    const formData = new FormData()
+    formData.append('schedule', JSON.stringify(location.schedule))
+
+    const url = `/api/v1/location/${location.idLocation}/schedule`
+
+    const response = await axiosApiInterna.put(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+    return response.data
+  }
 }

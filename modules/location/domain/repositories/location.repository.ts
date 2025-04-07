@@ -25,4 +25,26 @@ export abstract class LocationRepository {
       }[];
     }[];
   }): Promise<number>;
+
+  abstract changeStatusLocation(id: string): Promise<string>;
+
+  abstract updateDetailsLocation(location: {
+    idLocation: string;
+    nameLocation: string;
+    phoneLocation: string;
+    addressLocation: string;
+    reviewLocation: string | undefined;
+    imgLocation: File | null;
+  }) : Promise<string>;
+
+  abstract updateScheduleLocation(location: {
+    idLocation: string;
+    schedule: {
+      day: string;
+      ranges: {
+        start: string;
+        end: string;
+      }[];
+    }[];
+  }): Promise<string>;
 }

@@ -25,8 +25,11 @@ export interface LocationByIdEntity {
     schedules: ScheduleDayEntity[];
 }
 
+// En un archivo de tipos compartidos o donde definas ScheduleDayModel
+export type DayOfWeekEntity = 'Lunes' | 'Martes' | 'Miercoles' | 'Jueves' | 'Viernes' | 'Sabado' | 'Domingo';
+
 export interface ScheduleDayEntity {
-    day: string;
+    day: DayOfWeekEntity;
     ranges: {
       start: string;
       end: string;
