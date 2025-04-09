@@ -28,6 +28,7 @@ Aquí se encuentra un registro de las dependencias adicionales que se han instal
 | **drag-and-drop**  | 13/10/2024           | Facilita la funcionalidad de arrastrar y soltar.        | Jeffry          |
 | **zustand**        | 13/10/2024           | Gestor de estados globales.                             | Esteban         |
 | **authjs**         | 14/10/2024           | Authentication para la web con google.                  | Esteban         |
+| **@formkit/tempo** | 06/04/2025           | Utilidades de Fechas y horas en JS                      | Jeffry          |
 
 ### Dev Dependencias adicionales
 

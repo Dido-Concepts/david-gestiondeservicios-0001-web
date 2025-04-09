@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { createLocation } from '../../application/actions/location.action'
+import { createLocation } from '@/modules/location/application/actions/location.action'
 
 export type LocationCreateResponse = {
     name: string;
