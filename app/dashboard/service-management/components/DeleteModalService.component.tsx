@@ -1,3 +1,4 @@
+// DeleteModalService.component.tsx
 'use client'
 import React from 'react'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -7,12 +8,14 @@ interface DeleteModalServiceProps {
   open: boolean
   onOpenChange: (value: boolean) => void
   onConfirm: () => void
+  serviceName?: string // Añadir serviceName como prop opcional
 }
 
 const DeleteModalService: React.FC<DeleteModalServiceProps> = ({
   open,
   onOpenChange,
-  onConfirm
+  onConfirm,
+  serviceName // Recibir la prop serviceName
 }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -21,7 +24,8 @@ const DeleteModalService: React.FC<DeleteModalServiceProps> = ({
           <DialogTitle className="text-red-600">Eliminar Servicio</DialogTitle>
         </DialogHeader>
         <div className="text-gray-700">
-          ¿Estás seguro de que deseas eliminar este servicio? Esta acción no se puede deshacer.
+          {serviceName && <p>¿Estás seguro de que deseas eliminar el servicio: <strong>{serviceName}</strong>?</p>}
+          {!serviceName && <p>¿Estás seguro de que deseas eliminar este servicio? Esta acción no se puede deshacer.</p>}
         </div>
         <DialogFooter className="flex justify-end gap-2">
           <Button
