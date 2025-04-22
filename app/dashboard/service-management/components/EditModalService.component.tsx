@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -59,8 +59,9 @@ const EditModalService: React.FC<EditModalServiceProps> = ({
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label>Nombre del Servicio</Label>
+            <Label htmlFor="serviceName">Nombre del Servicio</Label>
             <Input
+              id="serviceName"
               value={serviceName}
               onChange={(e) => setServiceName(e.target.value)}
               placeholder="Nombre del servicio"
@@ -68,9 +69,10 @@ const EditModalService: React.FC<EditModalServiceProps> = ({
             />
           </div>
           <div>
-            <Label>Duración</Label>
+            <Label htmlFor="duration">Duración</Label>
             <Input
               type="text"
+              id="duration"
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
               placeholder="Ej: 30 minutos"
@@ -78,9 +80,10 @@ const EditModalService: React.FC<EditModalServiceProps> = ({
             />
           </div>
           <div>
-            <Label>Precio</Label>
+            <Label htmlFor="price">Precio</Label>
             <Input
               type="number"
+              id="price"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="Precio del servicio"
@@ -88,13 +91,14 @@ const EditModalService: React.FC<EditModalServiceProps> = ({
             />
           </div>
           <div>
-            <Label>Categoría</Label>
+            <Label htmlFor="category">Categoría</Label>
             <Select
               value={category}
               onValueChange={setCategory}
               required
+              disabled // La categoría no se debería poder editar desde este modal
             >
-              <SelectTrigger>
+              <SelectTrigger id="category-trigger">
                 <SelectValue placeholder="Seleccionar categoría" />
               </SelectTrigger>
               <SelectContent>
@@ -104,7 +108,12 @@ const EditModalService: React.FC<EditModalServiceProps> = ({
               </SelectContent>
             </Select>
           </div>
-          <Button type="submit" className="w-full">Guardar Cambios</Button>
+          <DialogFooter className="sm:justify-start">
+            <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>
+              Cancelar
+            </Button>
+            <Button type="submit">Guardar Cambios</Button>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
