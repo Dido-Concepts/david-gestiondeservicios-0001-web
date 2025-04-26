@@ -1,3 +1,4 @@
+import { CustomerModule } from '@/modules/customer/infra/provider/customer.provider'
 import { LocationModule } from '@/modules/location/infra/provider/location.provider'
 import { UserModule } from '@/modules/user/infra/provider/user.provider'
 import { Container } from 'inversify'
@@ -7,5 +8,6 @@ const container = new Container()
 
 container.load(UserModule)
 container.load(LocationModule)
+container.load(CustomerModule)
 
 export default container

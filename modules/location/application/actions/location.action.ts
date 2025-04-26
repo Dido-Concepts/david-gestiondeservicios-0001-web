@@ -2,7 +2,7 @@
 
 import container from '@/config/di/container'
 import { LocationRepository } from '@/modules/location/domain/repositories/location.repository'
-import { LOCATION_MODULE_TYPES } from '@/modules/location/domain/types-module/user-types.module'
+import { LOCATION_MODULE_TYPES } from '@/modules/location/domain/types-module/location-types.module'
 
 export async function getLocations (params: {
   pageIndex: number;
