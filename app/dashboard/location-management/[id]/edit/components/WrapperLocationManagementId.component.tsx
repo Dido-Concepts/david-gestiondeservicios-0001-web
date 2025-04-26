@@ -76,7 +76,7 @@ export function WrapperLocationManagementId (param: { id: string }) {
                 <strong>Teléfono del centro:</strong> &nbsp; {data.phone}
               </p>
               <p>
-                <strong>Fecha de registro:</strong> &nbsp; {format(data.registrationDate, { date: 'full' })}
+                <strong>Fecha de registro:</strong> &nbsp; {format(data.registrationDate, { date: 'full' }, 'es-PE')}
               </p>
               <p>
                 <strong>Direccion del local:</strong> &nbsp; {data.address}

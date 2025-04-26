@@ -4,6 +4,7 @@
     "next/typescript",
     "eslint-config-standard"
   ],
+  "plugins": ["local-rules"],
   "rules": {
     "no-useless-constructor": "off",
     "@next/next/no-img-element": "off"
@@ -13,6 +14,12 @@
       "files": ["*.entity.ts", "*.model.ts"],
       "rules": {
         "no-use-before-define": "off"
+      }
+    },
+    {
+      "files": ["**/*-implementation.repository.ts"],
+      "rules": {
+        "local-rules/require-reflect-metadata": "error"
       }
     }
   ]

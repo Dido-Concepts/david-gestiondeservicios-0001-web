@@ -1,4 +1,3 @@
-
 # Gestor de Servicios David
 
 ![Bun](https://img.shields.io/badge/Bun-1.1.20-ffcc00?logo=bun)
@@ -16,29 +15,29 @@ Este proyecto **Gestor de Servicios David** es una aplicación web que implement
 
 Aquí se encuentra un registro de las dependencias adicionales que se han instalado, incluyendo la fecha, su utilidad y el responsable:
 
-| Dependencia        | Fecha de instalación | Utilidad                                               | Responsable |
-|--------------------|----------------------|--------------------------------------------------------|-------------|
-| **Zod**            | 13/10/2024           | Validación de esquemas y tipos en TypeScript.           | Esteban, Jeffry |
-| **React Hook Form**| 13/10/2024           | Manejo de formularios reactivos en React.               | Esteban, Jeffry |
-| **Shadcn**         | 13/10/2024           | Componentes estilizados para interfaces con Tailwind.   | Esteban, Jeffry |
-| **Inversify**      | 13/10/2024           | Inyección de dependencias para aplicaciones JavaScript. | Esteban, Jeffry |
-| **Tanstack Query** | 13/10/2024           | Gestión de estado del servidor y caché de datos.        | Esteban, Jeffry |
-| **Tanstack Table** | 13/10/2024           | Creación de tablas con funcionalidades avanzadas.       | Esteban, Jeffry |
-| **Axios**          | 13/10/2024           | Cliente HTTP para realizar peticiones a APIs.           | Esteban, Jeffry |
-| **drag-and-drop**  | 13/10/2024           | Facilita la funcionalidad de arrastrar y soltar.        | Jeffry          |
-| **zustand**        | 13/10/2024           | Gestor de estados globales.                             | Esteban         |
-| **authjs**         | 14/10/2024           | Authentication para la web con google.                  | Esteban         |
-| **@formkit/tempo** | 06/04/2025           | Utilidades de Fechas y horas en JS                      | Jeffry          |
+| Dependencia         | Fecha de instalación | Utilidad                                                | Responsable     |
+| ------------------- | -------------------- | ------------------------------------------------------- | --------------- |
+| **Zod**             | 13/10/2024           | Validación de esquemas y tipos en TypeScript.           | Esteban, Jeffry |
+| **React Hook Form** | 13/10/2024           | Manejo de formularios reactivos en React.               | Esteban, Jeffry |
+| **Shadcn**          | 13/10/2024           | Componentes estilizados para interfaces con Tailwind.   | Esteban, Jeffry |
+| **Inversify**       | 13/10/2024           | Inyección de dependencias para aplicaciones JavaScript. | Esteban, Jeffry |
+| **Tanstack Query**  | 13/10/2024           | Gestión de estado del servidor y caché de datos.        | Esteban, Jeffry |
+| **Tanstack Table**  | 13/10/2024           | Creación de tablas con funcionalidades avanzadas.       | Esteban, Jeffry |
+| **Axios**           | 13/10/2024           | Cliente HTTP para realizar peticiones a APIs.           | Esteban, Jeffry |
+| **drag-and-drop**   | 13/10/2024           | Facilita la funcionalidad de arrastrar y soltar.        | Jeffry          |
+| **zustand**         | 13/10/2024           | Gestor de estados globales.                             | Esteban         |
+| **authjs**          | 14/10/2024           | Authentication para la web con google.                  | Esteban         |
+| **@formkit/tempo**  | 06/04/2025           | Utilidades de Fechas y horas en JS                      | Jeffry          |
 
 ### Dev Dependencias adicionales
 
 Son dependencias para calidad de código, pruebas, documentación, etc.
 
-| Dev Dependencia        | Fecha de instalación | Utilidad                                               | Responsable |
-|--------------------|----------------------|--------------------------------------------------------|-------------|
-| **ESLint**         | 13/10/2024          | Herramienta de análisis de código estático para identificar patrones problemáticos. | Esteban, Jeffry |
-| **commitlint**     | 13/10/2024          | Verifica si los mensajes de confirmación cumplen con el formato convencional. | Esteban, Jeffry |
-
+| Dev Dependencia               | Fecha de instalación | Utilidad                                                                                                                              | Responsable     |
+| ----------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| **ESLint**                    | 13/10/2024           | Herramienta de análisis de código estático para identificar patrones problemáticos.                                                   | Esteban, Jeffry |
+| **commitlint**                | 13/10/2024           | Verifica si los mensajes de confirmación cumplen con el formato convencional.                                                         | Esteban, Jeffry |
+| **eslint-plugin-local-rules** | 26/04/2025           | Creo custom rules para eslint, en este caso para que todo los repositories implementation importen si o si import 'reflect-metadata'. | Esteban         |
 
 ## Commilint Docs para los mensajes de commit
 
