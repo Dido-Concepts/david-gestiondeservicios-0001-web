@@ -37,7 +37,7 @@ export function ActionMenuChangeStatusLocation (props: {
       e.preventDefault()
       mutate(props.idLocation)
     }} disabled={isPending}>
-      {props.status ? 'Activar' : 'Desactivar'}
+      {!props.status ? 'Activar' : 'Desactivar'}
     </DropdownMenuItem>
   )
 }

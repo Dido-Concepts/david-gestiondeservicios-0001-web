@@ -26,11 +26,7 @@ CustomerModel
       phone_customer: param.phone,
       birthdate_customer: param.birthDate,
       status_customer: param.status,
-      annulled: false, // Default value
-      insert_date: new Date(), // Default value
-      update_date: null, // Default value
-      user_create: 'system', // Default value
-      user_modify: null // Default value
+      insert_date: param.createdAt
     }
   }
 }

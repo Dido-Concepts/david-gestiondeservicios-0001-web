@@ -18,7 +18,7 @@ export class LocationMapper extends Mapper<
         imageUrl: item.url,
         registrationDate: item.insert_date,
         review: item.location_review,
-        status: item.annulled
+        status: item.status
       })),
       meta: {
         page: param.meta.page,
@@ -42,7 +42,7 @@ export class LocationMapper extends Mapper<
         size: 0,
         url: item.imageUrl,
         insert_date: item.registrationDate,
-        annulled: item.status
+        status: item.status
       })),
       meta: {
         page: param.meta.page,

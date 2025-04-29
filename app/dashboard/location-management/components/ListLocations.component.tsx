@@ -32,7 +32,7 @@ function ContentLink (param: { location: Omit<LocationModel, 'openingHours'> }) 
     <Card
       className={`
             flex flex-col md:flex-row items-start md:items-center p-4 space-y-4 md:space-y-0 md:space-x-4  ${
-              param.location.status
+              !param.location.status
                 ? 'bg-gray-100 opacity-50'
                 : 'cursor-pointer transition-shadow hover:shadow-lg'
             }`}
@@ -132,7 +132,7 @@ export function ListLocations (param: { pageIndex: number; pageSize: number }) {
     <>
       {data.data.map((location) => (
         <div key={location.id}>
-          {location.status
+          {!location.status
             ? (
             <ContentLink location={location} />
               )
