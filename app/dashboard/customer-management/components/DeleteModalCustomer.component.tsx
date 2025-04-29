@@ -13,7 +13,7 @@ const DeleteModalCustomer = ({ isOpen, onClose, onDelete }: DeleteModalCustomerP
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg p-6 w-[400px] shadow-lg text-start">
-        <h2 className="text-xl font-semibold mb-3">¿Eliminar clientes?</h2>
+        <h2 className="text-xl font-semibold mb-3">¿Eliminar cliente?</h2>
         <p className="text-gray-600 mb-5">¿Quieres eliminar este cliente? Esta acción no se puede deshacer.</p>
 
         <div className="flex justify-end gap-3">

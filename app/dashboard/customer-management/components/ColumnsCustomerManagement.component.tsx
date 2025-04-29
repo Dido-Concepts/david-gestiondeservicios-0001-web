@@ -2,6 +2,7 @@
 
 import { CustomerModel } from '@/modules/customer/domain/models/customer.model'
 import { ColumnDef } from '@tanstack/react-table'
+import { ActionMenuCustomer } from '@/app/dashboard/customer-management/components/ActionMenuCustomercomponent'
 
 export const COLUMNS_CUSTOMER_MANAGEMENT: ColumnDef<CustomerModel>[] = [
   {
@@ -52,14 +53,14 @@ export const COLUMNS_CUSTOMER_MANAGEMENT: ColumnDef<CustomerModel>[] = [
         </span>
       )
     }
+  },
+  {
+    id: 'actions',
+    size: 5,
+    cell: ({ row }) => {
+      return (
+        <ActionMenuCustomer row={row} />
+      )
+    }
   }
-  // {
-  //   id: 'actions',
-  //   size: 5,
-  //   cell: ({ row }) => {
-  //     return (
-  //       <ActionMenu row={row} />
-  //     )
-  //   }
-  // }
 ]

@@ -7,9 +7,5 @@ export interface CustomerEntity {
     phone_customer: string;
     birthdate_customer: Date;
     status_customer: CustomerStatus
-    annulled: boolean;
-    insert_date: Date; // ISO date string
-    update_date: Date | null; // ISO date string or null
-    user_create: string;
-    user_modify: string | null;
+    insert_date: Date;
 }

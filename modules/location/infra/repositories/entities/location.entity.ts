@@ -7,11 +7,11 @@ export type LocationsEntity = {
     address_location: string
     location_review: string
     insert_date: Date
-    annulled: boolean
     url: string
     filename: string
     content_type: string
     size: number
+    status: boolean
 };
 
 export interface LocationByIdEntity {

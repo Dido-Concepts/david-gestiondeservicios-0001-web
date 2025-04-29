@@ -91,5 +91,3 @@ export function ActionMenu ({ row }: { row: Row<ListUsersResponse> }) {
     </DropdownMenu>
   )
 }
-
-//
