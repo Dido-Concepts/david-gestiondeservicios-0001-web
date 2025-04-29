@@ -27,6 +27,7 @@ import { useEffect } from 'react'
 import { ActionMenuChangeStatusLocation } from './ActionMenuChangeStatusLocation.component'
 
 function ContentLink (param: { location: Omit<LocationModel, 'openingHours'> }) {
+  console.log(param.location.status)
   return (
     <Card
       className={`

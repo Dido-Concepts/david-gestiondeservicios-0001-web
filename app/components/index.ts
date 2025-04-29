@@ -1,3 +1,7 @@
 export * from './DataTable.component'
+export * from './DataTablePagination.component'
 export * from './Icon.component'
+export * from './InputSearch.component'
+export * from './PaginationTable.component'
+export * from './combobox/ComboboxPopover.component'
 export * from './skeletons/DataTableSkeleton.component'

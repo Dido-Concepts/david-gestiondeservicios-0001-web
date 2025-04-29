@@ -1,3 +1,4 @@
+import { ComboboxPopover } from '@/app/components/combobox/ComboboxPopover.component'
 import DynamicTable from '@/app/components/list/DynamicList.component'
 import AddButtonService from '@/app/dashboard/service-management/components/AddButtonService.component'
 
@@ -13,6 +14,13 @@ export default function Page () {
           <p className="text-app-primary">
             Añade, edita o elimina las categorías y los servicios de su negocio
           </p>
+        </div>
+
+      </div>
+
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0 px-8">
+        <div className="flex space-x-2">
+          <ComboboxPopover label='Sede' />
         </div>
         <div className="flex space-x-2">
           <AddButtonService />
