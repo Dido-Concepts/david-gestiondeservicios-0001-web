@@ -4,9 +4,14 @@ export const QUERY_KEYS_USER_MANAGEMENT = Object.freeze({
 
 export const QUERY_KEYS_LOCATION_MANAGEMENT = Object.freeze({
   LMListLocations: 'LMListLocations',
-  LMGetLocation: 'LMGetLocation'
+  LMGetLocation: 'LMGetLocation',
+  LMGetLocationCatalog: 'LMGetLocationCatalog'
 })
 
 export const QUERY_KEYS_CUSTOMER_MANAGEMENT = Object.freeze({
   LMListCustomers: 'LMListCustomers'
+})
+
+export const QUERY_KEYS_SERVICE_MANAGEMENT = Object.freeze({
+  SMListServices: 'SMListServices'
 })

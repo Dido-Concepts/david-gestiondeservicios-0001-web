@@ -1,16 +1,6 @@
 'use client'
 
-import * as React from 'react'
-import {
-  ArrowUpCircle,
-  CheckCircle2,
-  Circle,
-  HelpCircle,
-  LucideIcon,
-  XCircle
-} from 'lucide-react'
-
-import { cn } from '@/lib/utils'
+import { IconComponent, IconsName } from '@/app/components'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -25,102 +15,105 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
-import { MainTableModel } from '@/modules/maintable/domain/models/maintable.model'
-import { IconsName } from '@/app/components'
+import { cn } from '@/lib/utils'
+import { useState } from 'react'
 
-type Status = {
+export type ComboboxProps = {
   value: string
   label: string
-  icon: LucideIcon
+  icon: IconsName
 }
 
-const statuses: Status[] = [
-  {
-    value: 'backlog',
-    label: 'Backlog',
-    icon: HelpCircle
-  },
-  {
-    value: 'todo',
-    label: 'Todo',
-    icon: Circle
-  },
-  {
-    value: 'in progress',
-    label: 'In Progress',
-    icon: ArrowUpCircle
-  },
-  {
-    value: 'done',
-    label: 'Done',
-    icon: CheckCircle2
-  },
-  {
-    value: 'canceled',
-    label: 'Canceled',
-    icon: XCircle
-  }
-]
-export interface ItemsComboboxPopoverProps extends MainTableModel {
-  iconName: IconsName;
-}
-export function ComboboxPopover (props: { label: string }) {
-  const [open, setOpen] = React.useState(false)
-
-  const [selectedStatus, setSelectedStatus] = React.useState<Status | null>(
-    statuses[0]
+export function ComboboxPopover (props: {
+  label: string
+  items: ComboboxProps[]
+  initialValue?: ComboboxProps
+  onSelect?: (selected: ComboboxProps | null) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const [selectedStatus, setSelectedStatus] = useState<ComboboxProps | null>(
+    props.initialValue || null
   )
 
+  const handleSelect = (selected: ComboboxProps | null) => {
+    setSelectedStatus(selected)
+    setOpen(false)
+    if (props.onSelect) {
+      props.onSelect(selected)
+    }
+  }
+
   return (
-    <div className="flex items-center space-x-4">
-      <p className="text-base text-muted-foreground font-semibold">{props.label}</p>
+    <div className="flex flex-col items-start space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+      <p className="text-base text-muted-foreground font-semibold shrink-0">
+        {props.label}
+      </p>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             size="sm"
-            className="w-[150px] justify-start"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-start sm:w-[180px] lg:w-[200px]"
           >
             {selectedStatus
               ? (
                 <>
-                  <selectedStatus.icon className="mr-2 h-4 w-4 shrink-0" />
-                  {selectedStatus.label}
+                  <IconComponent
+                    name={selectedStatus.icon}
+                    className="mr-2 h-4 w-4 shrink-0"
+                  />
+                  <span className="truncate">{selectedStatus.label}</span>
                 </>
                 )
               : (
-
                 <>+ Cambiar {props.label}</>
                 )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="p-0" side="right" align="start">
+        <PopoverContent
+          className="p-0"
+          style={{ width: 'var(--radix-popover-trigger-width)' }}
+          side="bottom"
+          align="start"
+        >
           <Command>
-            <CommandInput placeholder="Change status..." />
+            <CommandInput placeholder={`Buscar ${props.label}...`} />
             <CommandList>
-              <CommandEmpty>No results found.</CommandEmpty>
+              <CommandEmpty>No se encontraron resultados.</CommandEmpty>
               <CommandGroup>
-                {statuses.map((status) => (
+                {props.items.map((status) => (
                   <CommandItem
                     key={status.value}
-                    value={status.value}
-                    onSelect={(value) => {
-                      setSelectedStatus(
-                        statuses.find((priority) => priority.value === value) ||
-                        null
-                      )
-                      setOpen(false)
+                    value={status.label}
+                    onSelect={(currentLabel) => {
+                      const selected = props.items.find(
+                        (item) =>
+                          item.label.toLowerCase() === currentLabel.toLowerCase()
+                      ) || null
+                      handleSelect(selected)
                     }}
                   >
-                    <status.icon
+                    <IconComponent
+                      name={status.icon}
                       className={cn(
-                        'mr-2 h-4 w-4',
-                        status.value === selectedStatus?.value // La comparación funcionará correctamente
+                        'mr-2 h-4 w-4 shrink-0',
+                        status.value === selectedStatus?.value
                           ? 'opacity-100'
                           : 'opacity-40'
                       )}
                     />
                     <span>{status.label}</span>
+                    <span
+                      className={cn(
+                        'ml-auto pl-2',
+                        status.value === selectedStatus?.value
+                          ? 'opacity-100'
+                          : 'opacity-0'
+                      )}
+                    >
+                    </span>
                   </CommandItem>
                 ))}
               </CommandGroup>

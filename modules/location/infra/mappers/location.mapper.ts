@@ -1,8 +1,8 @@
 import { Mapper } from '@/modules/share/domain/mapper'
 import { PaginatedItemsViewModel } from '@/modules/share/domain/models/paginate/paginated-items-view.model'
 import { PaginatedItemsViewEntity } from '@/modules/share/infra/entities/paginate/paginated-items-view.entity'
-import { LocationByIdEntity, LocationsEntity } from '../repositories/entities/location.entity'
-import { LocationModel } from '../../domain/models/location.model'
+import { LocationByIdEntity, LocationCatalogEntity, LocationsEntity } from '@/modules/location/infra/repositories/entities/location.entity'
+import { LocationBodyModel, LocationModel } from '@/modules/location/domain/models/location.model'
 
 export class LocationMapper extends Mapper<
   PaginatedItemsViewEntity<LocationsEntity>,
@@ -70,6 +70,19 @@ export class LocationMapper extends Mapper<
           end: range.end
         }))
       }))
+    }
+  }
+
+  mapFromForCatalog (param: LocationCatalogEntity): LocationBodyModel {
+    return {
+      id: param.id_sede,
+      name: param.nombre_sede,
+      phone: param.telefono_sede,
+      address: param.direccion_sede,
+      registrationDate: param.insert_date,
+      fileId: param.file_id,
+      review: param.review_location,
+      status: true
     }
   }
 }

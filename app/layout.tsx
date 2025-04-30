@@ -6,6 +6,7 @@ import '@/config/di/reflect-metadata'
 import QueryClientProvider from '@/app/providers/QueryClient.provider'
 import NextTopLoader from 'nextjs-toploader'
 import { Toaster } from '@/components/ui/toaster'
+import { cookies } from 'next/headers'
 
 const raleway = Raleway({ subsets: ['latin'] })
 
@@ -19,6 +20,7 @@ export default function RootLayout ({
 }: Readonly<{
   children: ReactNode;
 }>) {
+  cookies()
   return (
     <html lang="es">
       <body

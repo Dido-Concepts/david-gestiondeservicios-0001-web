@@ -11,8 +11,8 @@ import { useModalUserForm } from '@/modules/user/infra/store/user-management.sto
 import { SelectRole } from './SelectRole.component'
 
 export function ModalUserFormData () {
-  const { isModalOpen, toggleModal, user } = useModalUserForm() // Extrae `user`
-  const { form, onSubmit, isEdit } = useFormUserManagement(toggleModal, user) // Pasa `user` como segundo argumento
+  const { isModalOpen, toggleModal, user } = useModalUserForm()
+  const { form, onSubmit, isEdit } = useFormUserManagement(toggleModal, user)
 
   const handleOpenChange = () => {
     form.reset()

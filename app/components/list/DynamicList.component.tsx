@@ -1,123 +1,118 @@
 // DynamicList.component.tsx
 'use client'
-import React from 'react'
+import { getCategories } from '@/modules/service/application/actions/category.action'
+// Asumiendo que CategoryModel existe y se importa así:
+import { CategoryModel } from '@/modules/service/domain/models/category.model'
+import { ServiceModel } from '@/modules/service/domain/models/service.model'
+import { QUERY_KEYS_SERVICE_MANAGEMENT } from '@/modules/share/infra/constants/query-keys.constant'
 import { useDragAndDrop } from '@formkit/drag-and-drop/react'
-import ActionMenuService from '@/app/dashboard/service-management/components/ActionMenuService.component'
-import ActionMenuCategory from '@/app/dashboard/service-management/components/ActionMenuCategory.component'
-import EditModalService from '@/app/dashboard/service-management/components/EditModalService.component' // Importa el modal de edición
+import { useSuspenseQuery } from '@tanstack/react-query'
+import React from 'react'
+import { IconComponent } from '../Icon.component'
 
-interface Service {
-  name: string;
+interface CategoryServiceListProps {
+  initialServices: ServiceModel[];
+  groupId: string;
+  categoryId: string;
 }
 
-interface Category {
-  title: string;
-  services: Service[];
-}
-
-export default function DynamicTable () {
-  // Datos de las secciones
-  const [sections, setSections] = React.useState<Category[]>([
+export const CategoryServiceList: React.FC<CategoryServiceListProps> = ({
+  initialServices,
+  groupId,
+  categoryId
+}) => {
+  const [parentRef, services] = useDragAndDrop<HTMLUListElement, ServiceModel>(
+    initialServices,
     {
-      title: 'Cabello',
-      services: [{ name: 'Corte de cabello - Adulto/Niño' }, { name: 'Ondulación Permanente' }]
-    },
-    {
-      title: 'Barba',
-      services: [{ name: 'Ritual de Barba' }, { name: 'Tinturación de Barba' }]
-    }
-  ])
-
-  // Estados para el drag and drop de cada sección
-  const [hairList, hairItems] = useDragAndDrop<HTMLUListElement, Service>(
-    sections[0].services,
-    {
-      group: 'services'
+      group: groupId,
+      selectedClass: 'bg-blue-500 text-white border-blue-600 ring-2 ring-blue-300'
     }
   )
-
-  const [beardList, beardItems] = useDragAndDrop<HTMLUListElement, Service>(
-    sections[1].services,
-    {
-      group: 'services'
-    }
-  )
-
-  // Combina los resultados en un array para mapear después
-  const dragAndDropData = [
-    { title: sections[0].title, listRef: hairList, items: hairItems },
-    { title: sections[1].title, listRef: beardList, items: beardItems }
-  ]
-
-  // Estado para controlar el modal de edición y el servicio a editar
-  const [editModalOpen, setEditModalOpen] = React.useState(false)
-  const [serviceToEdit, setServiceToEdit] = React.useState<{ serviceName: string; duration: string; price: string; category: string } | null>(null)
-  const [currentCategoryTitle, setCurrentCategoryTitle] = React.useState<string | null>(null)
-
-  const handleEditService = (service: Service, categoryTitle: string) => {
-    console.log('handleEditService called for:', service.name) // Verifica si se llama
-    setServiceToEdit({ serviceName: service.name, duration: '', price: '', category: categoryTitle })
-    setCurrentCategoryTitle(categoryTitle)
-    setEditModalOpen(true)
-    console.log('editModalOpen state:', editModalOpen) // Verifica el estado después de actualizar
-  }
-
-  const handleSaveService = (updatedService: { serviceName: string; duration: string; price: string; category: string }) => {
-    setSections(prevSections =>
-      prevSections.map(category =>
-        category.title === currentCategoryTitle
-          ? {
-              ...category,
-              services: category.services.map(s =>
-                s.name === serviceToEdit?.serviceName ? { name: updatedService.serviceName } : s
-              )
-            }
-          : category
-      )
-    )
-    setEditModalOpen(false)
-    setServiceToEdit(null)
-    setCurrentCategoryTitle(null)
-  }
 
   return (
-    <div className="flex gap-8 p-8">
-      {dragAndDropData.map((section) => (
-        <div key={section.title} className="w-1/2">
-          {/* Contenedor flexible para alinear el título y el ActionMenuCategory */}
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold">{section.title}</h2>
-            <ActionMenuCategory categoryName={section.title} />
-          </div>
-          <ul
-            ref={section.listRef}
-            className="border border-gray-300 rounded-md shadow-md p-4 bg-white"
-          >
-            {section.items.map((item) => (
-              <li
-                key={item.name}
-                className="p-2 border-b last:border-b-0 cursor-move hover:bg-gray-100 flex justify-between items-center"
-              >
-                <span>{item.name}</span>
-                <ActionMenuService
-                  onEdit={() => handleEditService(item, section.title)}
-                  serviceName={item.name}
-                />
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+    <ul
+      ref={parentRef}
+      className="list-none m-0 p-3 min-h-[80px] bg-white border border-dashed border-gray-300 rounded-md space-y-2"
+      data-category-id={categoryId}
+    >
+      {services.map((service) => (
+        <li
+          key={service.id}
+          className="bg-blue-50 border border-blue-200 px-3 py-2 rounded cursor-grab flex justify-between items-center text-sm transition-colors duration-150 ease-in-out hover:bg-blue-100"
+          data-service-id={service.id}
+        >
 
-      {/* Modal de edición */}
-      {editModalOpen && ( // Renderiza solo si editModalOpen es true
-        <EditModalService
-          open={editModalOpen}
-          onOpenChange={setEditModalOpen}
-          serviceData={serviceToEdit || { serviceName: '', duration: '', price: '', category: '' }} // Asegúrate de que serviceToEdit tenga un valor inicial
-          onSave={handleSaveService}
-        />
+          <span className="font-medium text-blue-800 flex items-center gap-2">
+            <IconComponent
+              name="fluent:glance-horizontal-sparkles-24-filled"
+              width={15}
+              height={15}
+              className="ml-2"
+            />
+            {service.name}</span>
+          <span className="text-xs text-gray-700">
+            (S/ {service.price.toFixed(2)} - {service.duration ?? '?'} Hora(s))
+          </span>
+        </li>
+      ))}
+      {services.length === 0 && (
+        <li className="p-5 text-center text-gray-400 italic text-sm">
+          Arrastra servicios aquí
+        </li>
       )}
+    </ul>
+  )
+}
+
+export default function DynamicTable ({ locationFilter }: { locationFilter: string }) {
+  const { data: initialCategoriesData = [] } = useSuspenseQuery<CategoryModel[]>({
+    queryKey: [QUERY_KEYS_SERVICE_MANAGEMENT.SMListServices, locationFilter],
+    queryFn: () =>
+      getCategories({ location: locationFilter })
+  })
+
+  const serviceDragGroup = 'all-service-categories'
+
+  return (
+    <div className="p-5 font-sans">
+
+      {/* Cambiado de flex flex-wrap a grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> {/* <-- MODIFICACIÓN AQUÍ */}
+        {initialCategoriesData.length > 0
+          ? (
+              initialCategoriesData.map((category) => (
+              // Removido flex-1, ya no es necesario con grid
+              <div
+                key={category.id}
+                // className="flex-1 min-w-[280px] bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm" <-- Clase Original
+                className="min-w-[280px] bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm" // <-- MODIFICACIÓN AQUÍ (quitado flex-1)
+              >
+                <h2 className="text-lg font-semibold mb-2 pb-2 border-b border-gray-200 text-gray-700 flex items-center gap-2">
+                  <IconComponent
+                    name="mdi:tag-plus"
+                    width={20}
+                    height={20}
+                    className="w-6 h-6 ml-2"
+                  />
+                  {category.name}
+                </h2>
+                <p className="text-sm text-gray-600 mb-4 min-h-[40px]">
+                  {category.description || <span className="italic text-gray-400">Sin descripción</span>}
+                </p>
+                <CategoryServiceList
+                  categoryId={category.id}
+                  initialServices={category.services}
+                  groupId={serviceDragGroup}
+                />
+              </div>
+              ))
+            )
+          : (
+            <p className="text-gray-500 italic col-span-full text-center"> {/* Añadido col-span-full y text-center para este mensaje */}
+              No se encontraron categorías.
+            </p>
+            )}
+      </div>
     </div>
   )
 }

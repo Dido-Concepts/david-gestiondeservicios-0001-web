@@ -75,14 +75,14 @@ export async function updateScheduleLocation ({
   idLocation,
   schedule
 }: {
-  idLocation: string
+  idLocation: string;
   schedule: {
-    day: string
+    day: string;
     ranges: {
-      start: string
-      end: string
-    }[]
-  }[]
+      start: string;
+      end: string;
+    }[];
+  }[];
 }) {
   const locationRepository = container.get<LocationRepository>(
     LOCATION_MODULE_TYPES.LocationRepository
@@ -91,4 +91,11 @@ export async function updateScheduleLocation ({
     idLocation,
     schedule
   })
+}
+
+export async function getLocationsCatalog () {
+  const locationRepository = container.get<LocationRepository>(
+    LOCATION_MODULE_TYPES.LocationRepository
+  )
+  return await locationRepository.getLocationsCatalog()
 }
