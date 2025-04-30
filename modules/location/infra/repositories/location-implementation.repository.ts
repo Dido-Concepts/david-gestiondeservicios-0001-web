@@ -1,15 +1,16 @@
 import { axiosApiInterna } from '@/config/axiosApiInterna'
-import { LocationModel } from '@/modules/location/domain/models/location.model'
+import { LocationBodyModel, LocationModel } from '@/modules/location/domain/models/location.model'
 import { LocationRepository } from '@/modules/location/domain/repositories/location.repository'
 import { PaginatedItemsViewModel } from '@/modules/share/domain/models/paginate/paginated-items-view.model'
 import { PaginatedItemsViewEntity } from '@/modules/share/infra/entities/paginate/paginated-items-view.entity'
 import { injectable } from 'inversify'
 import 'reflect-metadata'
-import { LocationMapper } from '../mappers/location.mapper'
+import { LocationMapper } from '@/modules/location/infra/mappers/location.mapper'
 import {
   LocationByIdEntity,
+  LocationCatalogEntity,
   LocationsEntity
-} from './entities/location.entity'
+} from '@/modules/location/infra/repositories/entities/location.entity'
 
 @injectable()
 export class LocationImplementationRepository implements LocationRepository {
@@ -132,5 +133,15 @@ export class LocationImplementationRepository implements LocationRepository {
     })
 
     return response.data
+  }
+
+  async getLocationsCatalog (): Promise<LocationBodyModel[]> {
+    const url = '/api/v1/location/list-catalog'
+
+    const response = await axiosApiInterna.get(url)
+
+    const locationsCatalog: LocationCatalogEntity[] = response.data
+
+    return locationsCatalog.map((item) => this.locationMapper.mapFromForCatalog(item))
   }
 }

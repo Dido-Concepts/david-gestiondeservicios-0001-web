@@ -38,7 +38,7 @@ export default function AddModalService () {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
           className="sm:max-w-[425px]"
-          onClick={(e) => e.stopPropagation()} // Evita que el clic en el modal cierre el DropdownMenu
+          onClick={(e) => e.stopPropagation()}
         >
           <DialogHeader>
             <DialogTitle>Agregar Nuevo Servicio</DialogTitle>

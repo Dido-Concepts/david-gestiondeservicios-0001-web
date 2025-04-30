@@ -20,3 +20,14 @@ export type LocationModel = {
   status: boolean;
   openingHours: ScheduleDayModel[];
 };
+
+export type LocationBodyModel = {
+  id: number;
+  name: string;
+  phone?: string;
+  address?: string;
+  registrationDate: string;
+  fileId?: number;
+  review: string;
+  status: boolean;
+};
