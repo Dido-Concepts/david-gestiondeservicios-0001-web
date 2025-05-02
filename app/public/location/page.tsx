@@ -10,7 +10,7 @@ interface OpeningHour {
   close: number;
 }
 
-interface Sede {
+export interface Sede {
   id: string;
   name: string;
   address: string;

@@ -1,7 +1,5 @@
 'use client' // Indica que este es un componente de cliente
 
-import { useState } from 'react'
-
 // Interfaz para los servicios
 interface Service {
   id: string;
@@ -43,11 +41,11 @@ const services: Service[] = [
 ]
 
 export default function Paso2 ({ onNext, onBack }: Paso2Props) {
-  const [selectedService, setSelectedService] = useState<Service | null>(null)
+  // Removed unused selectedService state
 
   // Función para manejar la selección del servicio
   const handleReserveClick = (service: Service) => {
-    setSelectedService(service) // Opcional: mantener el estado local
+    // Removed setSelectedService as selectedService state is no longer used
     onNext({ service }) // Avanza al siguiente paso con el servicio seleccionado
   }
 

@@ -55,38 +55,40 @@ export default function Paso3 ({ onNext, onBack }: Paso3Props) {
           <div
             key={professional.id}
             onClick={() => handleOptionClick(professional)}
-            className={`rounded-lg p-4 w-64 cursor-pointer ${
-              professional.id === 'any'
-                ? 'border-2 border-purple-400 text-center'
-                : 'bg-gray-100 flex items-center'
-            }`}
+            className={`rounded-lg p-4 w-64 cursor-pointer ${professional.id === 'any'
+              ? 'border-2 border-purple-400 text-center'
+              : 'bg-gray-100 flex items-center'
+              }`}
           >
-            {professional.image
-              ? (
-              <img
-                src={professional.image}
-                alt={professional.name}
-                className="w-12 h-12 rounded-full mr-4"
-              />
-                ) : (
-              <div className="flex justify-center mb-2">
-                {/* Icono de figuras humanas */}
-                <svg
-                  className="w-12 h-12 text-gray-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                  ></path>
-                </svg>
-              </div>
-                )}
+            {
+              professional.image
+                ? ( // Parte verdadera (consecuente) en nueva línea después de ?
+                  <img
+                    src={professional.image}
+                    alt={professional.name}
+                    className="w-12 h-12 rounded-full mr-4"
+                  />
+                  )
+                : ( // Parte falsa (alternativa) en nueva línea después de :
+                  <div className="flex justify-center mb-2">
+                    {/* Icono de figuras humanas */}
+                    <svg
+                      className="w-12 h-12 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                      ></path>
+                    </svg>
+                  </div>
+                  )
+            }
             <div>
               <p className="text-lg font-semibold text-gray-900">{professional.name}</p>
               {professional.description && (

@@ -3,12 +3,6 @@
 import React from 'react'
 import { Calendar, Clock } from 'lucide-react'
 
-// Interfaz para los props
-interface Paso6Props {
-  formData: FormData;
-  onConfirm: () => void; // Función para manejar la confirmación
-}
-
 // Interfaces para los tipos de datos
 interface SelectedDateTime {
   month: string;
@@ -21,6 +15,12 @@ interface FormData {
   service?: { id: string; name: string; duration: string; price: string };
   professional?: { id: string; name: string };
   dateTime?: SelectedDateTime;
+}
+
+// Interfaz para los props
+interface Paso6Props {
+  formData: FormData;
+  onConfirm: () => void; // Función para manejar la confirmación
 }
 
 export default function Paso6 ({ formData, onConfirm }: Paso6Props) {
