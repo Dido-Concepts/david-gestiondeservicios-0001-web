@@ -1,6 +1,5 @@
 'use client' // Necesario para usar hooks como useState
 
-import { useState } from 'react'
 import { mockLocationData } from '@/modules/location/infra/mock/location.mock'
 
 // Definimos las interfaces para las sedes y horarios
@@ -41,11 +40,8 @@ interface Paso1Props {
 }
 
 export default function Paso1 ({ onNext }: Paso1Props) {
-  const [selectedSede, setSelectedSede] = useState<Sede | null>(null)
-
   // Maneja el clic en una tarjeta
   const handleCardClick = (sede: Sede) => {
-    setSelectedSede(sede) // Opcional, para mantener el estado local si se necesita
     onNext({ sede }) // Pasa la sede seleccionada al siguiente paso
   }
 

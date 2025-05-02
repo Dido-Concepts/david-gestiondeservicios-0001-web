@@ -39,10 +39,12 @@ export default function Paso4 ({ onNext, onBack }: Paso4Props) {
 
   // Funciones para navegar entre meses (igual que en DatePage)
   const handlePrevMonth = () => {
+    setSelectedMonth('Febrero 2025') // Simulate changing to the previous month
     console.log('Mes anterior')
   }
 
   const handleNextMonth = () => {
+    setSelectedMonth('Abril 2025') // Simulate changing to the next month
     console.log('Mes siguiente')
   }
 

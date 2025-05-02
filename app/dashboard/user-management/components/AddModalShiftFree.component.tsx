@@ -27,7 +27,7 @@ const AddModalShiftFree = ({ isOpen, onClose, onSave }: AddModalShiftFreeProps) 
         <h2 className="text-xl font-semibold mb-4">Añadir días libres</h2>
 
         {/* Selección de Miembro del equipo */}
-        {/* <div className="flex flex-col mb-3">
+        <div className="flex flex-col mb-3">
           <label className="text-sm font-medium mb-1">Miembro del equipo</label>
           <select
             value={employee}
@@ -38,7 +38,7 @@ const AddModalShiftFree = ({ isOpen, onClose, onSave }: AddModalShiftFreeProps) 
             <option value="Beto Cerv">Beto Cerv</option>
             <option value="Wendy Smith">Wendy Smith</option>
           </select>
-        </div> */}
+        </div>
 
         {/* Selección del Tipo de día libre */}
         <div className="flex flex-col mb-3">

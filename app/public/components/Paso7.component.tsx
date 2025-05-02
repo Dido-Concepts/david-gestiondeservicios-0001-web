@@ -1,33 +1,39 @@
-'use client' // Necesario para usar hooks como useRouter
+// En Paso7.component.tsx
+import type { FormData } from '../register/page'
 
-import React from 'react'
-import { useRouter } from 'next/navigation' // Para manejar la redirección
+interface Paso7Props {
+  data: FormData;
+  onBack: () => void;
+}
 
-export default function Paso7 () {
-  const router = useRouter() // Instancia del router para navegación
-
-  // Función para redirigir a la página de inicio
-  const handleBackToHome = () => {
-    router.push('/') // Redirige a la raíz de la aplicación
-  }
+// Aplica la interfaz aquí VVVVVVVVVVVVVVVVVVVV
+export default function Paso7 ({ data, onBack }: Paso7Props) {
+  // Ahora TypeScript sabe que 'data' y 'onBack' existen y tienen los tipos correctos
+  // Puedes usar 'data' para mostrar el resumen y 'onBack' para el botón de retroceso
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="max-w-md w-full space-y-8">
-        <div className="bg-white p-8 rounded-lg shadow-md border border-gray-300">
-          <h1 className="text-2xl font-bold text-gray-800 text-center">
-            Cita reservada con éxito
-          </h1>
-        </div>
-        <div className="flex justify-center">
-          <button
-            className="px-6 py-3 bg-gray-200 text-gray-700 text-lg border border-gray-400 rounded-md hover:bg-gray-300 transition-colors"
-            onClick={handleBackToHome} // Acción al hacer clic
-          >
-            Volver a la página de inicio
-          </button>
-        </div>
-      </div>
+    <div>
+      <h2>Resumen y Confirmación (Paso 7)</h2>
+      <pre>{JSON.stringify(data, null, 2)}</pre> {/* Ejemplo: Muestra los datos */}
+
+      {/* Ejemplo de cómo usar las props */}
+      <p>Sede: {data.sede?.name || 'No seleccionada'}</p>
+      <p>Servicio: {data.service?.name || 'No seleccionado'}</p>
+      {/* ... mostrar otros datos ... */}
+
+      <button
+        onClick={onBack} // Usa la función onBack pasada como prop
+        className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded mr-2"
+      >
+        Atrás
+      </button>
+      <button
+        // Aquí iría la lógica para confirmar/finalizar la reserva
+        onClick={() => alert('Reserva Confirmada (simulado)!')}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        Confirmar Reserva
+      </button>
     </div>
   )
 }
