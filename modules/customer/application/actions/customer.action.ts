@@ -102,3 +102,4 @@ export async function updateDetailsCustomer (formData: FormData) {
     birthdate_customer: birthdateCustomer
   })
 }
+//
