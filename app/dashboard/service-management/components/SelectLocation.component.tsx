@@ -26,7 +26,9 @@ export function SelectLocation ({ control, name }: SelectLocationProps) {
           <FormLabel>Sedes</FormLabel>
           <FormControl>
             <Select onValueChange={(value) => field.onChange(value === '' ? 0 : Number(value))} value={field.value === undefined || field.value === 0 ? '' : field.value.toString()}>
-              <SelectTrigger className="w-full"><SelectValue placeholder="Selecciona la Sedes" /></SelectTrigger>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecciona la Sede" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Sedes</SelectLabel>
