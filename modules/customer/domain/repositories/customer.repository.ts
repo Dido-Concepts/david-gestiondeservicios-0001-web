@@ -26,7 +26,7 @@ export abstract class CustomerRepository {
    * @returns Promise que resuelve con un mensaje de estado (string) desde el backend.
    */
   abstract updateDetailsCustomer(customerData: { // <--- NUEVO MÉTODO AÑADIDO
-    customer_id: string; // Se necesita el ID para identificar al cliente
+    id: string; // Se necesita el ID para identificar al cliente
     name_customer: string;
     email_customer: string;
     phone_customer: string;
