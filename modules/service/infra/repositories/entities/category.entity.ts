@@ -4,6 +4,6 @@ export interface CategoryEntity {
     category_id: number;
     category_name: string;
     description?: string ;
-    insert_date: string;
+    insert_date: Date;
     services: ServiceEntity[];
 }

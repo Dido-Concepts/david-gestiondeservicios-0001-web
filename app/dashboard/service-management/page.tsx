@@ -2,13 +2,14 @@ import DynamicTable from '@/app/dashboard/service-management/components/DynamicL
 import AddButtonService from '@/app/dashboard/service-management/components/AddButtonService.component'
 import { getQueryClient } from '@/app/providers/GetQueryClient'
 import { getLocationsCatalog } from '@/modules/location/application/actions/location.action'
-import { getCategories } from '@/modules/service/application/actions/category.action'
+import { getAllCategories, getCategories } from '@/modules/service/application/actions/category.action'
 import { QUERY_KEYS_LOCATION_MANAGEMENT, QUERY_KEYS_SERVICE_MANAGEMENT } from '@/modules/share/infra/constants/query-keys.constant'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { FilterSede } from '@/app/dashboard/service-management/components/FilterSede.component'
 import { Suspense } from 'react'
 import { DataTableSkeleton } from '@/app/components'
 import { ModalCategoryFrom } from '@/app/dashboard/service-management/components/ModalCategoryFrom.component'
+import { ModalServiceFrom } from '@/app/dashboard/service-management/components/ModalServiceFrom.component'
 
 export default async function Page (props: {
   searchParams?: Promise<{
@@ -28,6 +29,12 @@ export default async function Page (props: {
   queryClient.prefetchQuery({
     queryKey: [QUERY_KEYS_LOCATION_MANAGEMENT.LMGetLocationCatalog],
     queryFn: () => getLocationsCatalog()
+  })
+
+  queryClient.prefetchQuery({
+    queryKey: [QUERY_KEYS_SERVICE_MANAGEMENT.SMListCategoriesCatalog],
+    queryFn: () =>
+      getAllCategories({ sede_id: parseInt(locationFilter) })
   })
 
   return (
@@ -66,6 +73,7 @@ export default async function Page (props: {
       </main>
 
       <ModalCategoryFrom />
+      <ModalServiceFrom />
 
     </HydrationBoundary>
   )

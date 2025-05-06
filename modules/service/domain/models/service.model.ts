@@ -1,8 +1,9 @@
-export type ServiceModel = {
-    id: string;
+export interface ServiceModel {
+    id: number;
     name: string;
-    duration?: number;
-    price: number;
     description?: string;
+    category_id: number;
+    price: number;
+    duration?: number;
     createdAt: Date;
 }

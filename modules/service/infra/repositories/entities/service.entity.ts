@@ -4,5 +4,6 @@ export interface ServiceEntity {
     duration_minutes?: number;
     price: number;
     description?: string;
-    insert_date: string;
+    insert_date: Date;
+    category_id: number;
 }

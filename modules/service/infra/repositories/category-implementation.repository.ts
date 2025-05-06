@@ -1,6 +1,6 @@
 import 'reflect-metadata'
 import { CategoryRepository } from '@/modules/service/domain/repositories/category.repository'
-import { CategoryModel } from '@/modules/service/domain/models/category.model'
+import { CategoryCatalogModel, CategoryModel } from '@/modules/service/domain/models/category.model'
 import { injectable } from 'inversify'
 import { CategoryMapper } from '@/modules/service/infra/mappers/category.mapper'
 import { axiosApiInterna } from '@/config/axiosApiInterna'
@@ -14,9 +14,10 @@ export class CategoryImplementationRepository implements CategoryRepository {
     const response = await axiosApiInterna.get(url)
     const data: CategoryEntity[] = response.data
 
-    return data.map((item) =>
+    const categories = data.map((item) =>
       this.categoryMapper.mapFrom(item)
     )
+    return categories
   }
 
   async createCategory (param: { name_category: string; description_category: string; location_id: number }): Promise<string> {
@@ -44,6 +45,14 @@ export class CategoryImplementationRepository implements CategoryRepository {
     const url = `/api/v1/category/${param.id}`
     const response = await axiosApiInterna.delete(url)
     const data: boolean = response.data
+
+    return data
+  }
+
+  async getAllCategories (param: { sede_id: number }): Promise<CategoryCatalogModel[]> {
+    const url = `/api/v1/category/catalog/${param.sede_id}`
+    const response = await axiosApiInterna.get(url)
+    const data: CategoryCatalogModel[] = response.data
 
     return data
   }

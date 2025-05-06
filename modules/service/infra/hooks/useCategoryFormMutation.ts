@@ -44,6 +44,7 @@ export function useCategoryFormMutation (category: CategoryModel | null, toggleM
     onSuccess: (data) => {
       const queryClient = getQueryClient()
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS_SERVICE_MANAGEMENT.SMListServices] })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS_SERVICE_MANAGEMENT.SMListCategoriesCatalog] })
       toast({
         title: category ? 'Categoría actualizado' : 'Categoría creado',
         description: `Categoría ${data.nameCategory} ${category ? 'actualizado' : 'creado'}`

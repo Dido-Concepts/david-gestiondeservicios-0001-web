@@ -7,3 +7,11 @@ export type CategoryModel = {
     createdAt: Date;
     services: ServiceModel[];
 }
+
+export type CategoryCatalogModel = {
+    category_id: number;
+    sede_id: number;
+    category_name: string;
+    description?: string;
+    created_at: Date;
+}
