@@ -1,4 +1,4 @@
-import DynamicTable from '@/app/components/list/DynamicList.component'
+import DynamicTable from '@/app/dashboard/service-management/components/DynamicList.component'
 import AddButtonService from '@/app/dashboard/service-management/components/AddButtonService.component'
 import { getQueryClient } from '@/app/providers/GetQueryClient'
 import { getLocationsCatalog } from '@/modules/location/application/actions/location.action'

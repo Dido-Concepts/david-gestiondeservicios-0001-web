@@ -7,14 +7,30 @@ import { z } from 'zod'
 import { useCategoryFormMutation } from './useCategoryFormMutation'
 
 export const formCategoryManagementSchema = z.object({
-  description_category: z.string().min(2).max(500).optional(),
-  location_id: z.number().int().positive(),
-  name_category: z.string().min(2).max(100)
+  description_category: z
+    .string()
+    .min(2, 'La descripción debe tener al menos 2 caracteres')
+    .max(500, 'La descripción debe tener como máximo 500 caracteres')
+    .optional(),
+  location_id: z
+    .number()
+    .int('El ID de ubicación debe ser un número entero')
+    .positive('El ID de ubicación debe ser un número positivo'),
+  name_category: z
+    .string()
+    .min(2, 'El nombre debe tener al menos 2 caracteres')
+    .max(100, 'El nombre debe tener como máximo 100 caracteres')
 })
 
-export type FormCategoryManagementInputs = z.infer<typeof formCategoryManagementSchema>
+export type FormCategoryManagementInputs = z.infer<
+  typeof formCategoryManagementSchema
+>;
 
-export function useFormCategoryManagement (toggleModal: () => void, category: CategoryModel | null, locationId: number) {
+export function useFormCategoryManagement (
+  toggleModal: () => void,
+  category: CategoryModel | null,
+  locationId: number
+) {
   const form = useForm<FormCategoryManagementInputs>({
     resolver: zodResolver(formCategoryManagementSchema),
     defaultValues: {

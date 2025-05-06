@@ -47,7 +47,7 @@ export function ModalCategoryFrom () {
             <FormField name="description_category" control={form.control} render={({ field }) => (
               <FormItem>
                 <FormLabel>Descripción</FormLabel>
-                <Input disabled={isEdit} placeholder="Detalla la categoría" {...field} />
+                <Input placeholder="Detalla la categoría" {...field} />
                 <FormMessage />
               </FormItem>
             )} />

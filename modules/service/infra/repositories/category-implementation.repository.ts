@@ -26,4 +26,25 @@ export class CategoryImplementationRepository implements CategoryRepository {
 
     return data
   }
+
+  async updateCategory (param: { id: number; name_category: string; description_category: string; location_id: number }): Promise<string> {
+    const url = `/api/v1/category/${param.id}`
+    const dataBody = {
+      name_category: param.name_category,
+      description_category: param.description_category,
+      location_id: param.location_id
+    }
+    const response = await axiosApiInterna.put(url, dataBody)
+    const data: string = response.data
+
+    return data
+  }
+
+  async deleteCategory (param: { id: number }): Promise<boolean> {
+    const url = `/api/v1/category/${param.id}`
+    const response = await axiosApiInterna.delete(url)
+    const data: boolean = response.data
+
+    return data
+  }
 }
