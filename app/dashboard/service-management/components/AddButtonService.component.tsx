@@ -12,13 +12,20 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { useModalCategory } from '@/modules/service/infra/store/category-modal.store'
+import { useModalService } from '@/modules/service/infra/store/service-modal.store'
 
 export default function AddButtonService () {
   const { setCategory, toggleModal } = useModalCategory()
+  const { setService, toggleModal: toggleModalService } = useModalService()
 
   const handleCreateCategory = () => {
     setCategory(null)
     toggleModal()
+  }
+
+  const handleCreateService = () => {
+    setService(null)
+    toggleModalService()
   }
 
   return (
@@ -38,7 +45,7 @@ export default function AddButtonService () {
         <DropdownMenuLabel>Opciones</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={handleCreateService}>
             <IconComponent
               name="fluent:glance-horizontal-sparkles-24-filled"
               width={20}

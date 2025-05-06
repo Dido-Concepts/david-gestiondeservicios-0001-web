@@ -13,12 +13,13 @@ CategoryModel
       description: param.description,
       createdAt: new Date(param.insert_date),
       services: param.services.map((service) => ({
-        id: service.service_id.toString(),
+        id: Number(service.service_id),
         name: service.service_name,
         description: service.description,
         price: service.price,
         duration: service.duration_minutes,
-        createdAt: new Date(service.insert_date)
+        createdAt: service.insert_date,
+        category_id: service.category_id
       }))
     }
   }
@@ -28,14 +29,15 @@ CategoryModel
       category_id: Number(param.id),
       category_name: param.name,
       description: param.description,
-      insert_date: param.createdAt.toISOString(),
+      insert_date: param.createdAt,
       services: param.services.map((service) => ({
         service_id: Number(service.id),
         service_name: service.name,
         duration_minutes: service.duration,
+        category_id: Number(param.id),
         price: service.price,
         description: service.description,
-        insert_date: service.createdAt.toISOString()
+        insert_date: service.createdAt
       }))
     }
   }

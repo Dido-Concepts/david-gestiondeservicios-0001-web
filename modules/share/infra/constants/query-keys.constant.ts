@@ -13,5 +13,6 @@ export const QUERY_KEYS_CUSTOMER_MANAGEMENT = Object.freeze({
 })
 
 export const QUERY_KEYS_SERVICE_MANAGEMENT = Object.freeze({
-  SMListServices: 'SMListServices'
+  SMListServices: 'SMListServices',
+  SMListCategoriesCatalog: 'SMListCategoriesCatalog'
 })
