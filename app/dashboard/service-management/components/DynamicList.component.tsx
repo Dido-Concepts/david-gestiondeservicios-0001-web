@@ -8,7 +8,9 @@ import { QUERY_KEYS_SERVICE_MANAGEMENT } from '@/modules/share/infra/constants/q
 import { useDragAndDrop } from '@formkit/drag-and-drop/react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import React from 'react'
-import { IconComponent } from '../Icon.component'
+import { IconComponent } from '@/app/components'
+import ActionMenuEditCategory from '@/app/dashboard/service-management/components/ActionMenuEditCategory.component'
+import ActionMenuEditService from '@/app/dashboard/service-management/components/ActionMenuEditService.component'
 
 interface CategoryServiceListProps {
   initialServices: ServiceModel[];
@@ -50,9 +52,13 @@ export const CategoryServiceList: React.FC<CategoryServiceListProps> = ({
               className="ml-2"
             />
             {service.name}</span>
-          <span className="text-xs text-gray-700">
-            (S/ {service.price.toFixed(2)} - {service.duration ?? '?'} Hora(s))
-          </span>
+
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-700">
+              (S/ {service.price.toFixed(2)} - {service.duration ?? '?'} Hora(s))
+            </span>
+            <ActionMenuEditService />
+          </div>
         </li>
       ))}
       {services.length === 0 && (
@@ -87,15 +93,20 @@ export default function DynamicTable ({ locationFilter }: { locationFilter: stri
                 // className="flex-1 min-w-[280px] bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm" <-- Clase Original
                 className="min-w-[280px] bg-gray-50 border border-gray-200 rounded-lg p-4 shadow-sm" // <-- MODIFICACIÓN AQUÍ (quitado flex-1)
               >
-                <h2 className="text-lg font-semibold mb-2 pb-2 border-b border-gray-200 text-gray-700 flex items-center gap-2">
-                  <IconComponent
-                    name="mdi:tag-plus"
-                    width={20}
-                    height={20}
-                    className="w-6 h-6 ml-2"
-                  />
-                  {category.name}
-                </h2>
+                <div className="text-lg font-semibold mb-2 pb-2 border-b border-gray-200 text-gray-700 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <IconComponent
+                      name="mdi:tag-plus"
+                      width={20}
+                      height={20}
+                      className="w-6 h-6 ml-2"
+                    />
+                    <span>
+                      {category.name}
+                    </span>
+                  </div>
+                  <ActionMenuEditCategory category={category} />
+                </div>
                 <p className="text-sm text-gray-600 mb-4 min-h-[40px]">
                   {category.description || <span className="italic text-gray-400">Sin descripción</span>}
                 </p>

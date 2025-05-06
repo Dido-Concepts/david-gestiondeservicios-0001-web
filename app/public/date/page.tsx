@@ -8,7 +8,7 @@ const DatePage = () => {
   const router = useRouter() // Obtenemos la instancia del router
 
   // Estados existentes para mes y día
-  const [selectedMonth, setSelectedMonth] = useState('Marzo 2025')
+  const [selectedMonth] = useState('Marzo 2025')
   const [selectedDay, setSelectedDay] = useState(12)
 
   // Nuevo estado para la hora seleccionada

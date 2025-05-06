@@ -25,7 +25,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Row } from '@tanstack/react-table'
 import { MoreHorizontal } from 'lucide-react'
 // Importa el componente del modal de eliminación
-import DeleteModalCustomer from './DeleteModalCustomer.component' // Ajusta esta ruta si es necesario
+import DeleteModal from '@/app/components/DeleteModal.component'
 
 export function ActionMenuCustomer ({ row }: { row: Row<CustomerModel> }) {
   const customer = row.original
@@ -165,7 +165,7 @@ export function ActionMenuCustomer ({ row }: { row: Row<CustomerModel> }) {
 
             {/* Renderiza el Modal de Confirmación de Borrado */}
             {/* Solo se muestra si isDeleteDialogOpen es true */}
-            <DeleteModalCustomer
+            <DeleteModal
                 isOpen={isDeleteDialogOpen}
                 onClose={() => setIsDeleteDialogOpen(false)} // Función para cerrar el modal (al cancelar)
                 onDelete={handleConfirmDelete} // Función para ejecutar al confirmar borrado

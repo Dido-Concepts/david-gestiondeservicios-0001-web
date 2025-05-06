@@ -23,3 +23,24 @@ export async function createCategory (params: {
   )
   return await categoryRepository.createCategory(params)
 }
+
+export async function updateCategory (params: {
+    id: number;
+    name_category: string;
+    description_category: string;
+    location_id: number;
+  }) {
+  const categoryRepository = container.get<CategoryRepository>(
+    CATEGORY_MODULE_TYPES.CategoryRepository
+  )
+  return await categoryRepository.updateCategory(params)
+}
+
+export async function deleteCategory (params: {
+    id: number;
+  }) {
+  const categoryRepository = container.get<CategoryRepository>(
+    CATEGORY_MODULE_TYPES.CategoryRepository
+  )
+  return await categoryRepository.deleteCategory(params)
+}

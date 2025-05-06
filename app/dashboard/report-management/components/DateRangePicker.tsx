@@ -126,7 +126,7 @@ export function DateRangePicker ({
             value={date?.to ? format(date.to, 'yyyy-MM-dd') : ''}
             onChange={(e) => {
               const newTo = e.target.value ? new Date(e.target.value) : undefined
-              setDate(prev => ({ ...prev, to: newTo }))
+              setDate(prev => prev ? { ...prev, to: newTo } : { from: undefined, to: newTo })
             }}
           />
         </div>

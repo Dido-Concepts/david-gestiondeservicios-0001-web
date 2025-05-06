@@ -1,4 +1,4 @@
-import DynamicTable from '@/app/components/list/DynamicList.component'
+import DynamicTable from '@/app/dashboard/service-management/components/DynamicList.component'
 import AddButtonService from '@/app/dashboard/service-management/components/AddButtonService.component'
 import { getQueryClient } from '@/app/providers/GetQueryClient'
 import { getLocationsCatalog } from '@/modules/location/application/actions/location.action'
@@ -24,6 +24,7 @@ export default async function Page (props: {
     queryFn: () => getCategories({ location: locationFilter })
   })
 
+  // ?? Averiguar como hacer el invalid de QUERY_KEYS_LOCATION_MANAGEMENT.LMGetLocationCatalog desde sedes a la hora de cambiar el estado de una sede o crear
   queryClient.prefetchQuery({
     queryKey: [QUERY_KEYS_LOCATION_MANAGEMENT.LMGetLocationCatalog],
     queryFn: () => getLocationsCatalog()
