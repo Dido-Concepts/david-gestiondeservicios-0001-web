@@ -44,3 +44,12 @@ export async function deleteCategory (params: {
   )
   return await categoryRepository.deleteCategory(params)
 }
+
+export async function getAllCategories (params: {
+    sede_id: number;
+  }) {
+  const categoryRepository = container.get<CategoryRepository>(
+    CATEGORY_MODULE_TYPES.CategoryRepository
+  )
+  return await categoryRepository.getAllCategories(params)
+}
