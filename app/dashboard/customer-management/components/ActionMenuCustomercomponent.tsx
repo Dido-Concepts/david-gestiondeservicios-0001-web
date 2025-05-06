@@ -26,6 +26,7 @@ import { Row } from '@tanstack/react-table'
 import { MoreHorizontal } from 'lucide-react'
 // Importa el componente del modal de eliminación
 import DeleteModal from '@/app/components/DeleteModal.component'
+import { useCustomerModal } from '@/modules/customer/infra/store/customer-modal.store'
 
 export function ActionMenuCustomer ({ row }: { row: Row<CustomerModel> }) {
   const customer = row.original
@@ -36,6 +37,9 @@ export function ActionMenuCustomer ({ row }: { row: Row<CustomerModel> }) {
 
   // Estado para controlar si el modal de confirmación de borrado está abierto o cerrado
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+
+  // Importamos el store para controlar el modal
+  const { toggleModal, setCustomer } = useCustomerModal()
 
   const { toast } = useToast() // Hook para mostrar notificaciones
   const queryClient = getQueryClient() // Cliente de React Query para invalidar caché
@@ -94,6 +98,19 @@ export function ActionMenuCustomer ({ row }: { row: Row<CustomerModel> }) {
   // Estado combinado para saber si alguna operación está en curso
   const isProcessing = isChangingStatus || isDeleting
 
+  // Función que maneja el clic en la opción "Editar"
+  const handleEditClick = () => {
+    if (isProcessing) return
+
+    // Simplemente usar el objeto customer original, que ya es de tipo CustomerModel
+    setCustomer(customer)
+
+    // Abrir el modal si no está abierto
+    if (!useCustomerModal.getState().isModalOpen) {
+      toggleModal()
+    }
+  }
+
   // Función que maneja el clic en la opción "Bloquear"/"Activar"
   const handleChangeStatus = () => {
     if (isProcessing) return // Evita doble clic si ya está procesando
@@ -144,11 +161,11 @@ export function ActionMenuCustomer ({ row }: { row: Row<CustomerModel> }) {
                     >
                         {actionLabel}
                     </DropdownMenuItem>
-                    {/* Opción para editar (funcionalidad pendiente) */}
+                    {/* Opción para editar cliente */}
                     <DropdownMenuItem
                         className="cursor-pointer"
-                        disabled={isProcessing} // Deshabilitado si hay operación en curso
-                        // onClick={() => { /* TODO: Implementar lógica de edición */ }}
+                        disabled={isProcessing}
+                        onClick={handleEditClick}
                     >
                         Editar
                     </DropdownMenuItem>

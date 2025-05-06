@@ -48,44 +48,58 @@ export async function deleteCustomer (id: string) {
 
 export async function createCustomer (formData: FormData) {
   const nameCustomer = formData.get('name_customer') as string
-  const emailCustomer = formData.get('email_customer') as string | null
-  const phoneCustomer = formData.get('phone_customer') as string | null
-  const birthdateCustomer = formData.get('birthdate_customer') as string | null
-  const statusCustomer = formData.get('status_customer') as 'active' | 'blocked' | null
+  const emailCustomer = formData.get('email_customer') as string
+  const phoneCustomer = formData.get('phone_customer') as string
+  const birthdateCustomer = formData.get('birthdate_customer') as string
+
+  // Verificamos campos obligatorios según repositorio
+  if (!nameCustomer) {
+    throw new Error('El nombre del cliente es obligatorio')
+  }
 
   const customerRepository = container.get<CustomerRepository>(
     CUSTOMER_MODULE_TYPES.CustomerRepository
   )
 
-  // Construir el objeto para el repositorio usando las claves snake_case requeridas
-  const customerDataForRepo: {
-    name_customer: string;
-    email_customer?: string;
-    phone_customer?: string;
-    birthdate_customer?: string;
-    status_customer?: 'active' | 'blocked';
-} = {
-  name_customer: nameCustomer // Mapear variable camelCase a clave snake_case
-}
+  // Asegurarnos de que todos los campos estén definidos y tengan un formato válido
+  const customerDataForRepo = {
+    name_customer: nameCustomer,
+    email_customer: emailCustomer || '', // Asegurar que no sea null/undefined
+    phone_customer: phoneCustomer || '',
+    birthdate_customer: birthdateCustomer || '',
+    status_customer: 'active' as const // Campo obligatorio
+  }
 
-  // Añadir opcionales si existen
-  if (emailCustomer) customerDataForRepo.email_customer = emailCustomer
-  if (phoneCustomer) customerDataForRepo.phone_customer = phoneCustomer
-  if (birthdateCustomer) customerDataForRepo.birthdate_customer = birthdateCustomer
-  if (statusCustomer) customerDataForRepo.status_customer = statusCustomer
+  // Log para diagnóstico
+  // console.log('>>> Enviando al Backend API (Crear Cliente): Payload:')
+  // console.log(JSON.stringify(customerDataForRepo, null, 2))
 
-  return await customerRepository.createCustomer(customerDataForRepo)
+  try {
+    return await customerRepository.createCustomer(customerDataForRepo)
+  } catch (error: unknown) {
+    // Tipamos error correctamente para evitar el uso de 'any'
+    if (error instanceof Error) {
+      console.error('Error al crear cliente:', error.message)
+    } else if (typeof error === 'object' && error !== null) {
+      const errorObj = error as { response?: { data?: unknown } }
+      console.error('Error al crear cliente:',
+        errorObj.response?.data || 'Error desconocido')
+    } else {
+      console.error('Error al crear cliente:', error)
+    }
+    throw error
+  }
 }
 
 export async function updateDetailsCustomer (formData: FormData) {
-  // Extraer con snake_case, asignar a camelCase
-  const customerId = formData.get('customer_id') as string
+  // Extraer datos del FormData usando el formato snake_case consistente
+  const customerId = formData.get('id') as string
   const nameCustomer = formData.get('name_customer') as string
-  const emailCustomer = formData.get('email_customer') as string
-  const phoneCustomer = formData.get('phone_customer') as string
-  const birthdateCustomer = formData.get('birthdate_customer') as string
+  const emailCustomer = formData.get('email_customer') as string | null
+  const phoneCustomer = formData.get('phone_customer') as string | null
+  const birthdateCustomer = formData.get('birthdate_customer') as string | null
 
-  if (!customerId || !nameCustomer || !emailCustomer || !phoneCustomer || !birthdateCustomer) {
+  if (!customerId || !nameCustomer) {
     throw new Error('Faltan datos requeridos para actualizar el cliente.')
   }
 
@@ -93,13 +107,47 @@ export async function updateDetailsCustomer (formData: FormData) {
     CUSTOMER_MODULE_TYPES.CustomerRepository
   )
 
-  // Llamar al repositorio mapeando las variables camelCase a las claves snake_case esperadas
-  return await customerRepository.updateDetailsCustomer({
-    customer_id: customerId,
+  // Construir objeto con todos los campos requeridos por el repositorio
+  // Proporcionar valores vacíos para los campos opcionales si no están presentes
+  const customerData = {
+    id: customerId,
     name_customer: nameCustomer,
-    email_customer: emailCustomer,
-    phone_customer: phoneCustomer,
-    birthdate_customer: birthdateCustomer
-  })
+    email_customer: emailCustomer || '', // Siempre proporcionar un string
+    phone_customer: phoneCustomer || '', // Siempre proporcionar un string
+    birthdate_customer: birthdateCustomer || '' // Siempre proporcionar un string
+  }
+
+  // Llamar al repositorio con los datos
+  return await customerRepository.updateDetailsCustomer(customerData)
+}
+
+export async function createCustomerWithAllFields (data: {
+  name_customer: string;
+  email_customer: string;
+  phone_customer: string;
+  birthdate_customer: string;
+}) {
+  // Verificamos campos obligatorios según repositorio
+  if (!data.name_customer) {
+    throw new Error('El nombre del cliente es obligatorio')
+  }
+
+  // Crear FormData para creación con todos los campos requeridos
+  const formData = new FormData()
+  formData.append('name_customer', data.name_customer)
+
+  // Siempre incluir estos campos, aunque estén vacíos
+  formData.append('email_customer', data.email_customer || '')
+  formData.append('phone_customer', data.phone_customer || '')
+  formData.append('birthdate_customer', data.birthdate_customer || '')
+  // Añadir estado por defecto
+  formData.append('status_customer', 'active')
+
+  const result = await createCustomer(formData)
+
+  return {
+    id: typeof result === 'number' ? result : 0,
+    name_customer: data.name_customer
+  }
 }
 //

@@ -1,81 +1,104 @@
 // modules/customer/infra/hooks/useFormCustomerManagement.ts
 
+'use client'
+
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useQueryClient } from '@tanstack/react-query'
-import { toast } from '@/hooks/use-toast' // Asumiendo que usas este hook para toasts
-import { QUERY_KEYS_CUSTOMER_MANAGEMENT } from '@/modules/share/infra/constants/query-keys.constant'
-import { useCreateCustomerMutation } from './useCreateCustomerMutation' // Importar el hook de mutación
+import { useCustomerFormMutation } from './useCustomerFormMutation'
+import { useEffect } from 'react'
 
-// Esquema Zod para validación (igual que antes)
-const customerFormSchema = z.object({
+// Exportamos el schema para usarlo en useCustomerFormMutation
+export const customerFormSchema = z.object({
   name_customer: z.string()
     .min(1, { message: 'El nombre es requerido.' })
-    .regex(/^[A-ZÁÉÍÓÚÜÑa-záéíóúüñ ]+$/, { message: 'El nombre solo debe contener letras y espacios.' }),
-  email_customer: z.string().email({ message: 'Email inválido.' }).optional().or(z.literal('')),
-  phone_customer: z.string()
-    .length(9, { message: 'El teléfono debe tener 9 dígitos.' })
-    .regex(/^[9]\d{8}$/, { message: 'Debe ser 9 dígitos y empezar con 9.' })
-    .optional()
+    .regex(/^[A-ZÁÉÍÓÚÜÑa-záéíóúüñ ]+$/, {
+      message: 'El nombre solo debe contener letras y espacios.'
+    }),
+  email_customer: z.string()
+    .email({ message: 'Email inválido.' })
     .or(z.literal('')),
-  birthdate_customer: z.string().optional().or(z.literal(''))
+  phone_customer: z.string()
+    .regex(/^[9]\d{8}$/, {
+      message: 'Debe ser 9 dígitos y empezar con 9.'
+    })
+    .or(z.literal('')),
+  birthdate_customer: z.string()
+    .refine(
+      (date) => {
+        if (!date) return true
+        const today = new Date()
+        const selectedDate = new Date(date)
+        return selectedDate <= today
+      },
+      { message: 'La fecha de nacimiento no puede ser en el futuro.' }
+    )
+    .or(z.literal(''))
 })
 
-// Tipo inferido del esquema
-export type CustomerFormValues = z.infer<typeof customerFormSchema>;
+export type CustomerFormValues = z.infer<typeof customerFormSchema>
 
-// Hook personalizado para el formulario de creación de clientes
-export function useFormCreateCustomer ({
-  handleModalOpen // Función para cerrar el modal
-}: {
-    handleModalOpen: () => void;
-}) {
+interface Customer {
+  id: number;
+  name_customer: string;
+  email_customer?: string;
+  phone_customer?: string;
+  birthdate_customer?: string;
+}
+
+export function useFormCustomerManagement (
+  toggleModal: () => void,
+  customer: Customer | null
+) {
+  // Inicializar con valores vacíos por defecto
+  const defaultValues: CustomerFormValues = {
+    name_customer: '',
+    email_customer: '',
+    phone_customer: '',
+    birthdate_customer: ''
+  }
+
+  // Solo usar valores del cliente si existe
+  if (customer && customer.id) {
+    defaultValues.name_customer = customer.name_customer || ''
+    defaultValues.email_customer = customer.email_customer || ''
+    defaultValues.phone_customer = customer.phone_customer || ''
+    defaultValues.birthdate_customer = customer.birthdate_customer || ''
+  }
+
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(customerFormSchema),
-    defaultValues: {
-      name_customer: '',
-      email_customer: '',
-      phone_customer: '',
-      birthdate_customer: ''
-    },
+    defaultValues,
     mode: 'onChange'
   })
 
-  const queryClient = useQueryClient()
-  const { mutate, isPending } = useCreateCustomerMutation() // Usar el hook de mutación
+  // Efecto para actualizar el formulario cuando cambia el cliente
+  useEffect(() => {
+    if (customer && customer.id) {
+      // Solo resetear si hay un cliente con ID válido
+      form.reset({
+        name_customer: customer.name_customer || '',
+        email_customer: customer.email_customer || '',
+        phone_customer: customer.phone_customer || '',
+        birthdate_customer: customer.birthdate_customer || ''
+      })
+    } else if (!customer) {
+      // Si no hay cliente, limpiar el formulario
+      form.reset(defaultValues)
+    }
+  }, [customer, defaultValues, form])
 
-  // Función onSubmit que se pasará a react-hook-form
+  const { mutate, isPending } = useCustomerFormMutation(customer, toggleModal)
+
   const onSubmit = (values: CustomerFormValues) => {
-    // Llamar a la función mutate del hook useCreateCustomerMutation
-    mutate(values, { // Pasamos los valores validados
-      onSuccess: (newCustomerId) => {
-        queryClient.invalidateQueries({
-          queryKey: [QUERY_KEYS_CUSTOMER_MANAGEMENT.LMListCustomers]
-        })
-        toast({ // Usar tu sistema de toasts
-          title: 'Cliente Creado',
-          description: `El cliente "${values.name_customer}" fue creado exitosamente (ID: ${newCustomerId}).`
-        })
-        form.reset() // Limpiar el formulario
-        handleModalOpen() // Cerrar el modal
-      },
-      onError: (error) => {
-        console.error('Error al crear cliente:', error)
-        toast({ // Usar tu sistema de toasts
-          variant: 'destructive',
-          title: 'Error al Crear Cliente',
-          description: error.message || 'Ocurrió un error inesperado.'
-        })
-        // No reseteamos ni cerramos el modal en caso de error
-      }
-    })
+    mutate(values)
   }
 
   return {
-    form, // Objeto form de react-hook-form
-    onSubmit, // Función para pasar al <form>
-    isPending // Estado de carga de la mutación
+    form,
+    onSubmit,
+    isPending,
+    isEdit: Boolean(customer?.id)
   }
 }
 

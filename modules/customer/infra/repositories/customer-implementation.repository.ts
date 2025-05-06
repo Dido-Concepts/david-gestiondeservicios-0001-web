@@ -91,14 +91,14 @@ export class CustomerImplementationRepository implements CustomerRepository {
 
   // --- IMPLEMENTACIÓN DE updateDetailsCustomer ---
   async updateDetailsCustomer (customerData: {
-    customer_id: string;
+    id: string;
     name_customer: string;
     email_customer: string;
     phone_customer: string;
     birthdate_customer: string | Date;
 }): Promise<string> {
     // Construye la URL específica para actualizar detalles, incluyendo el ID del cliente.
-    const url = `/api/v1/customer/${customerData.customer_id}/details` // Endpoint PUT definido en el backend
+    const url = `/api/v1/customer/${customerData.id}/details` // Endpoint PUT definido en el backend
 
     // Prepara el objeto payload que se enviará en el cuerpo de la petición.
     // Este payload debe coincidir con lo que espera el backend (UpdateCustomerDetailsPayload).

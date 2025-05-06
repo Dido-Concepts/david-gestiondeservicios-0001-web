@@ -1,11 +1,12 @@
 import { DataTableSkeleton } from '@/app/components'
-import AddButtonAndModalCustomer from '@/app/dashboard/customer-management/components/AddButtonAndModalCustomer.component'
 import TableCustomerManagement from '@/app/dashboard/customer-management/components/TableCustomerManagement.component'
 import { getQueryClient } from '@/app/providers/GetQueryClient'
 import { getCustomers } from '@/modules/customer/application/actions/customer.action'
 import { QUERY_KEYS_CUSTOMER_MANAGEMENT } from '@/modules/share/infra/constants/query-keys.constant'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { Suspense } from 'react'
+import { AddButtonCustomer } from '@/app/dashboard/customer-management/components/AddButtonCustomer.component'
+import { ModalCustomerFormData } from '@/app/dashboard/customer-management/components/ModalCustomerFormData.component'
 
 export default async function Page (props: {
   searchParams?: Promise<{
@@ -42,7 +43,7 @@ export default async function Page (props: {
           </div>
           <div className="flex space-x-2">
             {/* Botón para añadir clientes */}
-            <AddButtonAndModalCustomer />
+            <AddButtonCustomer />
           </div>
         </div>
 
@@ -54,6 +55,7 @@ export default async function Page (props: {
           <TableCustomerManagement pageIndex={pageIndex} pageSize={pageSize} />
         </Suspense>
       </main>
+      <ModalCustomerFormData />
     </HydrationBoundary>
   )
 }
