@@ -105,10 +105,7 @@ export function ActionMenuCustomer ({ row }: { row: Row<CustomerModel> }) {
     // Simplemente usar el objeto customer original, que ya es de tipo CustomerModel
     setCustomer(customer)
 
-    // Abrir el modal si no está abierto
-    if (!useCustomerModal.getState().isModalOpen) {
-      toggleModal()
-    }
+    toggleModal()
   }
 
   // Función que maneja el clic en la opción "Bloquear"/"Activar"

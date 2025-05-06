@@ -19,7 +19,21 @@ export const COLUMNS_CUSTOMER_MANAGEMENT: ColumnDef<CustomerModel>[] = [
   },
   {
     accessorKey: 'birthDate',
-    header: 'Cumpleaños'
+    header: 'Cumpleaños',
+    cell: ({ row }) => {
+      const date = new Date(row.original.birthDate)
+      const formattedDate = date.toLocaleDateString('es-ES', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
+
+      return (
+        <span>
+          {formattedDate}
+        </span>
+      )
+    }
   },
   {
     // Refactor: Averiguar como usar enums de forma correcta en este punto

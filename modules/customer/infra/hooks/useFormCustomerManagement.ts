@@ -1,108 +1,72 @@
-// modules/customer/infra/hooks/useFormCustomerManagement.ts
-
-'use client'
-
-import { useForm } from 'react-hook-form'
+import { CustomerModel } from '@/modules/customer/domain/models/customer.model'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useCustomerFormMutation } from './useCustomerFormMutation'
-import { useEffect } from 'react'
 
-// Exportamos el schema para usarlo en useCustomerFormMutation
-export const customerFormSchema = z.object({
-  name_customer: z.string()
-    .min(1, { message: 'El nombre es requerido.' })
-    .regex(/^[A-ZÁÉÍÓÚÜÑa-záéíóúüñ ]+$/, {
-      message: 'El nombre solo debe contener letras y espacios.'
-    }),
-  email_customer: z.string()
-    .email({ message: 'Email inválido.' })
-    .or(z.literal('')),
-  phone_customer: z.string()
-    .regex(/^[9]\d{8}$/, {
-      message: 'Debe ser 9 dígitos y empezar con 9.'
-    })
-    .or(z.literal('')),
-  birthdate_customer: z.string()
-    .refine(
-      (date) => {
-        if (!date) return true
-        const today = new Date()
-        const selectedDate = new Date(date)
-        return selectedDate <= today
-      },
-      { message: 'La fecha de nacimiento no puede ser en el futuro.' }
-    )
-    .or(z.literal(''))
+export const formCustomerManagementSchema = z.object({
+  name_customer: z
+    .string()
+    .min(2, 'El nombre debe tener al menos 2 caracteres')
+    .max(100, 'El nombre debe tener como máximo 100 caracteres'),
+  email_customer: z
+    .string()
+    .email('Correo electrónico inválido'),
+  phone_customer: z
+    .string()
+    .min(6, 'El teléfono debe tener al menos 6 caracteres')
+    .max(20, 'El teléfono debe tener como máximo 20 caracteres'),
+  birthdate_customer: z
+    .string(),
+  status_customer: z
+    .enum(['active', 'blocked'])
+    .optional()
 })
 
-export type CustomerFormValues = z.infer<typeof customerFormSchema>
-
-interface Customer {
-  id: number;
-  name_customer: string;
-  email_customer?: string;
-  phone_customer?: string;
-  birthdate_customer?: string;
-}
+export type FormCustomerManagementInputs = z.infer<typeof formCustomerManagementSchema>;
 
 export function useFormCustomerManagement (
   toggleModal: () => void,
-  customer: Customer | null
+  customer: CustomerModel | null
 ) {
-  // Inicializar con valores vacíos por defecto
-  const defaultValues: CustomerFormValues = {
-    name_customer: '',
-    email_customer: '',
-    phone_customer: '',
-    birthdate_customer: ''
-  }
-
-  // Solo usar valores del cliente si existe
-  if (customer && customer.id) {
-    defaultValues.name_customer = customer.name_customer || ''
-    defaultValues.email_customer = customer.email_customer || ''
-    defaultValues.phone_customer = customer.phone_customer || ''
-    defaultValues.birthdate_customer = customer.birthdate_customer || ''
-  }
-
-  const form = useForm<CustomerFormValues>({
-    resolver: zodResolver(customerFormSchema),
-    defaultValues,
-    mode: 'onChange'
+  const form = useForm<FormCustomerManagementInputs>({
+    resolver: zodResolver(formCustomerManagementSchema),
+    defaultValues: {
+      name_customer: '',
+      email_customer: '',
+      phone_customer: '',
+      birthdate_customer: '',
+      status_customer: 'active'
+    }
   })
 
-  // Efecto para actualizar el formulario cuando cambia el cliente
+  const { reset } = form
+  const { mutate } = useCustomerFormMutation(customer, toggleModal)
+
   useEffect(() => {
-    if (customer && customer.id) {
-      // Solo resetear si hay un cliente con ID válido
-      form.reset({
-        name_customer: customer.name_customer || '',
-        email_customer: customer.email_customer || '',
-        phone_customer: customer.phone_customer || '',
-        birthdate_customer: customer.birthdate_customer || ''
+    if (customer) {
+      reset({
+        name_customer: customer.name,
+        email_customer: customer.email,
+        phone_customer: customer.phone,
+        birthdate_customer: customer.birthDate.toISOString().split('T')[0],
+        status_customer: customer.status
       })
-    } else if (!customer) {
-      // Si no hay cliente, limpiar el formulario
-      form.reset(defaultValues)
+    } else {
+      reset({
+        name_customer: '',
+        email_customer: '',
+        phone_customer: '',
+        birthdate_customer: '',
+        status_customer: 'active'
+      })
     }
-  }, [customer, defaultValues, form])
+  }, [customer, reset])
 
-  const { mutate, isPending } = useCustomerFormMutation(customer, toggleModal)
-
-  const onSubmit = (values: CustomerFormValues) => {
+  const onSubmit = (values: FormCustomerManagementInputs) => {
     mutate(values)
   }
 
-  return {
-    form,
-    onSubmit,
-    isPending,
-    isEdit: Boolean(customer?.id)
-  }
+  return { form, onSubmit, isEdit: Boolean(customer) }
 }
-
-// NOTA: Si necesitas formularios para editar, podrías añadir aquí:
-// - Un esquema Zod para la edición (quizás campos diferentes son opcionales/requeridos)
-// - Un hook `useUpdateCustomerMutation` (similar a useCreateCustomerMutation)
-// - Un hook `useFormUpdateCustomer` (similar a useFormCreateCustomer)

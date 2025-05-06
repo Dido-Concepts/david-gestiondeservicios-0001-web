@@ -80,7 +80,7 @@ function ContentLink (param: { location: Omit<LocationModel, 'openingHours'> }) 
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            {!param.location.status
+            {param.location.status
               ? (
               <Link
                 href={`/dashboard/location-management/${param.location.id}/edit`}

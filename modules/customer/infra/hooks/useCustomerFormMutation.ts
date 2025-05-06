@@ -1,75 +1,55 @@
-import { useMutation } from '@tanstack/react-query'
-import { toast } from '@/hooks/use-toast'
 import { getQueryClient } from '@/app/providers/GetQueryClient'
-import { createCustomer, updateDetailsCustomer } from '@/modules/customer/application/actions/customer.action'
+import { toast } from '@/hooks/use-toast'
+import { CustomerModel } from '@/modules/customer/domain/models/customer.model'
+import { formCustomerManagementSchema } from './useFormCustomerManagement'
 import { QUERY_KEYS_CUSTOMER_MANAGEMENT } from '@/modules/share/infra/constants/query-keys.constant'
+import { useMutation } from '@tanstack/react-query'
 import { z } from 'zod'
-import { customerFormSchema } from '@/modules/customer/infra/hooks/useFormCustomerManagement'
+import { createCustomer, updateDetailsCustomer } from '@/modules/customer/application/actions/customer.action'
 
-// Definir tipos para las respuestas
 type CustomerResponse = {
-  id: number;
-  name_customer: string;
+  nameCustomer: string;
+  messageResponse: string | number;
 }
 
-export function useCustomerFormMutation (
-  customer: { id: number } | null,
-  toggleModal: () => void
-) {
-  return useMutation<CustomerResponse, Error, z.infer<typeof customerFormSchema>>({
+export function useCustomerFormMutation (customer: CustomerModel | null, toggleModal: () => void) {
+  return useMutation<CustomerResponse, Error, z.infer<typeof formCustomerManagementSchema>>({
     mutationFn: async (data) => {
       if (customer) {
-        // Crear FormData para edición
-        const formData = new FormData()
-        formData.append('id', customer.id.toString()) // Ahora es 'id', no 'customer_id'
-        formData.append('name_customer', data.name_customer)
+        const res = await updateDetailsCustomer({
+          id: String(customer.id),
+          name_customer: data.name_customer,
+          email_customer: data.email_customer || '',
+          phone_customer: data.phone_customer || '',
+          birthdate_customer: data.birthdate_customer || new Date().toISOString()
+        })
 
-        // Siempre incluir todos los campos
-        formData.append('email_customer', data.email_customer || '')
-        formData.append('phone_customer', data.phone_customer || '')
-        formData.append('birthdate_customer', data.birthdate_customer || '')
-
-        const result = await updateDetailsCustomer(formData)
-
-        return {
-          id: typeof result === 'number' ? result : customer.id,
-          name_customer: data.name_customer
-        }
+        return { nameCustomer: data.name_customer, messageResponse: res }
       } else {
-        // Crear FormData para creación
-        const formData = new FormData()
-        formData.append('name_customer', data.name_customer)
+        const res = await createCustomer({
+          name_customer: data.name_customer,
+          email_customer: data.email_customer,
+          phone_customer: data.phone_customer,
+          birthdate_customer: data.birthdate_customer,
+          status_customer: data.status_customer
+        })
 
-        // Siempre incluir todos los campos
-        formData.append('email_customer', data.email_customer || '')
-        formData.append('phone_customer', data.phone_customer || '')
-        formData.append('birthdate_customer', data.birthdate_customer || '')
-        // Añadir estado por defecto
-        formData.append('status_customer', 'active')
-
-        const result = await createCustomer(formData)
-
-        return {
-          id: typeof result === 'number' ? result : 0,
-          name_customer: data.name_customer
-        }
+        return { nameCustomer: data.name_customer, messageResponse: res }
       }
     },
     onError: (error) => {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: error.message || 'Error al procesar la solicitud'
+        description: error.message || 'Error al procesar la operación'
       })
     },
     onSuccess: (data) => {
       const queryClient = getQueryClient()
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS_CUSTOMER_MANAGEMENT.LMListCustomers]
-      })
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS_CUSTOMER_MANAGEMENT.LMListCustomers] })
       toast({
         title: customer ? 'Cliente actualizado' : 'Cliente creado',
-        description: `Cliente "${data.name_customer}" ${customer ? 'actualizado' : 'creado'} exitosamente`
+        description: `Cliente ${data.nameCustomer} ${customer ? 'actualizado' : 'creado'} exitosamente`
       })
       toggleModal()
     }

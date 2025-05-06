@@ -25,7 +25,7 @@ export class CustomerImplementationRepository implements CustomerRepository {
     const paginatedItemsEntity: PaginatedItemsViewEntity<CustomerEntity> =
       response.data
 
-    return {
+    const responseData = {
       data: paginatedItemsEntity.data.map((item) =>
         this.locationMapper.mapFrom(item)
       ),
@@ -36,6 +36,9 @@ export class CustomerImplementationRepository implements CustomerRepository {
         total: paginatedItemsEntity.meta.total
       }
     }
+
+    console.log({ responseData })
+    return responseData
   }
 
   async changeStatusCustomer (id: string): Promise<string> {

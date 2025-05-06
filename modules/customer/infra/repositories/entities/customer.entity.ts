@@ -5,7 +5,7 @@ export interface CustomerEntity {
     name_customer: string;
     email_customer: string;
     phone_customer: string;
-    birthdate_customer: Date;
+    birthdate_customer: string;
     status_customer: CustomerStatus
     insert_date: Date;
 }

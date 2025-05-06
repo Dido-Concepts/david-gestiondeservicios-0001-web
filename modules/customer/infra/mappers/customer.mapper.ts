@@ -7,12 +7,13 @@ CustomerEntity,
 CustomerModel
 > {
   mapFrom (param: CustomerEntity): CustomerModel {
+    console.log(param.birthdate_customer)
     return {
       id: param.id,
       name: param.name_customer,
       email: param.email_customer,
       phone: param.phone_customer,
-      birthDate: param.birthdate_customer,
+      birthDate: new Date(param.birthdate_customer + ' GMT-0500'),
       status: param.status_customer,
       createdAt: param.insert_date
     }
@@ -24,7 +25,7 @@ CustomerModel
       name_customer: param.name,
       email_customer: param.email,
       phone_customer: param.phone,
-      birthdate_customer: param.birthDate,
+      birthdate_customer: param.birthDate.toISOString(),
       status_customer: param.status,
       insert_date: param.createdAt
     }

@@ -1,8 +1,5 @@
 'use client'
 
-import { useCustomerModal } from '@/modules/customer/infra/store/customer-modal.store'
-import { useFormCustomerManagement } from '@/modules/customer/infra/hooks/useFormCustomerManagement'
-import { IconComponent } from '@/app/components'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -20,23 +17,15 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { useFormCustomerManagement } from '@/modules/customer/infra/hooks/useFormCustomerManagement'
+import { useCustomerModal } from '@/modules/customer/infra/store/customer-modal.store'
 
 export function ModalCustomerFormData () {
   const { isModalOpen, toggleModal, customer } = useCustomerModal()
 
-  const adaptedCustomer = customer
-    ? {
-        id: customer.id ?? 0,
-        name_customer: customer.name || '',
-        email_customer: customer.email || '',
-        phone_customer: customer.phone || '',
-        birthdate_customer: customer.birthDate ? String(customer.birthDate) : ''
-      }
-    : null
-
-  const { form, onSubmit, isPending, isEdit } = useFormCustomerManagement(
+  const { form, onSubmit, isEdit } = useFormCustomerManagement(
     toggleModal,
-    adaptedCustomer
+    customer
   )
 
   const handleOpenChange = () => {
@@ -68,11 +57,7 @@ export function ModalCustomerFormData () {
                   <FormItem>
                     <FormLabel>Nombre completo</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Ej: Juan Hancock"
-                        {...field}
-                        disabled={isPending}
-                      />
+                      <Input placeholder="Ej: Juan Hancock" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -90,7 +75,6 @@ export function ModalCustomerFormData () {
                         type="email"
                         placeholder="Ej: juan@correo.com"
                         {...field}
-                        disabled={isPending}
                       />
                     </FormControl>
                     <FormMessage />
@@ -110,7 +94,6 @@ export function ModalCustomerFormData () {
                         placeholder="Ej: 987654321"
                         maxLength={9}
                         {...field}
-                        disabled={isPending}
                       />
                     </FormControl>
                     <FormMessage />
@@ -129,7 +112,6 @@ export function ModalCustomerFormData () {
                         type="date"
                         max={new Date().toISOString().split('T')[0]}
                         {...field}
-                        disabled={isPending}
                       />
                     </FormControl>
                     <FormMessage />
@@ -143,24 +125,11 @@ export function ModalCustomerFormData () {
                 type="button"
                 variant="outline"
                 onClick={() => handleOpenChange()}
-                disabled={isPending}
               >
                 Cancelar
               </Button>
-              <Button type="submit" form="CustomerFormData" disabled={isPending}>
-                {isPending
-                  ? (
-                  <div className="flex items-center gap-2">
-                    <IconComponent
-                      name="spinner"
-                      className="animate-spin h-4 w-4"
-                    />
-                    Guardando...
-                  </div>
-                    )
-                  : (
-                      'Guardar'
-                    )}
+              <Button type="submit" form="CustomerFormData">
+                Guardar
               </Button>
             </div>
           </form>
