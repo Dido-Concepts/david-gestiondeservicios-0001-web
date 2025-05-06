@@ -48,6 +48,7 @@ export function ActionMenuCustomer ({ row }: { row: Row<CustomerModel> }) {
         variant: 'destructive',
         title: 'Error',
         description: error instanceof Error ? error.message : 'Error al actualizar el estado del cliente.'
+
       })
     },
     onSuccess: (data) => {
