@@ -33,3 +33,4 @@ export abstract class CustomerRepository {
     birthdate_customer: string | Date; // Puede ser string 'YYYY-MM-DD' o Date
   }): Promise<string>; // El backend devuelve un mensaje de confirmación/error
 }
+//
