@@ -7,6 +7,7 @@ import { CUSTOMER_MODULE_TYPES } from '@/modules/customer/domain/types-module/cu
 export async function getCustomers (params: {
   pageIndex: number;
   pageSize: number;
+  query?: string;
 }) {
   const customerRepository = container.get<CustomerRepository>(
     CUSTOMER_MODULE_TYPES.CustomerRepository

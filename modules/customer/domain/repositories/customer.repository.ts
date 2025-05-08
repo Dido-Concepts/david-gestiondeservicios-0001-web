@@ -5,6 +5,7 @@ export abstract class CustomerRepository {
   abstract getCustomers(param: {
     pageIndex: number;
     pageSize: number;
+    query?: string;
   }): Promise<PaginatedItemsViewModel<CustomerModel>>;
 
   abstract changeStatusCustomer(id: string): Promise<string>;

@@ -10,15 +10,18 @@ import { CustomerEntity } from './entities/customer.entity'
 
 @injectable()
 export class CustomerImplementationRepository implements CustomerRepository {
-  public locationMapper = new CustomerMapper()
+  public customerMapper = new CustomerMapper()
 
   async getCustomers (param: {
     pageIndex: number;
     pageSize: number;
+    query?: string;
   }): Promise<PaginatedItemsViewModel<CustomerModel>> {
-    const { pageIndex, pageSize } = param
+    let url = `/api/v1/customer?page_index=${param.pageIndex}&page_size=${param.pageSize}`
 
-    const url = `/api/v1/customer?page_index=${pageIndex}&page_size=${pageSize}`
+    if (param.query && param.query.trim() !== '') {
+      url += `&query=${encodeURIComponent(param.query)}`
+    }
 
     const response = await axiosApiInterna.get(url)
 
@@ -27,7 +30,7 @@ export class CustomerImplementationRepository implements CustomerRepository {
 
     const responseData = {
       data: paginatedItemsEntity.data.map((item) =>
-        this.locationMapper.mapFrom(item)
+        this.customerMapper.mapFrom(item)
       ),
       meta: {
         page: paginatedItemsEntity.meta.page,

@@ -1,4 +1,4 @@
-import { DataTableSkeleton } from '@/app/components'
+import { DataTableSkeleton, InputSearch } from '@/app/components'
 import TableCustomerManagement from '@/app/dashboard/customer-management/components/TableCustomerManagement.component'
 import { getQueryClient } from '@/app/providers/GetQueryClient'
 import { getCustomers } from '@/modules/customer/application/actions/customer.action'
@@ -10,11 +10,13 @@ import { ModalCustomerFormData } from '@/app/dashboard/customer-management/compo
 
 export default async function Page (props: {
   searchParams?: Promise<{
+    query?: string;
     pageIndex?: string;
     pageSize?: string;
   }>;
 }) {
   const searchParams = await props.searchParams
+  const query = searchParams?.query || ''
   const pageIndex = Number(searchParams?.pageIndex) || 1
   const pageSize = Number(searchParams?.pageSize) || 10
 
@@ -22,10 +24,11 @@ export default async function Page (props: {
   queryClient.prefetchQuery({
     queryKey: [
       QUERY_KEYS_CUSTOMER_MANAGEMENT.LMListCustomers,
+      query,
       pageIndex,
       pageSize
     ],
-    queryFn: () => getCustomers({ pageIndex, pageSize })
+    queryFn: () => getCustomers({ pageIndex, pageSize, query })
   })
 
   return (
@@ -48,11 +51,16 @@ export default async function Page (props: {
         </div>
 
         {/* Tabla de clientes */}
+        <InputSearch />
         <Suspense
-          key={pageIndex + pageSize}
+          key={query + pageIndex + pageSize}
           fallback={<DataTableSkeleton columnCount={6} />}
         >
-          <TableCustomerManagement pageIndex={pageIndex} pageSize={pageSize} />
+          <TableCustomerManagement
+            pageIndex={pageIndex}
+            pageSize={pageSize}
+            query={query}
+          />
         </Suspense>
       </main>
       <ModalCustomerFormData />
