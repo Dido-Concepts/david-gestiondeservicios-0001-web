@@ -33,3 +33,4 @@ const TableCustomerManagement = (param: {
 }
 
 export default TableCustomerManagement
+//
