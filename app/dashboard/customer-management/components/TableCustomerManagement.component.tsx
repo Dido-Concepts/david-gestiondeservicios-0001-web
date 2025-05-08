@@ -10,15 +10,17 @@ import { PaginationTable } from '@/app/components/PaginationTable.component'
 const TableCustomerManagement = (param: {
   pageIndex: number;
   pageSize: number;
+  query?: string;
 }) => {
   const { data } = useSuspenseQuery({
     queryKey: [
       QUERY_KEYS_CUSTOMER_MANAGEMENT.LMListCustomers,
+      param.query,
       param.pageIndex,
       param.pageSize
     ],
     queryFn: () =>
-      getCustomers({ pageIndex: param.pageIndex, pageSize: param.pageSize })
+      getCustomers({ pageIndex: param.pageIndex, pageSize: param.pageSize, query: param.query })
   })
   return (
     <>
@@ -33,3 +35,4 @@ const TableCustomerManagement = (param: {
 }
 
 export default TableCustomerManagement
+//

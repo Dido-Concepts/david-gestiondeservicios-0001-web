@@ -5,6 +5,7 @@ export abstract class CustomerRepository {
   abstract getCustomers(param: {
     pageIndex: number;
     pageSize: number;
+    query?: string;
   }): Promise<PaginatedItemsViewModel<CustomerModel>>;
 
   abstract changeStatusCustomer(id: string): Promise<string>;
@@ -26,10 +27,11 @@ export abstract class CustomerRepository {
    * @returns Promise que resuelve con un mensaje de estado (string) desde el backend.
    */
   abstract updateDetailsCustomer(customerData: { // <--- NUEVO MÉTODO AÑADIDO
-    customer_id: string; // Se necesita el ID para identificar al cliente
+    id: string; // Se necesita el ID para identificar al cliente
     name_customer: string;
     email_customer: string;
     phone_customer: string;
     birthdate_customer: string | Date; // Puede ser string 'YYYY-MM-DD' o Date
   }): Promise<string>; // El backend devuelve un mensaje de confirmación/error
 }
+//

@@ -1,24 +1,17 @@
 import { create } from 'zustand'
-
-interface Customer {
-  id?: number;
-  name_customer: string;
-  email_customer: string;
-  phone_customer: string;
-  birthdate_customer: string;
-}
+import { CustomerModel } from '@/modules/customer/domain/models/customer.model'
 
 interface CustomerModalState {
   isModalOpen: boolean;
-  customer: Customer | null;
-  setCustomer: (customer: Customer | null) => void;
+  customer: CustomerModel | null;
+  setCustomer: (customer: CustomerModel | null) => void;
   toggleModal: () => void;
 }
 
 export const useCustomerModal = create<CustomerModalState>((set) => ({
   isModalOpen: false,
   customer: null,
-  setCustomer: (customerChange: Customer | null) =>
+  setCustomer: (customerChange: CustomerModel | null) =>
     set(() => ({
       customer: customerChange
     })),

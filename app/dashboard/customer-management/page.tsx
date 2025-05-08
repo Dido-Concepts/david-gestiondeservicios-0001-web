@@ -1,19 +1,22 @@
-import { DataTableSkeleton } from '@/app/components'
-import AddButtonAndModalCustomer from '@/app/dashboard/customer-management/components/AddButtonAndModalCustomer.component'
+import { DataTableSkeleton, InputSearch } from '@/app/components'
 import TableCustomerManagement from '@/app/dashboard/customer-management/components/TableCustomerManagement.component'
 import { getQueryClient } from '@/app/providers/GetQueryClient'
 import { getCustomers } from '@/modules/customer/application/actions/customer.action'
 import { QUERY_KEYS_CUSTOMER_MANAGEMENT } from '@/modules/share/infra/constants/query-keys.constant'
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query'
 import { Suspense } from 'react'
+import { AddButtonCustomer } from '@/app/dashboard/customer-management/components/AddButtonCustomer.component'
+import { ModalCustomerFormData } from '@/app/dashboard/customer-management/components/ModalCustomerFormData.component'
 
 export default async function Page (props: {
   searchParams?: Promise<{
+    query?: string;
     pageIndex?: string;
     pageSize?: string;
   }>;
 }) {
   const searchParams = await props.searchParams
+  const query = searchParams?.query || ''
   const pageIndex = Number(searchParams?.pageIndex) || 1
   const pageSize = Number(searchParams?.pageSize) || 10
 
@@ -21,10 +24,11 @@ export default async function Page (props: {
   queryClient.prefetchQuery({
     queryKey: [
       QUERY_KEYS_CUSTOMER_MANAGEMENT.LMListCustomers,
+      query,
       pageIndex,
       pageSize
     ],
-    queryFn: () => getCustomers({ pageIndex, pageSize })
+    queryFn: () => getCustomers({ pageIndex, pageSize, query })
   })
 
   return (
@@ -42,18 +46,25 @@ export default async function Page (props: {
           </div>
           <div className="flex space-x-2">
             {/* Botón para añadir clientes */}
-            <AddButtonAndModalCustomer />
+            <AddButtonCustomer />
           </div>
         </div>
 
         {/* Tabla de clientes */}
+        <InputSearch />
         <Suspense
-          key={pageIndex + pageSize}
+          key={query + pageIndex + pageSize}
           fallback={<DataTableSkeleton columnCount={6} />}
         >
-          <TableCustomerManagement pageIndex={pageIndex} pageSize={pageSize} />
+          <TableCustomerManagement
+            pageIndex={pageIndex}
+            pageSize={pageSize}
+            query={query}
+          />
         </Suspense>
       </main>
+      <ModalCustomerFormData />
     </HydrationBoundary>
   )
 }
+//

@@ -10,24 +10,27 @@ import { CustomerEntity } from './entities/customer.entity'
 
 @injectable()
 export class CustomerImplementationRepository implements CustomerRepository {
-  public locationMapper = new CustomerMapper()
+  public customerMapper = new CustomerMapper()
 
   async getCustomers (param: {
     pageIndex: number;
     pageSize: number;
+    query?: string;
   }): Promise<PaginatedItemsViewModel<CustomerModel>> {
-    const { pageIndex, pageSize } = param
+    let url = `/api/v1/customer?page_index=${param.pageIndex}&page_size=${param.pageSize}`
 
-    const url = `/api/v1/customer?page_index=${pageIndex}&page_size=${pageSize}`
+    if (param.query && param.query.trim() !== '') {
+      url += `&query=${encodeURIComponent(param.query)}`
+    }
 
     const response = await axiosApiInterna.get(url)
 
     const paginatedItemsEntity: PaginatedItemsViewEntity<CustomerEntity> =
       response.data
 
-    return {
+    const responseData = {
       data: paginatedItemsEntity.data.map((item) =>
-        this.locationMapper.mapFrom(item)
+        this.customerMapper.mapFrom(item)
       ),
       meta: {
         page: paginatedItemsEntity.meta.page,
@@ -36,6 +39,9 @@ export class CustomerImplementationRepository implements CustomerRepository {
         total: paginatedItemsEntity.meta.total
       }
     }
+
+    console.log({ responseData })
+    return responseData
   }
 
   async changeStatusCustomer (id: string): Promise<string> {
@@ -91,14 +97,14 @@ export class CustomerImplementationRepository implements CustomerRepository {
 
   // --- IMPLEMENTACIÓN DE updateDetailsCustomer ---
   async updateDetailsCustomer (customerData: {
-    customer_id: string;
+    id: string;
     name_customer: string;
     email_customer: string;
     phone_customer: string;
     birthdate_customer: string | Date;
 }): Promise<string> {
     // Construye la URL específica para actualizar detalles, incluyendo el ID del cliente.
-    const url = `/api/v1/customer/${customerData.customer_id}/details` // Endpoint PUT definido en el backend
+    const url = `/api/v1/customer/${customerData.id}/details` // Endpoint PUT definido en el backend
 
     // Prepara el objeto payload que se enviará en el cuerpo de la petición.
     // Este payload debe coincidir con lo que espera el backend (UpdateCustomerDetailsPayload).
@@ -118,3 +124,4 @@ export class CustomerImplementationRepository implements CustomerRepository {
     return response.data
   }
 }
+//
