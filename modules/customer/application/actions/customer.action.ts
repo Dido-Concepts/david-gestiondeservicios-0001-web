@@ -53,3 +53,4 @@ export async function updateDetailsCustomer (params: {
   )
   return await customerRepository.updateDetailsCustomer(params)
 }
+//
