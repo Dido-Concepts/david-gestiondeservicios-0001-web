@@ -1,10 +1,13 @@
 'use client'
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import WeekSelector from '@/app/dashboard/user-management/components/WeekSelector.component'
 import TableShiftManagement from '@/app/dashboard/user-management/components/TableShiftManagement.component'
 
 const ShiftManagementContainer = () => {
   const [selectedDate, setSelectedDate] = useState<number>(new Date().getTime())
+  const searchParams = useSearchParams()
+  const locationFilter = searchParams.get('locationFilter') || '1'
 
   return (
     <>
@@ -14,7 +17,7 @@ const ShiftManagementContainer = () => {
       </div>
 
       {/* Tabla de turnos basada en la semana seleccionada */}
-      <TableShiftManagement selectedDate={selectedDate} />
+      <TableShiftManagement selectedDate={selectedDate} locationFilter={locationFilter} />
     </>
   )
 }

@@ -186,19 +186,25 @@ const CellShiftManagement = ({
       <AddModalShiftFree
         isOpen={isAddFreeModalOpen}
         onClose={() => setIsAddFreeModalOpen(false)}
-        onSave={(data) => console.log('Día libre añadido', data)}
+        employeeName={employeeName}
+        selectedDate={selectedDate}
+        userId={1}
       />
 
       <EditModalShiftFree
         isOpen={isEditFreeModalOpen}
         onClose={() => setIsEditFreeModalOpen(false)}
-        onSave={(data) => console.log('Día libre editado:', data)}
+        employeeName={employeeName}
+        selectedDate={selectedDate}
+        userId={1}
+        dayOffId={1}
         initialData={{
-          employee: employeeName,
           type: 'Vacaciones anuales',
-          date: selectedDate,
+          startDate: selectedDate,
+          endDate: selectedDate,
           startTime: '09:00',
-          endTime: '19:00'
+          endTime: '19:00',
+          motivo: 'Vacaciones familiares'
         }}
       />
     </div>

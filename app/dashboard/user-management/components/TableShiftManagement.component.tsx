@@ -81,16 +81,16 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
 
     // Prioridad 1: Si tiene un evento asignado
     if (userShift && userShift !== 'Sin turno') {
-      // Si es "No disponible" (ya procesado como día libre u otro evento)
-      if (userShift === 'No disponible') {
-        return 'No disponible'
+      // Si contiene salto de línea (No disponible + horario)
+      if (userShift.includes('\n')) {
+        return userShift
       }
       // Si es un turno personalizado (contiene horarios con formato HH:mm - HH:mm)
       if (userShift.match(/^\d{2}:\d{2}\s*-\s*\d{2}:\d{2}$/)) {
         return userShift
       }
-      // Cualquier otro evento (enfermedad, permiso, etc.) se considera "No disponible"
-      return 'No disponible'
+      // Cualquier otro evento se considera "No disponible"
+      return userShift
     }
 
     // Prioridad 2: Horario por defecto de la sede
@@ -118,9 +118,9 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
       const eventTime = `${format(new Date(event.event_start_time), 'HH:mm')} - ${format(new Date(event.event_end_time), 'HH:mm')}`
       employee.shifts[eventDate] = eventTime
     } else {
-      // Cualquier evento que NO sea turno se considera "No disponible"
-      // (dia_libre, enfermedad, permiso, etc.)
-      employee.shifts[eventDate] = 'No disponible'
+      // Cualquier evento que NO sea turno se considera "No disponible" + horario del evento
+      const eventTime = `${format(new Date(event.event_start_time), 'HH:mm')} - ${format(new Date(event.event_end_time), 'HH:mm')}`
+      employee.shifts[eventDate] = `No disponible\n${eventTime}`
     }
 
     return acc
@@ -181,25 +181,6 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
         </tbody>
       </table>
 
-      {/* Mostrar horarios de la sede
-      {location?.openingHours && (
-        <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-          <h3 className="font-semibold mb-2">Horarios de atención - {location.name}</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-2">
-            {location.openingHours.map((schedule: ScheduleDayModel, index: number) => (
-              <div key={index} className="text-sm">
-                <div className="font-medium">{schedule.day}</div>
-                {schedule.ranges.map((range, i: number) => (
-                  <div key={i} className="text-gray-600">
-                    {range.start} - {range.end}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      */}
     </div>
   )
 }

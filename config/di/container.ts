@@ -2,6 +2,8 @@ import { CustomerModule } from '@/modules/customer/infra/provider/customer.provi
 import { LocationModule } from '@/modules/location/infra/provider/location.provider'
 import { ServiceModule } from '@/modules/service/infra/provider/service.provider'
 import { UserModule } from '@/modules/user/infra/provider/user.provider'
+import { UserLocationModule } from '@/modules/user-location/infra/provider/user-location.provider'
+import { DaysOffModule } from '@/modules/days-off/infra/provider/days-off.provider'
 import { Container } from 'inversify'
 import 'reflect-metadata'
 
@@ -11,5 +13,7 @@ container.load(UserModule)
 container.load(LocationModule)
 container.load(CustomerModule)
 container.load(ServiceModule)
+container.load(UserLocationModule)
+container.load(DaysOffModule)
 
 export default container
