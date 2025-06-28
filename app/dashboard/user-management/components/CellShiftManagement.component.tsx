@@ -12,7 +12,8 @@ const CellShiftManagement = ({
   openId,
   setOpenId,
   employeeName,
-  selectedDate
+  selectedDate,
+  userId
 }: {
   shift: string
   id: string
@@ -20,6 +21,7 @@ const CellShiftManagement = ({
   setOpenId: (id: string | null) => void
   employeeName: string
   selectedDate: string
+  userId: number
 }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -188,7 +190,7 @@ const CellShiftManagement = ({
         onClose={() => setIsAddFreeModalOpen(false)}
         employeeName={employeeName}
         selectedDate={selectedDate}
-        userId={1}
+        userId={userId}
       />
 
       <EditModalShiftFree
@@ -196,7 +198,7 @@ const CellShiftManagement = ({
         onClose={() => setIsEditFreeModalOpen(false)}
         employeeName={employeeName}
         selectedDate={selectedDate}
-        userId={1}
+        userId={userId}
         dayOffId={1}
         initialData={{
           type: 'Vacaciones anuales',
