@@ -5,6 +5,7 @@ import EditModalShift from '@/app/dashboard/user-management/components/EditModal
 import DeleteModalShift from '@/app/dashboard/user-management/components/DeleteModalShift.component'
 import AddModalShiftFree from '@/app/dashboard/user-management/components/AddModalShiftFree.component'
 import EditModalShiftFree from '@/app/dashboard/user-management/components/EditModalShiftFree.component'
+import { UserLocationEvent } from '@/modules/user-location/domain/repositories/user-location.repository'
 
 const CellShiftManagement = ({
   shift,
@@ -13,7 +14,8 @@ const CellShiftManagement = ({
   setOpenId,
   employeeName,
   selectedDate,
-  userId
+  userId,
+  dayOffEvent
 }: {
   shift: string
   id: string
@@ -22,6 +24,7 @@ const CellShiftManagement = ({
   employeeName: string
   selectedDate: string
   userId: number
+  dayOffEvent?: UserLocationEvent
 }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -70,6 +73,75 @@ const CellShiftManagement = ({
     }`
   }
 
+  // Función para parsear el event_description y separar tipo y motivo
+  const parseEventDescription = (eventDescription: string): { type: string; motivo: string } => {
+    if (!eventDescription) {
+      return { type: 'Día libre', motivo: '' }
+    }
+
+    // Buscar el patrón "Tipo: motivo"
+    const colonIndex = eventDescription.indexOf(':')
+
+    if (colonIndex === -1) {
+      // Si no hay ":", todo es considerado como motivo
+      return { type: 'Día libre', motivo: eventDescription.trim() }
+    }
+
+    const type = eventDescription.substring(0, colonIndex).trim()
+    const motivo = eventDescription.substring(colonIndex + 1).trim()
+
+    return { type, motivo }
+  }
+
+  // Función para extraer fecha sin problemas de zona horaria
+  const extractDateFromTimestamp = (timestamp: string): string => {
+    const date = new Date(timestamp)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  // Función para extraer hora sin problemas de zona horaria
+  const extractTimeFromTimestamp = (timestamp: string): string => {
+    const date = new Date(timestamp)
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    return `${hours}:${minutes}`
+  }
+
+  // Extraer datos del evento de día libre si existe
+  const getDayOffInitialData = () => {
+    if (!dayOffEvent) {
+      return {
+        type: 'Día libre',
+        startDate: selectedDate,
+        endDate: selectedDate,
+        startTime: '09:00',
+        endTime: '19:00',
+        motivo: ''
+      }
+    }
+
+    // Usar las funciones que no tienen problemas de zona horaria
+    const startTime = extractTimeFromTimestamp(dayOffEvent.event_start_time)
+    const endTime = extractTimeFromTimestamp(dayOffEvent.event_end_time)
+    const startDate = extractDateFromTimestamp(dayOffEvent.event_start_time)
+    const endDate = extractDateFromTimestamp(dayOffEvent.event_end_time)
+
+    // Parsear el event_description para separar tipo y motivo
+    const { type, motivo } = parseEventDescription(dayOffEvent.event_description)
+
+    return {
+      type,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      motivo
+    }
+  }
+
   return (
     <div className="relative cell-dropdown">
       <div
@@ -111,7 +183,10 @@ const CellShiftManagement = ({
               <>
                 <li
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() => setIsEditFreeModalOpen(true)}
+                  onClick={() => {
+                    setIsEditFreeModalOpen(true)
+                    setOpenId(null)
+                  }}
                 >
                   Editar día libre
                 </li>
@@ -199,15 +274,8 @@ const CellShiftManagement = ({
         employeeName={employeeName}
         selectedDate={selectedDate}
         userId={userId}
-        dayOffId={1}
-        initialData={{
-          type: 'Vacaciones anuales',
-          startDate: selectedDate,
-          endDate: selectedDate,
-          startTime: '09:00',
-          endTime: '19:00',
-          motivo: 'Vacaciones familiares'
-        }}
+        dayOffId={dayOffEvent?.event_id}
+        initialData={getDayOffInitialData()}
       />
     </div>
   )
