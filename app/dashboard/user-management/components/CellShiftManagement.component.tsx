@@ -3,9 +3,11 @@ import React, { useState } from 'react'
 import AddModalShift from '@/app/dashboard/user-management/components/AddModalShift.component'
 import EditModalShift from '@/app/dashboard/user-management/components/EditModalShift.component'
 import DeleteModalShift from '@/app/dashboard/user-management/components/DeleteModalShift.component'
+import DeleteModalShiftFree from '@/app/dashboard/user-management/components/DeleteModalShiftFree.component'
 import AddModalShiftFree from '@/app/dashboard/user-management/components/AddModalShiftFree.component'
 import EditModalShiftFree from '@/app/dashboard/user-management/components/EditModalShiftFree.component'
 import { UserLocationEvent } from '@/modules/user-location/domain/repositories/user-location.repository'
+import { useDeleteDayOffMutation } from '@/modules/days-off/infra/hooks/useDeleteDayOffMutation'
 
 const CellShiftManagement = ({
   shift,
@@ -29,8 +31,11 @@ const CellShiftManagement = ({
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isDeleteFreeModalOpen, setIsDeleteFreeModalOpen] = useState(false)
   const [isAddFreeModalOpen, setIsAddFreeModalOpen] = useState(false)
   const [isEditFreeModalOpen, setIsEditFreeModalOpen] = useState(false)
+
+  const deleteDayOffMutation = useDeleteDayOffMutation()
 
   const toggleDropdown = (event: React.MouseEvent) => {
     event.stopPropagation()
@@ -47,6 +52,17 @@ const CellShiftManagement = ({
   const handleDelete = () => {
     console.log(`Turno de ${employeeName} el ${selectedDate} eliminado`)
     setIsDeleteModalOpen(false)
+  }
+
+  // Función específica para eliminar días libres
+  const handleDeleteFree = () => {
+    if (dayOffEvent?.event_id) {
+      deleteDayOffMutation.mutate(dayOffEvent.event_id)
+      setIsDeleteFreeModalOpen(false)
+    } else {
+      console.error('No se puede eliminar: dayOffEvent.event_id no disponible')
+      alert('Error: No se puede eliminar este día libre. ID no disponible.')
+    }
   }
 
   // Función para renderizar el contenido con saltos de línea
@@ -193,7 +209,7 @@ const CellShiftManagement = ({
                 <li
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   onClick={() => {
-                    setIsDeleteModalOpen(true)
+                    setIsDeleteFreeModalOpen(true)
                     setOpenId(null)
                   }}
                 >
@@ -276,6 +292,12 @@ const CellShiftManagement = ({
         userId={userId}
         dayOffId={dayOffEvent?.event_id}
         initialData={getDayOffInitialData()}
+      />
+
+      <DeleteModalShiftFree
+        isOpen={isDeleteFreeModalOpen}
+        onClose={() => setIsDeleteFreeModalOpen(false)}
+        onDelete={handleDeleteFree}
       />
     </div>
   )
