@@ -67,7 +67,7 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
   const getLocationScheduleForDay = (date: string): string => {
     if (!location?.openingHours) return 'Sin turno'
 
-    const dayOfWeek = new Date(date).getDay()
+    const dayOfWeek = new Date(date + 'T12:00:00').getDay()
 
     // 🔧 CORREGIDO: JavaScript usa 0 = Domingo, 1 = Lunes, etc.
     const dayMapping: Record<number, string> = {
