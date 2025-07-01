@@ -86,13 +86,13 @@ const CellShiftManagement = ({
   // Función para obtener las clases CSS del fondo
   const getBackgroundClasses = () => {
     if (isNotAvailable) {
-      return `text-sm p-3 font-medium text-center bg-gray-100 rounded-md cursor-pointer ${
-        openId === id ? 'bg-gray-300' : ''
-      }`
+      return `text-sm p-3 font-medium text-center bg-gray-200 rounded-md cursor-pointer 
+              hover:bg-gray-200 transition-colors border-transparent
+              ${openId === id ? 'bg-gray-300' : ''}`
     }
-    return `text-sm p-3 font-medium text-center bg-blue-100 rounded-md cursor-pointer ${
-      openId === id ? 'bg-blue-300' : ''
-    }`
+    return `text-sm p-2 font-medium text-left bg-blue-200 rounded-md cursor-pointer 
+            hover:bg-blue-200 transition-colors border-transparent
+            ${openId === id ? 'bg-blue-300' : ''}`
   }
 
   // Función para parsear el event_description y separar tipo y motivo
@@ -266,6 +266,7 @@ const CellShiftManagement = ({
         onClose={() => setIsAddModalOpen(false)}
         employeeName={employeeName}
         selectedDate={selectedDate}
+        userId={userId}
       />
 
       <EditModalShift
