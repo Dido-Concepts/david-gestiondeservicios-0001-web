@@ -31,11 +31,30 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
   // Obtener eventos de usuarios por sede
   const { data: userEvents = [] } = useQuery({
     queryKey: [QUERY_KEYS_USER_LOCATION_MANAGEMENT.ULMGetUserLocationEvents, locationFilter, formattedDates[0], formattedDates[6]],
-    queryFn: () => getUserLocationEvents({
-      sedeId: locationFilter,
-      startDate: formattedDates[0],
-      endDate: formattedDates[6]
-    })
+    queryFn: async () => {
+      const result = await getUserLocationEvents({
+        sedeId: locationFilter,
+        startDate: formattedDates[0],
+        endDate: formattedDates[6]
+      })
+
+      // 🔍 DEBUG: Ver cada evento individual
+      if (result && Array.isArray(result)) {
+        console.log(`🔍 DEBUG - Total eventos recibidos: ${result.length}`)
+        result.forEach((event, index) => {
+          console.log(`📅 DEBUG - Evento ${index + 1}:`, {
+            event_type: event.event_type,
+            user_id: event.user_id,
+            user_name: event.user_name,
+            eventDate: format(new Date(event.event_start_time), 'yyyy-MM-dd'),
+            event_start_time: event.event_start_time,
+            event_end_time: event.event_end_time
+          })
+        })
+      }
+
+      return result
+    }
   })
 
   // Obtener información de la sede (horarios)
@@ -49,14 +68,16 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
     if (!location?.openingHours) return 'Sin turno'
 
     const dayOfWeek = new Date(date).getDay()
+
+    // 🔧 CORREGIDO: JavaScript usa 0 = Domingo, 1 = Lunes, etc.
     const dayMapping: Record<number, string> = {
-      0: 'Lunes', // Monday
-      1: 'Martes', // Tuesday
-      2: 'Miercoles', // Wednesday
-      3: 'Jueves', // Thursday
-      4: 'Viernes', // Friday
-      5: 'Sabado', // Saturday
-      6: 'Domingo' // Sunday
+      0: 'Domingo', // Sunday
+      1: 'Lunes', // Monday
+      2: 'Martes', // Tuesday
+      3: 'Miercoles', // Wednesday
+      4: 'Jueves', // Thursday
+      5: 'Viernes', // Friday
+      6: 'Sabado' // Saturday
     }
 
     const mappedDay = dayMapping[dayOfWeek]
@@ -97,7 +118,7 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
     return getLocationScheduleForDay(date)
   }
 
-  // Procesar datos de usuarios y sus eventos
+  // Procesar datos de usuarios y sus eventos incluyendo días libres
   const processedEmployees = userEvents.reduce((acc: ProcessedEmployee[], event: UserLocationEvent) => {
     let employee = acc.find(emp => emp.user_id === event.user_id)
 
@@ -113,12 +134,23 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
 
     const eventDate = format(new Date(event.event_start_time), 'yyyy-MM-dd')
 
-    // Determinar el contenido basado en el tipo de evento
+    // Procesar diferentes tipos de eventos
     if (event.event_type === 'turno') {
       const eventTime = `${format(new Date(event.event_start_time), 'HH:mm')} - ${format(new Date(event.event_end_time), 'HH:mm')}`
       employee.shifts[eventDate] = eventTime
+    } else if (event.event_type === 'DAY_OFF' || event.event_type === 'dia_libre' || event.event_type === 'day_off' || event.event_type === 'days_off') {
+      // Manejo específico de días libres
+      console.log('🔍 DEBUG - Evento de día libre:', {
+        event_type: event.event_type,
+        user_id: event.user_id,
+        eventDate,
+        event_details: event.event_description,
+        event
+      })
+      const eventTime = `${format(new Date(event.event_start_time), 'HH:mm')} - ${format(new Date(event.event_end_time), 'HH:mm')}`
+      employee.shifts[eventDate] = `No disponible\n${eventTime}`
     } else {
-      // Cualquier evento que NO sea turno se considera "No disponible" + horario del evento
+      // Cualquier otro evento se considera "No disponible" + horario del evento
       const eventTime = `${format(new Date(event.event_start_time), 'HH:mm')} - ${format(new Date(event.event_end_time), 'HH:mm')}`
       employee.shifts[eventDate] = `No disponible\n${eventTime}`
     }
@@ -164,23 +196,36 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
                 </div>
                 <span>{employee.name}</span>
               </td>
-              {formattedDates.map((date, i) => (
-                <td key={i}>
-                  <Cell
-                    shift={getCellContent(employee, date)}
-                    id={`${employee.user_id}-${i}`}
-                    openId={openId}
-                    setOpenId={setOpenId}
-                    employeeName={employee.name}
-                    selectedDate={format(new Date(date), 'EEE, d MMM', { locale: es })}
-                  />
-                </td>
-              ))}
+              {formattedDates.map((date, i) => {
+                // Buscar el evento de día libre para esta fecha y usuario
+                const dayOffEvent = userEvents.find(event => {
+                  const eventDate = format(new Date(event.event_start_time), 'yyyy-MM-dd')
+                  return (
+                    event.user_id === employee.user_id &&
+                    eventDate === date &&
+                    (event.event_type === 'DAY_OFF' || event.event_type === 'dia_libre' || event.event_type === 'day_off' || event.event_type === 'days_off')
+                  )
+                })
+
+                return (
+                  <td key={i}>
+                    <Cell
+                      shift={getCellContent(employee, date)}
+                      id={`${employee.user_id}-${i}`}
+                      openId={openId}
+                      setOpenId={setOpenId}
+                      employeeName={employee.name}
+                      selectedDate={date}
+                      userId={employee.user_id}
+                      dayOffEvent={dayOffEvent} // Pasar el evento completo si existe
+                    />
+                  </td>
+                )
+              })}
             </tr>
           ))}
         </tbody>
       </table>
-
     </div>
   )
 }
