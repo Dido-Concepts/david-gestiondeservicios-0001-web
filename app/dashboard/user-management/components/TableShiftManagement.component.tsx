@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { format, addDays, startOfWeek } from 'date-fns'
 import { es } from 'date-fns/locale/es'
 import Cell from '@/app/dashboard/user-management/components/CellShiftManagement.component'
+import CellShiftActions from '@/app/dashboard/user-management/components/CellShiftActions.component'
 import { useQuery } from '@tanstack/react-query'
 import { getUserLocationEvents } from '@/modules/user-location/application/user-location-action'
 import { getLocationById } from '@/modules/location/application/actions/location.action'
@@ -135,7 +136,13 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
     const eventDate = format(new Date(event.event_start_time), 'yyyy-MM-dd')
 
     // Procesar diferentes tipos de eventos
-    if (event.event_type === 'turno') {
+    console.log('🔍 DEBUG - Tipo de evento recibido:', {
+      event_type: event.event_type,
+      user_id: event.user_id,
+      eventDate,
+      event
+    })
+    if (event.event_type === 'turno' || event.event_type === 'SHIFT') {
       const eventTime = `${format(new Date(event.event_start_time), 'HH:mm')} - ${format(new Date(event.event_end_time), 'HH:mm')}`
       employee.shifts[eventDate] = eventTime
     } else if (event.event_type === 'DAY_OFF' || event.event_type === 'dia_libre' || event.event_type === 'day_off' || event.event_type === 'days_off') {
@@ -208,17 +215,28 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
                 })
 
                 return (
-                  <td key={i}>
-                    <Cell
-                      shift={getCellContent(employee, date)}
-                      id={`${employee.user_id}-${i}`}
-                      openId={openId}
-                      setOpenId={setOpenId}
-                      employeeName={employee.name}
-                      selectedDate={date}
-                      userId={employee.user_id}
-                      dayOffEvent={dayOffEvent} // Pasar el evento completo si existe
-                    />
+                  <td key={i} className="p-2">
+                    <div className="space-y-1">
+                      <Cell
+                        shift={getCellContent(employee, date)}
+                        id={`${employee.user_id}-${i}`}
+                        openId={openId}
+                        setOpenId={setOpenId}
+                        employeeName={employee.name}
+                        selectedDate={date}
+                        userId={employee.user_id}
+                        dayOffEvent={dayOffEvent}
+                      />
+                      <div className="flex justify-center">
+                        <CellShiftActions
+                          shift={getCellContent(employee, date)}
+                          employeeName={employee.name}
+                          selectedDate={date}
+                          userId={employee.user_id}
+                          dayOffEvent={dayOffEvent}
+                        />
+                      </div>
+                    </div>
                   </td>
                 )
               })}
