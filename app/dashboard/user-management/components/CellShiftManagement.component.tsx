@@ -34,7 +34,8 @@ const CellShiftManagement = ({
 
   // Verificar los casos
   const isNoShift = shift === 'Sin turno'
-  const isFreeDay = shift === 'Libre'
+  const isFreeDay = shift === 'Libre' || shift.startsWith('No disponible')
+  const isNotAvailable = shift.startsWith('No disponible')
   const hasShift = !isNoShift && !isFreeDay // Caso donde hay un turno definido (Ej. "09:00 - 19:00")
 
   // Función de eliminación (simulada, luego se integrará con la API)
@@ -43,15 +44,37 @@ const CellShiftManagement = ({
     setIsDeleteModalOpen(false)
   }
 
+  // Función para renderizar el contenido con saltos de línea
+  const renderShiftContent = () => {
+    if (shift.includes('\n')) {
+      return shift.split('\n').map((line, index) => (
+        <div key={index} className={index === 0 ? 'font-medium' : 'text-xs text-gray-600'}>
+          {line}
+        </div>
+      ))
+    }
+    return shift
+  }
+
+  // Función para obtener las clases CSS del fondo
+  const getBackgroundClasses = () => {
+    if (isNotAvailable) {
+      return `text-sm p-3 font-medium text-center bg-gray-100 rounded-md cursor-pointer ${
+        openId === id ? 'bg-gray-300' : ''
+      }`
+    }
+    return `text-sm p-3 font-medium text-center bg-blue-100 rounded-md cursor-pointer ${
+      openId === id ? 'bg-blue-300' : ''
+    }`
+  }
+
   return (
     <div className="relative cell-dropdown">
       <div
-        className={`text-sm p-3 font-medium text-center bg-blue-100 rounded-md cursor-pointer ${
-          openId === id ? 'bg-blue-300' : ''
-        }`}
+        className={getBackgroundClasses()}
         onClick={toggleDropdown}
       >
-        {shift}
+        {renderShiftContent()}
       </div>
 
       {openId === id && (
@@ -81,7 +104,7 @@ const CellShiftManagement = ({
               </>
             )}
 
-            {/* Caso: Si la celda tiene "Libre" */}
+            {/* Caso: Si la celda tiene "Libre" o "No disponible" */}
             {isFreeDay && (
               <>
                 <li
@@ -163,19 +186,25 @@ const CellShiftManagement = ({
       <AddModalShiftFree
         isOpen={isAddFreeModalOpen}
         onClose={() => setIsAddFreeModalOpen(false)}
-        onSave={(data) => console.log('Día libre añadido', data)}
+        employeeName={employeeName}
+        selectedDate={selectedDate}
+        userId={1}
       />
 
       <EditModalShiftFree
         isOpen={isEditFreeModalOpen}
         onClose={() => setIsEditFreeModalOpen(false)}
-        onSave={(data) => console.log('Día libre editado:', data)}
+        employeeName={employeeName}
+        selectedDate={selectedDate}
+        userId={1}
+        dayOffId={1}
         initialData={{
-          employee: employeeName,
           type: 'Vacaciones anuales',
-          date: selectedDate,
+          startDate: selectedDate,
+          endDate: selectedDate,
           startTime: '09:00',
-          endTime: '19:00'
+          endTime: '19:00',
+          motivo: 'Vacaciones familiares'
         }}
       />
     </div>
