@@ -1,4 +1,4 @@
-import { LocationBodyModel, LocationModel } from '@/modules/location/domain/models/location.model'
+import { LocationBodyModel, LocationModel, LocationResponseModel } from '@/modules/location/domain/models/location.model'
 import { PaginatedItemsViewModel } from '@/modules/share/domain/models/paginate/paginated-items-view.model'
 
 // Define la clase abstracta LocationRepository para manejar las ubicaciones
@@ -49,4 +49,18 @@ export abstract class LocationRepository {
   }): Promise<string>;
 
   abstract getLocationsCatalog(): Promise<LocationBodyModel[]>;
+
+  abstract getListLocationsV2(
+    locationParams: { pageIndex: number,
+      pageSize: number,
+      orderBy: string,
+      sortBy: 'ASC' | 'DESC',
+      query?: string,
+      fields?: string,
+      filters?: {
+        status?: boolean,
+        userCreate?: string,
+      }
+    }
+  ): Promise<PaginatedItemsViewModel<LocationResponseModel>>;
 }

@@ -1,5 +1,5 @@
 import { axiosApiInterna } from '@/config/axiosApiInterna'
-import { LocationBodyModel, LocationModel } from '@/modules/location/domain/models/location.model'
+import { LocationBodyModel, LocationModel, LocationResponseModel } from '@/modules/location/domain/models/location.model'
 import { LocationRepository } from '@/modules/location/domain/repositories/location.repository'
 import { PaginatedItemsViewModel } from '@/modules/share/domain/models/paginate/paginated-items-view.model'
 import { PaginatedItemsViewEntity } from '@/modules/share/infra/entities/paginate/paginated-items-view.entity'
@@ -143,5 +143,34 @@ export class LocationImplementationRepository implements LocationRepository {
     const locationsCatalog: LocationCatalogEntity[] = response.data
 
     return locationsCatalog.map((item) => this.locationMapper.mapFromForCatalog(item))
+  }
+
+  async getListLocationsV2 (
+    locationParams: { pageIndex: number,
+      pageSize: number,
+      orderBy: string,
+      sortBy: 'ASC' | 'DESC',
+      query?: string,
+      fields?: string,
+      filters?: {
+        status?: boolean,
+        userCreate?: string,
+      }
+    }
+  ):Promise<PaginatedItemsViewModel<LocationResponseModel>> {
+    const url = '/api/v2/location'
+    const response = await axiosApiInterna.get(url, {
+      params: {
+        page_index: locationParams.pageIndex,
+        page_size: locationParams.pageSize,
+        order_by: locationParams.orderBy,
+        sort_by: locationParams.sortBy,
+        query: locationParams.query,
+        fields: locationParams.fields,
+        filters: locationParams.filters
+      }
+    })
+
+    return response.data
   }
 }
