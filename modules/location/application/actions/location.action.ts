@@ -1,8 +1,13 @@
 'use server'
 
+import { axiosApiInterna } from '@/config/axiosApiInterna'
 import container from '@/config/di/container'
 import { LocationRepository } from '@/modules/location/domain/repositories/location.repository'
 import { LOCATION_MODULE_TYPES } from '@/modules/location/domain/types-module/location-types.module'
+import { PaginatedItemsViewModel } from '@/modules/share/domain/models/paginate/paginated-items-view.model'
+import { LocationResponseModel } from '@/modules/location/domain/models/location.model'
+
+// Tipo compartido para los parámetros de búsqueda de ubicaciones
 
 export async function getLocations (params: {
   pageIndex: number;
@@ -98,4 +103,44 @@ export async function getLocationsCatalog () {
     LOCATION_MODULE_TYPES.LocationRepository
   )
   return await locationRepository.getLocationsCatalog()
+}
+
+export type LocationSearchParams = {
+  pageIndex: number;
+  pageSize: number;
+  orderBy: 'id' | 'nombre_sede' | 'telefono_sede' | 'direccion_sede' | 'insert_date' | 'update_date' | 'status';
+  sortBy: 'ASC' | 'DESC';
+  query?: string;
+  fields?: string;
+  filters?: {
+    status?: boolean;
+    user_create?: string;
+  };
+}
+
+export async function getListLocationsV2 (params: LocationSearchParams): Promise<PaginatedItemsViewModel<LocationResponseModel>> {
+  const url = '/api/v2/location'
+  const response = await axiosApiInterna.get(url, {
+    params: {
+      page_index: params.pageIndex,
+      page_size: params.pageSize,
+      order_by: params.orderBy,
+      sort_by: params.sortBy,
+      query: params.query,
+      fields: params.fields,
+      filters: JSON.stringify(params.filters)
+    }
+  })
+
+  const res: PaginatedItemsViewModel<LocationResponseModel> = {
+    data: response.data.data,
+    meta: {
+      page: response.data.meta.page,
+      pageSize: response.data.meta.page_size,
+      pageCount: response.data.meta.page_count,
+      total: response.data.meta.total
+    }
+  }
+
+  return res
 }

@@ -31,3 +31,25 @@ export type LocationBodyModel = {
   review: string;
   status: boolean;
 };
+
+export type LocationResponseModel = {
+  id: number;
+  nombre_sede?: string;
+  telefono_sede?: string;
+  direccion_sede?: string;
+  insert_date?: string;
+  update_date?: string;
+  user_create?: string;
+  user_modify?: string;
+  review_location?: string;
+  status?: boolean;
+  file?: {
+    id: number;
+    url: string;
+    filename: string;
+    content_type: string;
+    size: number;
+    insert_date: string;
+    update_date?: string;
+  };
+}

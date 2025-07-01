@@ -25,6 +25,7 @@ export default function RootLayout ({
     <html lang="es">
       <body
         className={`${raleway.className} antialiased`}
+        suppressHydrationWarning={true}
       >
         <QueryClientProvider>
           {children}
