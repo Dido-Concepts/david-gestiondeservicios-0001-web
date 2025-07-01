@@ -9,10 +9,22 @@ export const QUERY_KEYS_LOCATION_MANAGEMENT = Object.freeze({
 })
 
 export const QUERY_KEYS_CUSTOMER_MANAGEMENT = Object.freeze({
-  LMListCustomers: 'LMListCustomers'
+  LMListCustomers: 'LMListCustomers',
+  CMActiveCustomers: 'CMActiveCustomers'
 })
 
 export const QUERY_KEYS_SERVICE_MANAGEMENT = Object.freeze({
   SMListServices: 'SMListServices',
-  SMListCategoriesCatalog: 'SMListCategoriesCatalog'
+  SMListCategoriesCatalog: 'SMListCategoriesCatalog',
+  CMActiveServices: 'CMActiveServices'
+})
+
+export const QUERY_KEYS_MAINTABLE_MANAGEMENT = Object.freeze({
+  MTListMaintable: 'MTListMaintable',
+  CMCalendarStatusOptions: 'CMCalendarStatusOptions'
+})
+
+export const QUERY_KEYS_CALENDAR_MANAGEMENT = Object.freeze({
+  CMListCalendar: 'CMListCalendar',
+  CMListLocations: 'CMListLocations'
 })
