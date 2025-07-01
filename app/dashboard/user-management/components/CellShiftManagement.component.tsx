@@ -8,6 +8,7 @@ import AddModalShiftFree from '@/app/dashboard/user-management/components/AddMod
 import EditModalShiftFree from '@/app/dashboard/user-management/components/EditModalShiftFree.component'
 import { UserLocationEvent } from '@/modules/user-location/domain/repositories/user-location.repository'
 import { useDeleteDayOffMutation } from '@/modules/days-off/infra/hooks/useDeleteDayOffMutation'
+import { useToast } from '@/hooks/use-toast'
 
 const CellShiftManagement = ({
   shift,
@@ -36,6 +37,7 @@ const CellShiftManagement = ({
   const [isEditFreeModalOpen, setIsEditFreeModalOpen] = useState(false)
 
   const deleteDayOffMutation = useDeleteDayOffMutation()
+  const { toast } = useToast()
 
   const toggleDropdown = (event: React.MouseEvent) => {
     event.stopPropagation()
@@ -61,7 +63,11 @@ const CellShiftManagement = ({
       setIsDeleteFreeModalOpen(false)
     } else {
       console.error('No se puede eliminar: dayOffEvent.event_id no disponible')
-      alert('Error: No se puede eliminar este día libre. ID no disponible.')
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'No se puede eliminar este día libre. ID no disponible.'
+      })
     }
   }
 
