@@ -21,10 +21,10 @@ export function ModalUserFormData () {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[425px] bg-app-primary text-white">
+      <DialogContent className="sm:max-w-[425px] bg-app-terciary text-app-quaternary">
         <DialogHeader>
-          <DialogTitle className="text-white">{isEdit ? 'Editar' : 'Añadir'} usuario</DialogTitle>
-          <DialogDescription className="text-gray-300">
+          <DialogTitle className="text-xl font-semibold">{isEdit ? 'Editar' : 'Añadir'} usuario</DialogTitle>
+          <DialogDescription className="text-gray-600">
             {isEdit
               ? 'Haz cambios en la información del usuario'
               : 'Completa los campos para crear el usuario '}
@@ -54,7 +54,7 @@ export function ModalUserFormData () {
         </Form>
 
         <DialogFooter>
-          <Button type="submit" form="UserFormData" className="bg-slate-200 hover:bg-slate-400 text-app-primary hover:text-slate-200">
+          <Button type="submit" form="UserFormData" className="bg-app-quaternary hover:bg-slate-400 text-app-terciary hover:text-slate-200">
              {isEdit
                ? 'Guardar cambios'
                : 'Guardar'}

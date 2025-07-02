@@ -1,7 +1,7 @@
 'use server'
 
 import container from '@/config/di/container'
-import { CreateDaysOffRequest } from '@/modules/days-off/domain/models/days-off.model'
+import { CreateDaysOffRequest, GetDayOffTypesParams, UpdateDaysOffDetailsRequest } from '@/modules/days-off/domain/models/days-off.model'
 import { DaysOffRepository } from '@/modules/days-off/domain/repositories/days-off.repository'
 import { DAYS_OFF_MODULE_TYPES } from '@/modules/days-off/domain/types-module/days-off-types.module'
 
@@ -31,4 +31,18 @@ export async function deleteDayOff (id: number) {
     DAYS_OFF_MODULE_TYPES.DaysOffRepository
   )
   return await daysOffRepository.deleteDayOff(id)
+}
+
+export async function getDayOffTypes (params: GetDayOffTypesParams) {
+  const daysOffRepository = container.get<DaysOffRepository>(
+    DAYS_OFF_MODULE_TYPES.DaysOffRepository
+  )
+  return await daysOffRepository.getDayOffTypes(params)
+}
+
+export async function updateDayOffDetails (dayOffId: number, details: UpdateDaysOffDetailsRequest) {
+  const daysOffRepository = container.get<DaysOffRepository>(
+    DAYS_OFF_MODULE_TYPES.DaysOffRepository
+  )
+  return await daysOffRepository.updateDayOffDetails(dayOffId, details)
 }

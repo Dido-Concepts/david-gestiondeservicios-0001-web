@@ -72,3 +72,26 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* 🎨 Personalización del backdrop del Dialog con MÁXIMA especificidad */
+@layer utilities {
+  /* Sobreescribir TODOS los posibles selectores de backdrop de Dialog */
+  [data-state="open"][data-radix-collection-item],
+  [data-radix-dialog-overlay],
+  .DialogOverlay,
+  [data-radix-portal] [data-radix-dialog-overlay],
+  [data-radix-portal] > div[data-radix-dialog-overlay],
+  div[data-radix-dialog-overlay],
+  div.fixed.inset-0.bg-black\/80,
+  div.fixed.inset-0[class*="bg-black"],
+  .fixed.inset-0.bg-black\/80,
+  .fixed.inset-0[class*="bg-black"] {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+  }
+  
+  /* Selector ultra específico para clases de Tailwind */
+  .fixed.inset-0.z-50.bg-black.bg-opacity-80,
+  .fixed.inset-0.z-50[style*="background"] {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+  }
+}

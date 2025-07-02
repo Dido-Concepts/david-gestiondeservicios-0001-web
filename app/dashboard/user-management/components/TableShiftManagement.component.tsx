@@ -15,11 +15,20 @@ interface TableShiftManagementProps {
   locationFilter: string
 }
 
+interface ShiftEvent {
+  event_id: number
+  event_type: string
+  start_time: string
+  end_time: string
+  display_time: string
+  original_event: UserLocationEvent
+}
+
 interface ProcessedEmployee {
   user_id: number
   name: string
   email: string
-  shifts: Record<string, string>
+  dailyShifts: Record<string, ShiftEvent[]>
 }
 
 const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManagementProps) => {
@@ -38,22 +47,6 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
         startDate: formattedDates[0],
         endDate: formattedDates[6]
       })
-
-      // 🔍 DEBUG: Ver cada evento individual
-      if (result && Array.isArray(result)) {
-        console.log(`🔍 DEBUG - Total eventos recibidos: ${result.length}`)
-        result.forEach((event, index) => {
-          console.log(`📅 DEBUG - Evento ${index + 1}:`, {
-            event_type: event.event_type,
-            user_id: event.user_id,
-            user_name: event.user_name,
-            eventDate: format(new Date(event.event_start_time), 'yyyy-MM-dd'),
-            event_start_time: event.event_start_time,
-            event_end_time: event.event_end_time
-          })
-        })
-      }
-
       return result
     }
   })
@@ -70,15 +63,14 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
 
     const dayOfWeek = new Date(date + 'T12:00:00').getDay()
 
-    // 🔧 CORREGIDO: JavaScript usa 0 = Domingo, 1 = Lunes, etc.
     const dayMapping: Record<number, string> = {
-      0: 'Domingo', // Sunday
-      1: 'Lunes', // Monday
-      2: 'Martes', // Tuesday
-      3: 'Miercoles', // Wednesday
-      4: 'Jueves', // Thursday
-      5: 'Viernes', // Friday
-      6: 'Sabado' // Saturday
+      0: 'Domingo',
+      1: 'Lunes',
+      2: 'Martes',
+      3: 'Miercoles',
+      4: 'Jueves',
+      5: 'Viernes',
+      6: 'Sabado'
     }
 
     const mappedDay = dayMapping[dayOfWeek]
@@ -88,38 +80,14 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
       return 'Sin turno'
     }
 
-    // Si no tiene rangos horarios definidos (ranges vacío)
     if (schedule.ranges.length === 0) {
       return 'Sin turno'
     }
 
-    // Si tiene múltiples rangos, los concatena
     return schedule.ranges.map(range => `${range.start} - ${range.end}`).join(', ')
   }
 
-  // Función para determinar qué mostrar en cada celda
-  const getCellContent = (employee: ProcessedEmployee, date: string): string => {
-    const userShift = employee.shifts[date]
-
-    // Prioridad 1: Si tiene un evento asignado
-    if (userShift && userShift !== 'Sin turno') {
-      // Si contiene salto de línea (No disponible + horario)
-      if (userShift.includes('\n')) {
-        return userShift
-      }
-      // Si es un turno personalizado (contiene horarios con formato HH:mm - HH:mm)
-      if (userShift.match(/^\d{2}:\d{2}\s*-\s*\d{2}:\d{2}$/)) {
-        return userShift
-      }
-      // Cualquier otro evento se considera "No disponible"
-      return userShift
-    }
-
-    // Prioridad 2: Horario por defecto de la sede
-    return getLocationScheduleForDay(date)
-  }
-
-  // Procesar datos de usuarios y sus eventos incluyendo días libres
+  // Procesar datos de usuarios y sus eventos
   const processedEmployees = userEvents.reduce((acc: ProcessedEmployee[], event: UserLocationEvent) => {
     let employee = acc.find(emp => emp.user_id === event.user_id)
 
@@ -128,42 +96,75 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
         user_id: event.user_id,
         name: event.user_name,
         email: event.email,
-        shifts: {}
+        dailyShifts: {}
       }
       acc.push(employee)
     }
 
     const eventDate = format(new Date(event.event_start_time), 'yyyy-MM-dd')
 
-    // Procesar diferentes tipos de eventos
-    console.log('🔍 DEBUG - Tipo de evento recibido:', {
-      event_type: event.event_type,
-      user_id: event.user_id,
-      eventDate,
-      event
-    })
+    if (!employee.dailyShifts[eventDate]) {
+      employee.dailyShifts[eventDate] = []
+    }
+
     if (event.event_type === 'turno' || event.event_type === 'SHIFT') {
-      const eventTime = `${format(new Date(event.event_start_time), 'HH:mm')} - ${format(new Date(event.event_end_time), 'HH:mm')}`
-      employee.shifts[eventDate] = eventTime
-    } else if (event.event_type === 'DAY_OFF' || event.event_type === 'dia_libre' || event.event_type === 'day_off' || event.event_type === 'days_off') {
-      // Manejo específico de días libres
-      console.log('🔍 DEBUG - Evento de día libre:', {
+      const shiftEvent: ShiftEvent = {
+        event_id: event.event_id,
         event_type: event.event_type,
-        user_id: event.user_id,
-        eventDate,
-        event_details: event.event_description,
-        event
-      })
-      const eventTime = `${format(new Date(event.event_start_time), 'HH:mm')} - ${format(new Date(event.event_end_time), 'HH:mm')}`
-      employee.shifts[eventDate] = `No disponible\n${eventTime}`
+        start_time: format(new Date(event.event_start_time), 'HH:mm'),
+        end_time: format(new Date(event.event_end_time), 'HH:mm'),
+        display_time: `${format(new Date(event.event_start_time), 'HH:mm')} - ${format(new Date(event.event_end_time), 'HH:mm')}`,
+        original_event: event
+      }
+      employee.dailyShifts[eventDate].push(shiftEvent)
+    } else if (event.event_type === 'DAY_OFF' || event.event_type === 'dia_libre' || event.event_type === 'day_off' || event.event_type === 'days_off') {
+      const dayOffEvent: ShiftEvent = {
+        event_id: event.event_id,
+        event_type: event.event_type,
+        start_time: format(new Date(event.event_start_time), 'HH:mm'),
+        end_time: format(new Date(event.event_end_time), 'HH:mm'),
+        display_time: `No disponible\n${format(new Date(event.event_start_time), 'HH:mm')} - ${format(new Date(event.event_end_time), 'HH:mm')}`,
+        original_event: event
+      }
+      employee.dailyShifts[eventDate].push(dayOffEvent)
     } else {
-      // Cualquier otro evento se considera "No disponible" + horario del evento
-      const eventTime = `${format(new Date(event.event_start_time), 'HH:mm')} - ${format(new Date(event.event_end_time), 'HH:mm')}`
-      employee.shifts[eventDate] = `No disponible\n${eventTime}`
+      const otherEvent: ShiftEvent = {
+        event_id: event.event_id,
+        event_type: event.event_type,
+        start_time: format(new Date(event.event_start_time), 'HH:mm'),
+        end_time: format(new Date(event.event_end_time), 'HH:mm'),
+        display_time: `No disponible\n${format(new Date(event.event_start_time), 'HH:mm')} - ${format(new Date(event.event_end_time), 'HH:mm')}`,
+        original_event: event
+      }
+      employee.dailyShifts[eventDate].push(otherEvent)
     }
 
     return acc
   }, [])
+
+  // Función para obtener qué mostrar cuando no hay eventos
+  const getDefaultCellContent = (date: string): ShiftEvent => {
+    return {
+      event_id: 0,
+      event_type: 'default',
+      start_time: '',
+      end_time: '',
+      display_time: getLocationScheduleForDay(date),
+      original_event: {} as UserLocationEvent
+    }
+  }
+
+  // Función para obtener los eventos de día libre para una fecha y usuario
+  const getDayOffEvent = (userId: number, date: string): UserLocationEvent | undefined => {
+    return userEvents.find(event => {
+      const eventDate = format(new Date(event.event_start_time), 'yyyy-MM-dd')
+      return (
+        event.user_id === userId &&
+        eventDate === date &&
+        (event.event_type === 'DAY_OFF' || event.event_type === 'dia_libre' || event.event_type === 'day_off' || event.event_type === 'days_off')
+      )
+    })
+  }
 
   // Si no hay empleados asignados a la sede
   if (processedEmployees.length === 0) {
@@ -204,38 +205,82 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
                 <span>{employee.name}</span>
               </td>
               {formattedDates.map((date, i) => {
-                // Buscar el evento de día libre para esta fecha y usuario
-                const dayOffEvent = userEvents.find(event => {
-                  const eventDate = format(new Date(event.event_start_time), 'yyyy-MM-dd')
-                  return (
-                    event.user_id === employee.user_id &&
-                    eventDate === date &&
-                    (event.event_type === 'DAY_OFF' || event.event_type === 'dia_libre' || event.event_type === 'day_off' || event.event_type === 'days_off')
-                  )
-                })
+                const dailyShifts = employee.dailyShifts[date] || []
 
-                return (
-                  <td key={i} className="p-2">
-                    <div className="space-y-1">
-                      <Cell
-                        shift={getCellContent(employee, date)}
-                        id={`${employee.user_id}-${i}`}
-                        openId={openId}
-                        setOpenId={setOpenId}
-                        employeeName={employee.name}
-                        selectedDate={date}
-                        userId={employee.user_id}
-                        dayOffEvent={dayOffEvent}
-                      />
-                      <div className="flex justify-center">
-                        <CellShiftActions
-                          shift={getCellContent(employee, date)}
+                if (dailyShifts.length === 0) {
+                  const defaultShift = getDefaultCellContent(date)
+                  const dayOffEvent = getDayOffEvent(employee.user_id, date)
+
+                  return (
+                    <td key={i} className="p-2">
+                      <div className="space-y-1">
+                        <Cell
+                          shift={defaultShift.display_time}
+                          id={`${employee.user_id}-${i}-default`}
+                          openId={openId}
+                          setOpenId={setOpenId}
                           employeeName={employee.name}
                           selectedDate={date}
                           userId={employee.user_id}
                           dayOffEvent={dayOffEvent}
+                          shiftId={undefined}
+                          shiftDateISO={date}
                         />
+                        <div className="flex justify-center">
+                          <CellShiftActions
+                            shift={defaultShift.display_time}
+                            employeeName={employee.name}
+                            selectedDate={date}
+                            userId={employee.user_id}
+                            dayOffEvent={dayOffEvent}
+                          />
+                        </div>
                       </div>
+                    </td>
+                  )
+                }
+
+                return (
+                  <td key={i} className="p-2">
+                    <div className="space-y-2">
+                      {dailyShifts.map((shift, shiftIndex) => {
+                        const dayOffEvent = shift.event_type.includes('DAY_OFF') ||
+                                          shift.event_type.includes('dia_libre') ||
+                                          shift.event_type.includes('day_off') ||
+                                          shift.event_type.includes('days_off')
+                          ? shift.original_event
+                          : undefined
+
+                        const shiftId = (shift.event_type === 'turno' || shift.event_type === 'SHIFT')
+                          ? shift.event_id
+                          : undefined
+
+                        return (
+                          <div key={`${shift.event_id}-${shiftIndex}`} className="mb-1">
+                            <Cell
+                              shift={shift.display_time}
+                              id={`${employee.user_id}-${i}-${shift.event_id}`}
+                              openId={openId}
+                              setOpenId={setOpenId}
+                              employeeName={employee.name}
+                              selectedDate={date}
+                              userId={employee.user_id}
+                              dayOffEvent={dayOffEvent}
+                              shiftId={shiftId}
+                              shiftDateISO={date}
+                            />
+                            <div className="flex justify-center mt-1">
+                              <CellShiftActions
+                                shift={shift.display_time}
+                                employeeName={employee.name}
+                                selectedDate={date}
+                                userId={employee.user_id}
+                                dayOffEvent={dayOffEvent}
+                              />
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                   </td>
                 )

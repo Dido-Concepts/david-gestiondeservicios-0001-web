@@ -1,16 +1,25 @@
 'use client'
 import React, { useState } from 'react'
+import { useCreateShiftMutation } from '@/modules/shift/infra/hooks/useShiftFormMutation'
+import { CreateShiftRequest } from '@/modules/shift/domain/models/shift.model'
+import { useSearchParams } from 'next/navigation'
 
 interface AddModalShiftProps {
   isOpen: boolean
   onClose: () => void
   employeeName: string
   selectedDate: string
+  userId: number
 }
 
-const AddModalShift = ({ isOpen, onClose, employeeName, selectedDate }: AddModalShiftProps) => {
+const AddModalShift = ({ isOpen, onClose, employeeName, selectedDate, userId }: AddModalShiftProps) => {
   const [startTime, setStartTime] = useState<string>('10:00')
   const [endTime, setEndTime] = useState<string>('17:00')
+
+  const searchParams = useSearchParams()
+  const locationFilter = searchParams.get('locationFilter') || '1'
+
+  const createShiftMutation = useCreateShiftMutation()
 
   // Calcular la duración del turno en horas
   const calculateDuration = () => {
@@ -22,6 +31,23 @@ const AddModalShift = ({ isOpen, onClose, employeeName, selectedDate }: AddModal
     const durationMinutes = endTotalMinutes - startTotalMinutes
 
     return durationMinutes > 0 ? `${Math.floor(durationMinutes / 60)} h` : '0 h'
+  }
+
+  const handleSave = () => {
+    const shiftData: CreateShiftRequest = {
+      fecha_turno: selectedDate,
+      hora_inicio: `${startTime}:00`,
+      hora_fin: `${endTime}:00`,
+      sede_id: parseInt(locationFilter),
+      user_id: userId
+    }
+
+    createShiftMutation.mutate(shiftData)
+    onClose()
+
+    // Reset form
+    setStartTime('10:00')
+    setEndTime('17:00')
   }
 
   if (!isOpen) return null
@@ -69,8 +95,6 @@ const AddModalShift = ({ isOpen, onClose, employeeName, selectedDate }: AddModal
 
         <div className="text-right text-sm mt-2 text-gray-600">{calculateDuration()}</div>
 
-        <button className="text-purple-600 mt-4 text-sm">+ Añadir turno</button>
-
         <p className="text-sm text-gray-500 mt-2">
           Solo estás editando los turnos de este día. Para configurar los turnos habituales, ve a{' '}
           <a href="#" className="text-blue-500 underline">
@@ -79,14 +103,21 @@ const AddModalShift = ({ isOpen, onClose, employeeName, selectedDate }: AddModal
           .
         </p>
 
-        <div className="flex justify-between mt-6">
-          <button className="text-red-600 border border-red-600 px-4 py-2 rounded-lg">Eliminar</button>
-          <div className="flex gap-3">
-            <button className="border px-4 py-2 rounded-lg" onClick={onClose}>
-              Cancelar
-            </button>
-            <button className="bg-black text-white px-4 py-2 rounded-lg">Guardar</button>
-          </div>
+        <div className="flex justify-end gap-3 mt-6">
+          <button
+            className="border px-4 py-2 rounded-lg"
+            onClick={onClose}
+            disabled={createShiftMutation.isPending}
+          >
+            Cancelar
+          </button>
+          <button
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+            onClick={handleSave}
+            disabled={createShiftMutation.isPending}
+          >
+            {createShiftMutation.isPending ? 'Guardando...' : 'Guardar'}
+          </button>
         </div>
       </div>
     </div>
