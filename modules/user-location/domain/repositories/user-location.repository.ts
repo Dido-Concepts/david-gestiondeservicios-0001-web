@@ -10,10 +10,26 @@ export interface UserLocationEvent {
   event_sede_id: number;
 }
 
+export interface AssignUserToLocationResponse {
+  success: boolean;
+  message: string;
+  data?: unknown;
+}
+
 export abstract class UserLocationRepository {
   abstract getUserLocationEvents(params: {
     sedeId: string;
     startDate: string;
     endDate: string;
   }): Promise<UserLocationEvent[]>;
+
+  abstract assignUserToLocation(params: {
+    sedeId: number;
+    userId: number;
+  }): Promise<AssignUserToLocationResponse>;
+
+  abstract deactivateUserFromLocation(params: {
+    sedeId: number;
+    userId: number;
+  }): Promise<AssignUserToLocationResponse>;
 }
