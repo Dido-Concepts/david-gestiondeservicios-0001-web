@@ -7,7 +7,7 @@ export interface DeactivateUserFromLocationParams {
   userId: number
 }
 
-export function useDeactivateUserFromLocationMutation(sedeId: string) {
+export function useDeactivateUserFromLocationMutation (sedeId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -21,4 +21,4 @@ export function useDeactivateUserFromLocationMutation(sedeId: string) {
       })
     }
   })
-} 
+}

@@ -198,7 +198,7 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
                   className="p-1 hover:bg-gray-100 rounded transition-colors"
                   title="Gestionar asignaciones de sede"
                 >
-                  <IconComponent name="pencil" className="w-4 h-4 text-gray-600 hover:text-gray-800" />
+                  <IconComponent name="pencil" className="w-5 h-5 text-gray-600 hover:text-gray-800" />
                 </button>
               </div>
             </th>
