@@ -39,3 +39,7 @@ export const QUERY_KEYS_DAYS_OFF_MANAGEMENT = Object.freeze({
   DOGetDaysOffByUser: 'DOGetDaysOffByUser',
   DOGetDayOffTypes: 'DOGetDayOffTypes'
 })
+
+export const QUERY_KEYS_ROLE_MANAGEMENT = Object.freeze({
+  RMGetRoles: 'RMGetRoles'
+})
