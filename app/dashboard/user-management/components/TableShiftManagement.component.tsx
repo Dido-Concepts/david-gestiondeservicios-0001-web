@@ -315,4 +315,3 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
 }
 
 export default TableShiftManagement
-//
