@@ -19,16 +19,16 @@ import {
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Calendar, Clock, Plus } from 'lucide-react'
+import { Calendar, Clock, Edit, Trash2 } from 'lucide-react'
 import { useCustomers } from '../../hook/client/useCustomerQueries'
 import { useServices } from '../../hook/client/useServiceQueries'
 import { useStaff } from '../../hook/client/useStaffQueries'
 import { useStatus } from '../../hook/client/useStatusQueries'
-import { useCreateAppointment, CreateAppointmentRequest } from '../../hook/client/useAppointmentQueries'
+import { useUpdateAppointment, useDeleteAppointment, UpdateAppointmentRequest, AppointmentResponseModel } from '../../hook/client/useAppointmentQueries'
 import { useToast } from '@/hooks/use-toast'
 import { handleAppointmentCreationError } from '../utils/apiErrorHandler'
 
-interface NewAppointmentData {
+interface EditAppointmentData {
   cliente: string
   servicio: string
   barbero: string
@@ -37,26 +37,29 @@ interface NewAppointmentData {
   fecha: string
 }
 
-interface NewAppointmentModalProps {
+interface EditAppointmentModalProps {
   isOpen: boolean
   onClose: () => void
-  selectedDate?: string
-  onCreateAppointment: (appointment: NewAppointmentData) => void
+  appointment?: AppointmentResponseModel | null
+  onUpdateAppointment?: (appointment: EditAppointmentData) => void
 }
 
-export function NewAppointmentModal ({
+export function EditAppointmentModal ({
   isOpen,
   onClose,
-  selectedDate,
-  onCreateAppointment
-}: NewAppointmentModalProps) {
+  appointment,
+  onUpdateAppointment
+}: EditAppointmentModalProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const idLocation = searchParams.get('idLocation') || ''
   const { toast } = useToast()
 
-  // Hook para crear citas
-  const createAppointmentMutation = useCreateAppointment()
+  // Hook para actualizar citas
+  const updateAppointmentMutation = useUpdateAppointment()
+
+  // Hook para eliminar citas
+  const deleteAppointmentMutation = useDeleteAppointment()
 
   // Hook para obtener clientes - solo se ejecuta cuando el modal está abierto
   const { data: customersData, isLoading: isLoadingCustomers, error: customersError } = useCustomers({
@@ -100,33 +103,43 @@ export function NewAppointmentModal ({
     enabled: isOpen
   })
 
-  const [formData, setFormData] = useState<NewAppointmentData>({
+  const [formData, setFormData] = useState<EditAppointmentData>({
     cliente: '',
     servicio: '',
     barbero: '',
     horaInicio: '09:00',
-    estado: '5', // Valor por defecto "5" que corresponde a "Reservada" (maintable_id)
-    fecha: selectedDate || new Date().toISOString().split('T')[0]
+    estado: '5',
+    fecha: new Date().toISOString().split('T')[0]
   })
 
-  // Limpiar datos cuando se abre el modal
-  const resetFormData = useCallback(() => {
-    setFormData({
-      cliente: '',
-      servicio: '',
-      barbero: '',
-      horaInicio: '09:00',
-      estado: '5', // Valor por defecto "5" que corresponde a "Reservada" (maintable_id)
-      fecha: selectedDate || new Date().toISOString().split('T')[0]
-    })
-  }, [selectedDate])
+  // Estado para el modal de confirmación de eliminación
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
-  // Ejecutar reset cuando se abre el modal
-  useEffect(() => {
-    if (isOpen) {
-      resetFormData()
+  // Función para poblar el formulario con los datos de la cita
+  const populateFormWithAppointment = useCallback(() => {
+    if (appointment) {
+      // Extraer fecha y hora del start_datetime
+      const startDate = new Date(appointment.start_datetime)
+      const fecha = startDate.toISOString().split('T')[0]
+      const horaInicio = startDate.toTimeString().substring(0, 5) // HH:MM format
+
+      setFormData({
+        cliente: appointment.customer_id.toString(),
+        servicio: appointment.service_id.toString(),
+        barbero: appointment.user_id.toString(),
+        horaInicio,
+        estado: appointment.status_id.toString(),
+        fecha
+      })
     }
-  }, [isOpen, resetFormData])
+  }, [appointment])
+
+  // Limpiar y poblar datos cuando se abre el modal con una cita
+  useEffect(() => {
+    if (isOpen && appointment) {
+      populateFormWithAppointment()
+    }
+  }, [isOpen, appointment, populateFormWithAppointment])
 
   // Función helper para calcular start_datetime y end_datetime
   const calculateAppointmentDateTimes = (
@@ -159,6 +172,15 @@ export function NewAppointmentModal ({
   }
 
   const handleSubmit = async () => {
+    if (!appointment) {
+      toast({
+        title: 'Error',
+        description: 'No se encontró la información de la cita a actualizar',
+        variant: 'destructive'
+      })
+      return
+    }
+
     // Validar que todos los campos estén completos
     if (!formData.cliente || !formData.servicio || !formData.barbero) {
       toast({
@@ -191,7 +213,7 @@ export function NewAppointmentModal ({
     )
 
     // Preparar datos para la API
-    const appointmentData: CreateAppointmentRequest = {
+    const appointmentData: UpdateAppointmentRequest = {
       customer_id: parseInt(formData.cliente),
       end_datetime: endDatetime,
       location_id: parseInt(idLocation),
@@ -202,18 +224,21 @@ export function NewAppointmentModal ({
     }
 
     try {
-      await createAppointmentMutation.mutateAsync(appointmentData)
+      await updateAppointmentMutation.mutateAsync({
+        appointmentId: appointment.appointment_id,
+        appointmentData
+      })
 
       toast({
-        title: 'Cita creada exitosamente',
-        description: `La cita ha sido programada para el ${formatSelectedDate(formData.fecha)} a las ${formData.horaInicio}`,
+        title: 'Cita actualizada exitosamente',
+        description: `La cita ha sido reprogramada para el ${formatSelectedDate(formData.fecha)} a las ${formData.horaInicio}`,
         variant: 'default'
       })
 
-      onCreateAppointment(formData)
+      onUpdateAppointment?.(formData)
       onClose()
     } catch (error) {
-      console.error('Error al crear la cita:', error)
+      console.error('Error al actualizar la cita:', error)
 
       const errorInfo = handleAppointmentCreationError(error)
 
@@ -222,6 +247,47 @@ export function NewAppointmentModal ({
         description: errorInfo.description,
         variant: 'destructive'
       })
+    }
+  }
+
+  const handleDeleteAppointment = () => {
+    if (!appointment) {
+      toast({
+        title: 'Error',
+        description: 'No se encontró la información de la cita a eliminar',
+        variant: 'destructive'
+      })
+      return
+    }
+
+    // Mostrar modal de confirmación
+    setShowDeleteConfirm(true)
+  }
+
+  const confirmDeleteAppointment = async () => {
+    if (!appointment) return
+
+    try {
+      await deleteAppointmentMutation.mutateAsync(appointment.appointment_id)
+
+      toast({
+        title: 'Cita eliminada exitosamente',
+        description: `La cita de ${appointment.customer_name} ha sido eliminada`,
+        variant: 'default'
+      })
+
+      setShowDeleteConfirm(false)
+      onClose()
+    } catch (error) {
+      console.error('Error al eliminar la cita:', error)
+
+      toast({
+        title: 'Error al eliminar la cita',
+        description: 'No se pudo eliminar la cita. Inténtalo de nuevo.',
+        variant: 'destructive'
+      })
+
+      setShowDeleteConfirm(false)
     }
   }
 
@@ -234,16 +300,19 @@ export function NewAppointmentModal ({
     })
   }
 
+  // Obtener el nombre del cliente actual para mostrar en el título
+  const currentCustomerName = appointment?.customer_name || 'Cliente'
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px]" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Nueva Cita
+            <Edit className="h-5 w-5" />
+            Editar Cita
           </DialogTitle>
           <DialogDescription>
-            Completa los campos para crear una nueva cita en la fecha {formatSelectedDate(formData.fecha)}
+            Modifica los campos para actualizar la cita de {currentCustomerName}
           </DialogDescription>
         </DialogHeader>
 
@@ -285,8 +354,8 @@ export function NewAppointmentModal ({
                       router.push('/dashboard/customer-management')
                     }}
                   >
-                    <Plus className="h-4 w-4" />
-                    Crear nuevo cliente
+                    <Edit className="h-4 w-4" />
+                    Gestionar clientes
                   </Button>
                 </div>
               </SelectContent>
@@ -339,8 +408,8 @@ export function NewAppointmentModal ({
                       router.push(`/dashboard/service-management?locationFilter=${idLocation}`)
                     }}
                   >
-                    <Plus className="h-4 w-4" />
-                    Crear nuevo servicio
+                    <Edit className="h-4 w-4" />
+                    Gestionar servicios
                   </Button>
                 </div>
               </SelectContent>
@@ -401,6 +470,21 @@ export function NewAppointmentModal ({
             )}
           </div>
 
+          {/* Fecha */}
+          <div className="space-y-2">
+            <Label htmlFor="fecha" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Fecha *
+            </Label>
+            <Input
+              id="fecha"
+              type="date"
+              value={formData.fecha}
+              onChange={(e) => setFormData(prev => ({ ...prev, fecha: e.target.value }))}
+              className="w-full"
+            />
+          </div>
+
           {/* Hora inicio */}
           <div className="space-y-2">
             <Label htmlFor="hora-inicio" className="flex items-center gap-2">
@@ -458,18 +542,72 @@ export function NewAppointmentModal ({
         </div>
 
         {/* Botones */}
-        <div className="flex justify-end gap-3 pt-4">
-          <Button variant="outline" onClick={onClose} disabled={createAppointmentMutation.isPending}>
-            Cancelar
-          </Button>
+        <div className="flex justify-between pt-4">
+          {/* Botón de eliminar a la izquierda */}
           <Button
-            onClick={handleSubmit}
-            disabled={createAppointmentMutation.isPending}
+            variant="destructive"
+            onClick={handleDeleteAppointment}
+            disabled={updateAppointmentMutation.isPending || deleteAppointmentMutation.isPending}
+            className="flex items-center gap-2"
           >
-            {createAppointmentMutation.isPending ? 'Creando...' : 'Crear Cita'}
+            <Trash2 className="h-4 w-4" />
+            {deleteAppointmentMutation.isPending ? 'Eliminando...' : 'Eliminar'}
           </Button>
+
+          {/* Botones de acción a la derecha */}
+          <div className="flex gap-3">
+            <Button variant="outline" onClick={onClose} disabled={updateAppointmentMutation.isPending || deleteAppointmentMutation.isPending}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={updateAppointmentMutation.isPending || deleteAppointmentMutation.isPending}
+            >
+              {updateAppointmentMutation.isPending ? 'Actualizando...' : 'Actualizar Cita'}
+            </Button>
+          </div>
         </div>
       </DialogContent>
+
+      {/* Modal de confirmación de eliminación */}
+      <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-600">
+              <Trash2 className="h-5 w-5" />
+              Confirmar Eliminación
+            </DialogTitle>
+            <DialogDescription className="pt-2">
+              ¿Estás seguro de que deseas eliminar la cita de{' '}
+              <span className="font-semibold">{appointment?.customer_name}</span>?
+              <br />
+              <br />
+              <span className="text-sm text-gray-600">
+                Esta acción no se puede deshacer.
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteConfirm(false)}
+              disabled={deleteAppointmentMutation.isPending}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDeleteAppointment}
+              disabled={deleteAppointmentMutation.isPending}
+              className="flex items-center gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              {deleteAppointmentMutation.isPending ? 'Eliminando...' : 'Eliminar Cita'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   )
 }
