@@ -15,6 +15,7 @@ import { CalendarSkeleton } from './CalendarSkeleton.component'
 import { UpcomingAppointmentsSkeleton } from './UpcomingAppointmentsSkeleton.component'
 import { useAppointments, appointmentToCalendarEvent, AppointmentResponseModel, useUpdateAppointment } from '../../hook/client/useAppointmentQueries'
 import { useToast } from '@/hooks/use-toast'
+import { handleApiError } from '../utils/apiErrorHandler'
 
 export function BasicCalendar () {
   // Obtener idLocation de los parámetros de la URL
@@ -221,9 +222,11 @@ export function BasicCalendar () {
       // Revertir el movimiento visual si hay error
       dropInfo.revert()
 
+      // Usar el apiErrorHandler para obtener el mensaje de error apropiado
+      const errorInfo = handleApiError(error)
       toast({
-        title: '❌ Error al mover la cita',
-        description: 'No se pudo reprogramar la cita. Inténtalo de nuevo.',
+        title: errorInfo.title,
+        description: errorInfo.description,
         duration: 4000,
         variant: 'destructive'
       })
