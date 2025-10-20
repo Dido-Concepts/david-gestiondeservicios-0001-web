@@ -51,8 +51,6 @@ export function TokenManager (): null {
 
         // Guardar tokens en localStorage
         saveGoogleTokens(tokens)
-
-        console.log('🔐 Tokens de Google sincronizados con localStorage')
       } catch (error) {
         console.error('❌ Error al sincronizar tokens:', error)
       }

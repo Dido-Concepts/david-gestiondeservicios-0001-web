@@ -44,8 +44,6 @@ export const saveGoogleTokens = (tokens: GoogleTokens): void => {
 
     const encodedData = encode(JSON.stringify(tokenData))
     localStorage.setItem(STORAGE_KEY, encodedData)
-
-    console.log('✅ Tokens de Google guardados en localStorage')
   } catch (error) {
     console.error('❌ Error al guardar tokens en localStorage:', error)
   }
