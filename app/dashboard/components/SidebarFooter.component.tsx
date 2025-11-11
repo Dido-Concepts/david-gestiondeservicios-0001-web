@@ -1,13 +1,31 @@
 'use client'
 
 import { signOutOnServer } from '@/modules/auth/actions/auth.action'
+import { clearAllLocalStorage } from '@/lib/token-storage'
 import { useDashboardStore } from '@/modules/share/infra/store/ui.store'
 
 export function SidebarFooter () {
   const { isDashboardOpen } = useDashboardStore()
+
+  const handleSignOut = async () => {
+    try {
+      // Primero limpiamos todo el localStorage
+      clearAllLocalStorage()
+
+      // Luego ejecutamos el cierre de sesión del servidor
+      await signOutOnServer()
+    } catch (error) {
+      console.error('❌ Error durante el cierre de sesión:', error)
+      // Aún así intentamos cerrar sesión aunque falle la limpieza
+      await signOutOnServer()
+    }
+  }
+
   return (
-        <form action={signOutOnServer} className="flex-shrink-0 p-2 border-t max-h-14 bg-app-primary">
-            <button type='submit'
+        <div className="flex-shrink-0 p-2 border-t max-h-14 bg-app-primary">
+            <button
+                type='button'
+                onClick={handleSignOut}
                 className="flex items-center justify-center w-full px-4 py-2 space-x-1 font-medium tracking-wider uppercase bg-app-terciary border rounded-md focus:outline-none focus:ring">
                 <span>
                     <svg className="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -16,6 +34,6 @@ export function SidebarFooter () {
                 </span>
                 <span className={`${!isDashboardOpen ? 'lg:hidden' : ''}`}>Cerrar sesión</span>
             </button>
-        </form>
+        </div>
   )
 }

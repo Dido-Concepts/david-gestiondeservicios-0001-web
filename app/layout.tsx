@@ -4,6 +4,7 @@ import './globals.css'
 import { ReactNode } from 'react'
 import '@/config/di/reflect-metadata'
 import QueryClientProvider from '@/app/providers/QueryClient.provider'
+import { AuthProvider } from '@/app/providers/Auth.provider'
 import NextTopLoader from 'nextjs-toploader'
 import { Toaster } from '@/components/ui/toaster'
 import { cookies } from 'next/headers'
@@ -28,12 +29,14 @@ export default function RootLayout ({
         suppressHydrationWarning={true}
       >
         <QueryClientProvider>
-          {children}
-          <Toaster />
-          <NextTopLoader
-            color='linear-gradient(90deg, #414141, #BF0413)'
-            height={10}
-          />
+          <AuthProvider>
+            {children}
+            <Toaster />
+            <NextTopLoader
+              color='linear-gradient(90deg, #414141, #BF0413)'
+              height={10}
+            />
+          </AuthProvider>
         </QueryClientProvider>
       </body>
     </html>
