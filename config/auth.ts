@@ -94,6 +94,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.id_token = token.id_token
       session.user.role = token.role
       session.user.permissions = token.permissions
+      // Incluir tokens adicionales en la sesión para el cliente
+      session.accessToken = token.access_token
+      session.refreshToken = token.refresh_token
+      session.expiresAt = token.expires_at
       return session
     }
   }
@@ -103,6 +107,9 @@ declare module 'next-auth' {
   // eslint-disable-next-line no-unused-vars
   interface Session {
     error?: 'RefreshTokenError';
+    accessToken?: string;
+    refreshToken?: string;
+    expiresAt?: number;
     user: {
       id_token?: string;
       role?: string;
