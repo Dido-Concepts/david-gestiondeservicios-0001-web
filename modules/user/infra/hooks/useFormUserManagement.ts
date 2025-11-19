@@ -7,9 +7,9 @@ import { ListUsersResponse } from '@/modules/user/application/use-cases/query/li
 import { useUserFormMutation } from '@/modules/user/infra/hooks/useUserFormMutation'
 
 export const formUserManagementSchema = z.object({
-  nameUser: z.string().min(2).max(50),
-  idRole: z.number().int().positive(),
-  email: z.string().email().regex(/^[\w.%+-]+@gmail\.com$/, { message: 'El correo debe ser un correo de Gmail' })
+  nameUser: z.string().min(2, 'El nombre es obligatorio').max(50),
+  idRole: z.number().int().positive('Debes seleccionar un rol'),
+  email: z.string().email('Por favor ingresa un email válido').regex(/^[\w.%+-]+@gmail\.com$/, { message: 'El correo debe ser un correo de Gmail' })
 })
 
 type FormUserManagementInputs = z.infer<typeof formUserManagementSchema>
@@ -49,3 +49,4 @@ export function useFormUserManagement (toggleModal: () => void, user: ListUsersR
 
   return { form, onSubmit, isEdit: Boolean(user) }
 }
+//

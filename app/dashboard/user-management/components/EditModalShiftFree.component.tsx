@@ -1,9 +1,10 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { updateDayOff } from '@/modules/days-off/application/days-off.action'
-import { CreateDaysOffRequest } from '@/modules/days-off/domain/models/days-off.model'
+import { updateDayOffDetails } from '@/modules/days-off/application/days-off.action'
+import { UpdateDaysOffDetailsRequest } from '@/modules/days-off/domain/models/days-off.model'
 import { QUERY_KEYS_USER_LOCATION_MANAGEMENT } from '@/modules/share/infra/constants/query-keys.constant'
+import { useDayOffTypes } from '@/modules/days-off/infra/hooks/useDayOffTypes'
 
 interface EditModalShiftFreeProps {
   isOpen: boolean
@@ -22,6 +23,15 @@ interface EditModalShiftFreeProps {
   }
 }
 
+// Interfaz para los tipos de días libres transformados
+interface DayOffType {
+  id: number
+  name: string
+  value: string
+  description: string
+  order: number
+}
+
 const EditModalShiftFree = ({
   isOpen,
   onClose,
@@ -30,7 +40,7 @@ const EditModalShiftFree = ({
   dayOffId,
   initialData
 }: EditModalShiftFreeProps) => {
-  const [type, setType] = useState(initialData?.type || 'Vacaciones anuales')
+  const [typeId, setTypeId] = useState<number>(1) // Valor por defecto
   const [startDate, setStartDate] = useState(initialData?.startDate || selectedDate)
   const [endDate, setEndDate] = useState(initialData?.endDate || selectedDate)
   const [startTime, setStartTime] = useState(initialData?.startTime || '09:00')
@@ -39,29 +49,50 @@ const EditModalShiftFree = ({
 
   const queryClient = useQueryClient()
 
-  // Mapeo de tipos a IDs (esto debería venir de una API en producción)
-  const typeToIdMap: Record<string, number> = {
-    'Vacaciones anuales': 1,
-    'Licencia médica': 2,
-    'Permiso personal': 3,
-    'Día libre': 4
+  // Usar el hook para obtener los tipos de días libres desde la API maintable
+  const { data: dayOffTypesResponse, isLoading: isLoadingTypes, error: typesError } = useDayOffTypes()
+
+  // Función para encontrar el ID del tipo basándose en su nombre
+  const findTypeIdByName = (typeName: string, types: DayOffType[]): number => {
+    if (!types || types.length === 0) return 1 // Valor por defecto
+
+    const foundType = types.find(type =>
+      type.name.toLowerCase().trim() === typeName.toLowerCase().trim()
+    )
+
+    return foundType ? foundType.id : 1 // Si no encuentra el tipo, usa ID 1 por defecto
   }
 
-  // Actualizar los valores cuando se abra el modal
+  // Actualizar los valores cuando se abra el modal, cambien los datos iniciales, o se carguen los tipos
   useEffect(() => {
-    if (isOpen && initialData) {
-      setType(initialData.type)
+    if (initialData && dayOffTypesResponse?.types) {
       setStartDate(initialData.startDate)
       setEndDate(initialData.endDate)
       setStartTime(initialData.startTime)
       setEndTime(initialData.endTime)
       setMotivo(initialData.motivo)
+
+      // Mapear el tipo desde el nombre al ID usando la API real
+      const typeId = findTypeIdByName(initialData.type, dayOffTypesResponse.types)
+      setTypeId(typeId)
     }
-  }, [isOpen, initialData])
+  }, [initialData, dayOffTypesResponse])
+
+  // Debug: Log del dayOffId cuando se abre el modal
+  useEffect(() => {
+    if (isOpen) {
+      console.log('🔍 DEBUG - EditModalShiftFree abierto:', {
+        dayOffId,
+        initialData,
+        employeeName,
+        selectedDate
+      })
+    }
+  }, [isOpen, dayOffId, initialData, employeeName, selectedDate])
 
   const updateDayOffMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: Partial<CreateDaysOffRequest> }) =>
-      updateDayOff(id, data),
+    mutationFn: ({ dayOffId, details }: { dayOffId: number; details: UpdateDaysOffDetailsRequest }) =>
+      updateDayOffDetails(dayOffId, details),
     onSuccess: () => {
       // Invalidar queries para refrescar la tabla
       queryClient.invalidateQueries({
@@ -73,7 +104,18 @@ const EditModalShiftFree = ({
     },
     onError: (error) => {
       console.error('Error actualizando día libre:', error)
-      // Aquí podrías mostrar un toast de error
+      console.error('🔍 DEBUG - Datos enviados:', {
+        dayOffId,
+        datos: {
+          tipo_dia_libre_maintable_id: typeId,
+          fecha_inicio: startDate,
+          fecha_fin: endDate,
+          hora_inicio: `${startTime}:00`,
+          hora_fin: `${endTime}:00`,
+          motivo
+        }
+      })
+      alert(`Error al actualizar el día libre: ${error instanceof Error ? error.message : 'Error desconocido'}`)
     }
   })
 
@@ -84,20 +126,31 @@ const EditModalShiftFree = ({
     }
 
     if (!dayOffId) {
-      alert('Error: ID del día libre no disponible')
+      alert('Error: No se puede editar este día libre. El ID no está disponible.')
+      console.error('🔍 DEBUG - dayOffId no disponible:', { dayOffId, initialData })
       return
     }
 
-    const dayOffData: Partial<CreateDaysOffRequest> = {
+    if (!typeId) {
+      alert('Por favor seleccione un tipo de día libre')
+      return
+    }
+
+    const dayOffDetails: UpdateDaysOffDetailsRequest = {
+      tipo_dia_libre_maintable_id: typeId,
       fecha_inicio: startDate,
       fecha_fin: endDate,
       hora_inicio: `${startTime}:00`,
       hora_fin: `${endTime}:00`,
-      motivo,
-      tipo_dia_libre_maintable_id: typeToIdMap[type] || 1
+      motivo
     }
 
-    updateDayOffMutation.mutate({ id: dayOffId, data: dayOffData })
+    console.log('🔍 DEBUG - Enviando actualización:', {
+      dayOffId,
+      details: dayOffDetails
+    })
+
+    updateDayOffMutation.mutate({ dayOffId, details: dayOffDetails })
   }
 
   if (!isOpen) return null
@@ -106,6 +159,13 @@ const EditModalShiftFree = ({
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg p-6 w-[500px] shadow-lg">
         <h2 className="text-xl font-semibold mb-4">Editar días libres</h2>
+
+        {/* Debug Info - Solo visible en desarrollo */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
+            <strong>🔍 DEBUG:</strong> dayOffId = {dayOffId || 'No disponible'}
+          </div>
+        )}
 
         {/* Mostrar empleado seleccionado (solo lectura) */}
         <div className="flex flex-col mb-3">
@@ -121,16 +181,41 @@ const EditModalShiftFree = ({
         {/* Selección del Tipo de día libre */}
         <div className="flex flex-col mb-3">
           <label className="text-sm font-medium mb-1">Tipo</label>
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            className="border rounded p-2"
-          >
-            <option value="Vacaciones anuales">Vacaciones anuales</option>
-            <option value="Licencia médica">Licencia médica</option>
-            <option value="Permiso personal">Permiso personal</option>
-            <option value="Día libre">Día libre</option>
-          </select>
+
+          {isLoadingTypes
+            ? (
+            <div className="border rounded p-2 bg-gray-100 flex items-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900 mr-2"></div>
+              Cargando tipos...
+            </div>
+              )
+            : typesError
+              ? (
+            <div className="border rounded p-2 bg-red-50 text-red-600">
+              Error al cargar los tipos de días libres: {(typesError as Error).message}
+            </div>
+                )
+              : (
+            <select
+              value={typeId || ''}
+              onChange={(e) => setTypeId(Number(e.target.value))}
+              className="border rounded p-2"
+            >
+              <option value="">Seleccione un tipo</option>
+              {dayOffTypesResponse?.types?.map((type) => (
+                <option key={type.id} value={type.id} title={type.description}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+                )}
+
+          {/* Mostrar descripción del tipo seleccionado */}
+          {typeId && dayOffTypesResponse?.types && (
+            <div className="text-xs text-gray-600 mt-1">
+              {dayOffTypesResponse.types.find(t => t.id === typeId)?.description}
+            </div>
+          )}
         </div>
 
         {/* Motivo del día libre */}
@@ -202,6 +287,13 @@ const EditModalShiftFree = ({
           </div>
         </div>
 
+        {/* Información de carga */}
+        {dayOffTypesResponse?.meta && (
+          <div className="text-xs text-gray-500 mt-2">
+            Total de tipos disponibles: {dayOffTypesResponse.meta.total}
+          </div>
+        )}
+
         {/* Botones */}
         <div className="flex justify-end mt-6 gap-3">
           <button
@@ -214,7 +306,7 @@ const EditModalShiftFree = ({
           <button
             className="bg-black text-white px-4 py-2 rounded-lg disabled:bg-gray-400"
             onClick={handleSave}
-            disabled={updateDayOffMutation.isPending}
+            disabled={updateDayOffMutation.isPending || isLoadingTypes}
           >
             {updateDayOffMutation.isPending ? 'Guardando...' : 'Guardar'}
           </button>
@@ -225,4 +317,3 @@ const EditModalShiftFree = ({
 }
 
 export default EditModalShiftFree
-//

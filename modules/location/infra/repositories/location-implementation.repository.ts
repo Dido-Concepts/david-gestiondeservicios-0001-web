@@ -34,6 +34,7 @@ export class LocationImplementationRepository implements LocationRepository {
 
   async getLocationById (id: string): Promise<LocationModel> {
     const url = `/api/v1/location/${id}`
+    console.log('Fetching location with URL:', url) // Debug log
 
     const response = await axiosApiInterna.get(url)
 

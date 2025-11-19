@@ -14,3 +14,23 @@ export async function getUserLocationEvents (params: {
   )
   return await userLocationRepository.getUserLocationEvents(params)
 }
+
+export async function assignUserToLocation (params: {
+  sedeId: number;
+  userId: number;
+}) {
+  const userLocationRepository = container.get<UserLocationRepository>(
+    USER_LOCATION_MODULE_TYPES.UserLocationRepository
+  )
+  return await userLocationRepository.assignUserToLocation(params)
+}
+
+export async function deactivateUserFromLocation (params: {
+  sedeId: number;
+  userId: number;
+}) {
+  const userLocationRepository = container.get<UserLocationRepository>(
+    USER_LOCATION_MODULE_TYPES.UserLocationRepository
+  )
+  return await userLocationRepository.deactivateUserFromLocation(params)
+}

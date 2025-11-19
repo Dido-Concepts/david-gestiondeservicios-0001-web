@@ -36,5 +36,10 @@ export const QUERY_KEYS_USER_LOCATION_MANAGEMENT = Object.freeze({
 
 export const QUERY_KEYS_DAYS_OFF_MANAGEMENT = Object.freeze({
   DOListDaysOff: 'DOListDaysOff',
-  DOGetDaysOffByUser: 'DOGetDaysOffByUser'
+  DOGetDaysOffByUser: 'DOGetDaysOffByUser',
+  DOGetDayOffTypes: 'DOGetDayOffTypes'
+})
+
+export const QUERY_KEYS_ROLE_MANAGEMENT = Object.freeze({
+  RMGetRoles: 'RMGetRoles'
 })
