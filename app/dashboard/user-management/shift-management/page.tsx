@@ -14,32 +14,42 @@ export default async function ShiftManagementPage (props: {
   }>;
 }) {
   const searchParams = await props.searchParams
-  const locationFilter = searchParams?.locationFilter || '1'
+  const queryClient = getQueryClient()
 
   // Calcular fechas para la semana actual
   const start = startOfWeek(new Date(), { weekStartsOn: 1 })
   const startDate = format(start, 'yyyy-MM-dd')
   const endDate = format(addDays(start, 6), 'yyyy-MM-dd')
 
-  const queryClient = getQueryClient()
-
-  // Prefetch datos de ubicaciones
-  queryClient.prefetchQuery({
+  // Prefetch datos de ubicaciones primero
+  await queryClient.prefetchQuery({
     queryKey: [QUERY_KEYS_LOCATION_MANAGEMENT.LMGetLocationCatalog],
     queryFn: () => getLocationsCatalog()
   })
 
-  // Prefetch eventos de usuarios para la sede seleccionada
-  queryClient.prefetchQuery({
-    queryKey: [QUERY_KEYS_USER_LOCATION_MANAGEMENT.ULMGetUserLocationEvents, locationFilter, startDate, endDate],
-    queryFn: () => getUserLocationEvents({ sedeId: locationFilter, startDate, endDate })
-  })
+  // Obtener las ubicaciones para determinar un locationFilter válido
+  const locations = await getLocationsCatalog()
+  const locationFilter = searchParams?.locationFilter || (locations.length > 0 ? locations[0].id.toString() : null)
 
-  // Prefetch información de la sede
-  queryClient.prefetchQuery({
-    queryKey: [QUERY_KEYS_LOCATION_MANAGEMENT.LMGetLocation, locationFilter],
-    queryFn: () => getLocationById(locationFilter)
-  })
+  // Solo hacer prefetch si hay un locationFilter válido
+  if (locationFilter) {
+    // Verificar que la ubicación existe en la lista de ubicaciones disponibles
+    const locationExists = locations.some(location => location.id.toString() === locationFilter)
+
+    if (locationExists) {
+      // Prefetch eventos de usuarios para la sede seleccionada
+      queryClient.prefetchQuery({
+        queryKey: [QUERY_KEYS_USER_LOCATION_MANAGEMENT.ULMGetUserLocationEvents, locationFilter, startDate, endDate],
+        queryFn: () => getUserLocationEvents({ sedeId: locationFilter, startDate, endDate })
+      })
+
+      // Prefetch información de la sede
+      queryClient.prefetchQuery({
+        queryKey: [QUERY_KEYS_LOCATION_MANAGEMENT.LMGetLocation, locationFilter],
+        queryFn: () => getLocationById(locationFilter)
+      })
+    }
+  }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
@@ -47,7 +57,15 @@ export default async function ShiftManagementPage (props: {
         <div>
           <h1 className="text-3xl md:text-4xl font-bold text-app-quaternary mb-2">Gestionar turnos</h1>
         </div>
-        <Suspense key={locationFilter} fallback={<span>Cargando...</span>}>
+        <Suspense
+          key={locationFilter}
+          fallback={
+            <div className="flex flex-col items-start space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+              <p className="text-base text-muted-foreground font-semibold shrink-0">Sede</p>
+              <div className="w-full sm:w-[180px] lg:w-[200px] h-9 bg-muted rounded-md animate-pulse" />
+            </div>
+          }
+        >
           <FilterSede />
         </Suspense>
       </div>

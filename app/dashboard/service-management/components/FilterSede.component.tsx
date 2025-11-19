@@ -5,7 +5,7 @@ import { getLocationsCatalog } from '@/modules/location/application/actions/loca
 import { QUERY_KEYS_LOCATION_MANAGEMENT } from '@/modules/share/infra/constants/query-keys.constant'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useEffect, useState } from 'react'
 
 export function FilterSede () {
   const { data: locations } = useSuspenseQuery({
@@ -18,6 +18,13 @@ export function FilterSede () {
   const pathname = usePathname()
   const router = useRouter()
 
+  // Estado para manejar la hidratación
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   const itemsLocationCombobox = useMemo(() =>
     locations.map((location) => ({
       label: location.name,
@@ -26,22 +33,27 @@ export function FilterSede () {
     })), [locations]
   )
 
-  const currentSelectedLocationValue = searchParams.get('locationFilter')
-  const initialValue = itemsLocationCombobox.find(item => item.value === currentSelectedLocationValue) || itemsLocationCombobox[0] || null
+  const currentSelectedLocationValue = isClient ? searchParams.get('locationFilter') : null
+  const initialValue = currentSelectedLocationValue
+    ? itemsLocationCombobox.find(item => item.value === currentSelectedLocationValue) || null
+    : null
 
+  // Efecto para establecer la primera ubicación si no hay ninguna seleccionada
   useEffect(() => {
-    if (!initialValue?.value) return
+    if (!isClient || !itemsLocationCombobox.length) return
 
-    const params = new URLSearchParams(searchParams.toString())
-    const currentLocationFilter = params.get('locationFilter')
+    const currentFilter = searchParams.get('locationFilter')
 
-    if (currentLocationFilter !== initialValue.value) {
-      params.set('locationFilter', initialValue.value)
+    if (!currentFilter && itemsLocationCombobox.length > 0) {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('locationFilter', itemsLocationCombobox[0].value)
       router.replace(`${pathname}?${params.toString()}`, { scroll: false })
     }
-  }, [initialValue?.value, pathname, router, searchParams])
+  }, [isClient, itemsLocationCombobox, searchParams, pathname, router])
 
   const handleLocationSelect = useCallback((selected: ComboboxProps | null) => {
+    if (!isClient) return
+
     const params = new URLSearchParams(searchParams.toString())
 
     if (selected?.value) {
@@ -50,13 +62,23 @@ export function FilterSede () {
       params.delete('locationFilter')
     }
     router.replace(`${pathname}?${params.toString()}`, { scroll: false })
-  }, [pathname, router, searchParams])
+  }, [pathname, router, searchParams, isClient])
+
+  // Mostrar un placeholder durante la hidratación
+  if (!isClient) {
+    return (
+      <div className="flex flex-col items-start space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+        <p className="text-base text-muted-foreground font-semibold shrink-0">Sede</p>
+        <div className="w-full sm:w-[180px] lg:w-[200px] h-9 bg-muted rounded-md animate-pulse" />
+      </div>
+    )
+  }
 
   return (
     <ComboboxPopover
         label='Sede'
         items={itemsLocationCombobox}
-        initialValue={initialValue}
+        initialValue={initialValue || undefined}
         onSelect={handleLocationSelect}
     />
   )

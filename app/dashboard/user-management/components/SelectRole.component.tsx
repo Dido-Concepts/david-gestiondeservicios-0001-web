@@ -26,8 +26,8 @@ export function SelectRole ({ control, name }: SelectRoleProps) {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Roles de Usuario</SelectLabel>
-                  <SelectItem value="1">Administrador</SelectItem>
-                  <SelectItem value="2">Supervisor</SelectItem>
+                  <SelectItem value="8">Administrador</SelectItem>
+                  <SelectItem value="9">Barbero</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>

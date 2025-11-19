@@ -120,6 +120,9 @@ export type LocationSearchParams = {
 
 export async function getListLocationsV2 (params: LocationSearchParams): Promise<PaginatedItemsViewModel<LocationResponseModel>> {
   const url = '/api/v2/location'
+  console.log('Fetching location with URL:', url) // Debug log
+  console.log('With params:', params) // Debug log
+
   const response = await axiosApiInterna.get(url, {
     params: {
       page_index: params.pageIndex,
