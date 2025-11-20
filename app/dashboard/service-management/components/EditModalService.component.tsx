@@ -69,7 +69,7 @@ const EditModalService: React.FC<EditModalServiceProps> = ({
             />
           </div>
           <div>
-            <Label htmlFor="duration">Duración</Label>
+            <Label htmlFor="duration">Duración (minutos)</Label>
             <Input
               type="text"
               id="duration"

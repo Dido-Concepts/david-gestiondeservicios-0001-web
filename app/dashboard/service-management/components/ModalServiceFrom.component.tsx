@@ -55,7 +55,7 @@ export function ModalServiceFrom () {
 
             <FormField name="duration_minutes" control={form.control} render={({ field }) => (
               <FormItem>
-                <FormLabel>Duración</FormLabel>
+                <FormLabel>Duración (minutos)</FormLabel>
                 <Input
                   type="number"
                   placeholder="Duración en minutos"

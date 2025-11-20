@@ -54,7 +54,7 @@ export default function AddModalService () {
               />
             </div>
             <div>
-              <Label>Duración</Label>
+              <Label>Duración (minutos)</Label>
               <Input
                 type="text"
                 value={duration}

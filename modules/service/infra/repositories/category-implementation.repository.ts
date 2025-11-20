@@ -22,6 +22,7 @@ export class CategoryImplementationRepository implements CategoryRepository {
 
   async createCategory (param: { name_category: string; description_category: string; location_id: number }): Promise<string> {
     const url = '/api/v1/category'
+    console.log('Creating category with params:', param)
     const response = await axiosApiInterna.post(url, param)
     const data: string = response.data
 

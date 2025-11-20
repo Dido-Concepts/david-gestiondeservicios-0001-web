@@ -48,7 +48,7 @@ export const useStaff = (
     enabled?: boolean // Parámetro para controlar cuándo ejecutar la query
   } = {
     location_id: '',
-    role_id: 7, // Por defecto role_id = 7 para barberos
+    role_id: 9, // Por defecto role_id = 9 para barberos
     pageIndex: 1,
     pageSize: 100,
     orderBy: 'id',
@@ -62,7 +62,7 @@ export const useStaff = (
     queryKey: [...STAFF_QUERY_KEYS.staff, staffParams],
     queryFn: async (): Promise<PaginatedItemsViewModel<StaffResponseModel>> => {
       const filters = {
-        role_id: staffParams.role_id || 7, // Siempre 7 para barberos
+        role_id: staffParams.role_id || 9, // Siempre 7 para barberos
         location_id: parseInt(staffParams.location_id)
       }
 

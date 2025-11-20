@@ -82,7 +82,7 @@ export function NewAppointmentModal ({
   // Hook para obtener staff/barberos - solo se ejecuta cuando el modal está abierto y hay idLocation
   const { data: staffData, isLoading: isLoadingStaff, error: staffError } = useStaff({
     location_id: idLocation,
-    role_id: 7, // Siempre 7 para barberos
+    role_id: 9, // Siempre 9 para barberos
     pageIndex: 1,
     pageSize: 100,
     orderBy: 'id',

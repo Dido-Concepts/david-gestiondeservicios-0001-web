@@ -107,7 +107,7 @@ export const CategoryServiceList: React.FC<CategoryServiceListProps> = ({
 
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-700">
-              (S/ {service.price.toFixed(2)} - {service.duration ?? '?'} Hora(s))
+              (S/ {service.price.toFixed(2)} - {service.duration ?? '?'} Minuto(s))
             </span>
             <ActionMenuEditService service={service} />
           </div>
