@@ -61,9 +61,13 @@ export const useStaff = (
   return useQuery({
     queryKey: [...STAFF_QUERY_KEYS.staff, staffParams],
     queryFn: async (): Promise<PaginatedItemsViewModel<StaffResponseModel>> => {
-      const filters = {
-        role_id: staffParams.role_id || 9, // Siempre 7 para barberos
-        location_id: parseInt(staffParams.location_id)
+      const filters: { role_id: number; location_id?: number } = {
+        role_id: staffParams.role_id || 9 // Siempre 9 para barberos
+      }
+
+      // Solo agregar location_id al filtro si tiene un valor válido
+      if (staffParams.location_id && staffParams.location_id !== '0') {
+        filters.location_id = parseInt(staffParams.location_id)
       }
 
       const response = await axiosClientApi.get('/api/v2/staff', {
@@ -79,7 +83,7 @@ export const useStaff = (
       })
       return response.data
     },
-    enabled: hasTokens && staffParams.enabled && Boolean(staffParams.location_id), // Solo ejecutar si hay tokens, está habilitado y hay location_id
+    enabled: hasTokens && staffParams.enabled, // Solo requiere tokens y que esté habilitado
     staleTime: 1000 * 60 * 10, // 10 minutos para staff (pueden cambiar)
     gcTime: 1000 * 60 * 30 // 30 minutos
   })

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useGoogleTokens } from '@/hooks/use-google-tokens'
-import { useLocations } from '../hooks/useCalendarQueries'
+import { useLocations } from '../../hook/client/useCalendarQueries'
 import { LocationResponseModel } from '@/modules/location/domain/models/location.model'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'

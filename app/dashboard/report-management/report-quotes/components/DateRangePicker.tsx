@@ -2,7 +2,8 @@
 'use client'
 
 import * as React from 'react'
-import { format, endOfWeek, startOfMonth, endOfMonth } from 'date-fns'
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns'
+import { es } from 'date-fns/locale'
 import { DateRange } from 'react-day-picker'
 
 import { cn } from '@/lib/utils'
@@ -32,10 +33,17 @@ type Preset = {
 
 const presets: Preset[] = [
   {
-    label: 'Resto de la semana',
+    label: 'Hoy',
     range: () => {
       const today = new Date()
-      return { from: today, to: endOfWeek(today) }
+      return { from: today, to: today }
+    }
+  },
+  {
+    label: 'Semana actual',
+    range: () => {
+      const today = new Date()
+      return { from: startOfWeek(today, { weekStartsOn: 1 }), to: endOfWeek(today, { weekStartsOn: 1 }) }
     }
   },
   {
@@ -45,7 +53,6 @@ const presets: Preset[] = [
       return { from: startOfMonth(today), to: endOfMonth(today) }
     }
   }
-  // Puedes agregar más presets según necesites
 ]
 
 export function DateRangePicker ({
@@ -140,6 +147,8 @@ export function DateRangePicker ({
         selected={date}
         onSelect={handleSelect}
         numberOfMonths={2}
+        weekStartsOn={1}
+        locale={es}
       />
 
       {/* Botones de Acción */}

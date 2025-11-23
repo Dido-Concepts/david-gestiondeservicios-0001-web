@@ -17,7 +17,7 @@ import {
   CardTitle
 } from '@/components/ui/card'
 import { AlertCircle } from 'lucide-react'
-import { useLocations } from '../hooks/useCalendarQueries'
+import { useLocations } from '../../hook/client/useCalendarQueries'
 import { LocationResponseModel } from '@/modules/location/domain/models/location.model'
 import { BasicCalendar } from './BasicCalendar.component'
 

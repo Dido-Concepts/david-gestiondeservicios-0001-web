@@ -3,37 +3,122 @@
 
 import React, { useState } from 'react'
 import { DateRange } from 'react-day-picker'
-// Make sure this path is correct for your project structure
-// Assuming this is the correct path to your component
-import { FiltersPanel } from '@/app/dashboard/report-management/components/FiltersPanel'
 import { Button } from '@/components/ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Calendar as CalendarIcon } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { format } from 'date-fns'
-import { es } from 'date-fns/locale' // Optional: Import locale for Spanish formatting
-import { DateRangePicker } from '@/app/dashboard/report-management/components/DateRangePicker'
+import { DateRangePopover } from './components/DateRangePopover'
+import { FiltersPopover } from './components/FiltersPopover'
+import { useGetReportExcelBlob, formatDateForApi, type ReportParams } from '@/app/dashboard/hook/client/useReportsQueries'
+import { useToast } from '@/hooks/use-toast'
 
 export default function ReportQuotesPage () {
-  const [dateOpen, setDateOpen] = useState(false)
-  const [filtersOpen, setFiltersOpen] = useState(false)
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined)
+  const [filters, setFilters] = useState<{
+    barber_id?: number
+    location_id?: number
+  }>({})
 
-  const handleFiltersClose = () => setFiltersOpen(false)
-  const handleApplyFilters = () => {
-    // Aquí puedes agregar la lógica para aplicar los filtros seleccionados
-    console.log('Filtros aplicados')
-    handleFiltersClose()
+  // Hook para obtener el blob del reporte (sin descarga automática)
+  const getReportBlob = useGetReportExcelBlob()
+  const { toast } = useToast()
+
+  const handleApplyFilters = (newFilters: { barbero_id?: number; sede_id?: number }) => {
+    // Mapear los nombres de los campos del FiltersPanel al formato esperado por la API
+    const mappedFilters = {
+      barber_id: newFilters.barbero_id,
+      location_id: newFilters.sede_id
+    }
+    setFilters(mappedFilters)
+    console.log('Filtros aplicados:', mappedFilters)
   }
+
   const handleClearAllFilters = () => {
-    // Aquí puedes agregar la lógica para borrar todos los filtros
+    setFilters({})
+    setDateRange(undefined)
     console.log('Todos los filtros borrados')
   }
 
-  // Function to close the Date Picker Popover
-  const handleDatePopoverClose = () => {
-    setDateOpen(false)
+  // Función para generar hash simple
+  const generateHash = (str: string) => {
+    let hash = 0
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i)
+      hash = ((hash << 5) - hash) + char
+      hash = hash & hash // Convertir a entero de 32 bits
+    }
+    return Math.abs(hash).toString(16).slice(0, 8)
   }
+
+  // Función para formatear fecha para el nombre del archivo
+  const formatDateForFileName = (date: Date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  const handleDownloadReport = async () => {
+    if (!dateRange?.from || !dateRange?.to) {
+      toast({
+        title: 'Error',
+        description: 'Por favor selecciona un rango de fechas válido',
+        variant: 'destructive'
+      })
+      return
+    }
+
+    try {
+      // Formatear las fechas al formato requerido por la API: YYYY-MM-DD HH:mm:ss
+      const startDate = new Date(dateRange.from)
+      startDate.setHours(0, 0, 0, 0) // Inicio del día
+
+      const endDate = new Date(dateRange.to)
+      endDate.setHours(23, 59, 59, 999) // Final del día
+
+      const reportParams: ReportParams = {
+        start_date: formatDateForApi(startDate),
+        end_date: formatDateForApi(endDate),
+        ...filters
+      }
+
+      // Generar nombre personalizado del archivo
+      const startDateStr = formatDateForFileName(startDate)
+      const endDateStr = formatDateForFileName(endDate)
+      const dateRangeStr = startDateStr === endDateStr ? startDateStr : `${startDateStr}_${endDateStr}`
+
+      // Crear string para hash basado en parámetros
+      const hashString = JSON.stringify(reportParams)
+      const hash = generateHash(hashString)
+
+      const customFileName = `reportes_${dateRangeStr}_${hash}.xlsx`
+
+      // Descargar el reporte obteniendo el blob
+      const { blob } = await getReportBlob.mutateAsync(reportParams)
+
+      // Crear descarga manual con nombre personalizado
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = customFileName
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+
+      toast({
+        title: 'Éxito',
+        description: `Reporte descargado como: ${customFileName}`
+      })
+    } catch (error) {
+      console.error('Error al descargar reporte:', error)
+      toast({
+        title: 'Error',
+        description: 'Hubo un problema al descargar el reporte',
+        variant: 'destructive'
+      })
+    }
+  }
+
+  // Verificar si se ha seleccionado un rango de fechas completo
+  const isDateRangeSelected = dateRange?.from && dateRange?.to
 
   return (
     <main className="container mx-auto p-6 space-y-6">
@@ -46,62 +131,43 @@ export default function ReportQuotesPage () {
 
       <div className="flex items-center justify-between">
         <div className="flex space-x-2">
-          {/* Popover para el DateRangePicker */}
-          <Popover open={dateOpen} onOpenChange={setDateOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className={cn(
-                  'bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg justify-start text-left font-normal', // Added justify-start, text-left, font-normal for better alignment
-                  !dateRange?.from && !dateRange?.to && 'text-muted-foreground'
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateRange?.from && dateRange?.to
-                  ? (
-                  `${format(dateRange.from, 'PPP', { locale: es })} - ${format(dateRange.to, 'PPP', { locale: es })}` // Added locale
-                    )
-                  : (
-                  <span className="text-gray-700">Elige una fecha</span>
-                    )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              {/* === FIX IS HERE === */}
-              <DateRangePicker
-                selectedRange={dateRange}
-                onSelectRange={setDateRange}
-                onClose={handleDatePopoverClose} // Pass the closing function here
-                // Alternatively, inline: onClose={() => setDateOpen(false)}
-              />
-              {/* ==================== */}
-            </PopoverContent>
-          </Popover>
+          <DateRangePopover
+            dateRange={dateRange}
+            onDateRangeChange={setDateRange}
+          />
 
-          {/* Popover para el FiltersPanel */}
-          <Popover open={filtersOpen} onOpenChange={setFiltersOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg"> {/* Added variant="outline" for consistency */}
-                Filtros
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <FiltersPanel
-                onClose={handleFiltersClose}
-                onApply={handleApplyFilters}
-                onClearAll={handleClearAllFilters}
-              />
-            </PopoverContent>
-          </Popover>
+          <FiltersPopover
+            disabled={!isDateRangeSelected}
+            onApplyFilters={handleApplyFilters}
+            onClearAllFilters={handleClearAllFilters}
+          />
         </div>
 
         <div className="flex items-center space-x-2">
-          <Button variant="outline" className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg"> {/* Added variant="outline" */}
-            Descargar
+          <Button
+            variant="outline"
+            className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg"
+            onClick={handleDownloadReport}
+            disabled={!isDateRangeSelected || getReportBlob.isPending}
+          >
+            {getReportBlob.isPending ? 'Descargando...' : 'Descargar'}
           </Button>
         </div>
       </div>
       {/* Rest of your page content (e.g., table displaying reports) */}
+
+      {/* Overlay de loading que bloquea toda la pantalla */}
+      {getReportBlob.isPending && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 flex flex-col items-center space-y-4 shadow-xl">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900">Generando reporte</h3>
+              <p className="text-gray-600 mt-1">Por favor espera mientras procesamos tu solicitud...</p>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
