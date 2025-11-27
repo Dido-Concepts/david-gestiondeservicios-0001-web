@@ -28,7 +28,8 @@ export type FormCustomerManagementInputs = z.infer<typeof formCustomerManagement
 
 export function useFormCustomerManagement (
   toggleModal: () => void,
-  customer: CustomerModel | null
+  customer: CustomerModel | null,
+  isModalOpen: boolean
 ) {
   const form = useForm<FormCustomerManagementInputs>({
     resolver: zodResolver(formCustomerManagementSchema),
@@ -45,6 +46,8 @@ export function useFormCustomerManagement (
   const { mutate } = useCustomerFormMutation(customer, toggleModal)
 
   useEffect(() => {
+    if (!isModalOpen) return
+
     if (customer) {
       reset({
         name_customer: customer.name,
@@ -62,7 +65,7 @@ export function useFormCustomerManagement (
         status_customer: 'active'
       })
     }
-  }, [customer, reset])
+  }, [customer, reset, isModalOpen])
 
   const onSubmit = (values: FormCustomerManagementInputs) => {
     mutate(values)

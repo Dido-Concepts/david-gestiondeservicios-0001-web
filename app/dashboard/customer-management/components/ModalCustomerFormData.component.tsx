@@ -25,16 +25,12 @@ export function ModalCustomerFormData () {
 
   const { form, onSubmit, isEdit } = useFormCustomerManagement(
     toggleModal,
-    customer
+    customer,
+    isModalOpen
   )
 
-  const handleOpenChange = () => {
-    form.reset()
-    toggleModal()
-  }
-
   return (
-    <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={isModalOpen} onOpenChange={toggleModal}>
       <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold mb-1">
@@ -124,7 +120,7 @@ export function ModalCustomerFormData () {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleOpenChange()}
+                onClick={toggleModal}
               >
                 Cancelar
               </Button>
