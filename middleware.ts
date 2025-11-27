@@ -2,7 +2,7 @@ import { auth } from '@/config/auth'
 import { NextResponse } from 'next/server'
 
 const authRoutes = ['/login']
-const publicRoutes = ['/public']
+const publicRoutes = ['/public', '/review']
 
 const apiAuthPrefix = '/api/auth'
 
@@ -20,7 +20,8 @@ export default auth((req) => {
 
   if (
     publicRoutes.includes(nextUrl.pathname) ||
-    nextUrl.pathname.startsWith('/public')
+    nextUrl.pathname.startsWith('/public') ||
+    nextUrl.pathname.startsWith('/review')
   ) {
     return NextResponse.next()
   }
