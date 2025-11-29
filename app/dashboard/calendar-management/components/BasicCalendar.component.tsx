@@ -259,17 +259,28 @@ export function BasicCalendar () {
     <div className="w-full space-y-4">
 
       {/* Layout de dos columnas */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Columna del calendario */}
         <div className="lg:col-span-2">
           <Card className="w-full">
-            <CardContent className="p-6">
+            <CardContent className="p-2 sm:p-4 md:p-6">
               {appointmentsQuery.isLoading && !viewDates.start_date
                 ? (
                 <CalendarSkeleton />
                   )
                 : (
-                <div className={`calendar-container [&_.fc-toolbar-title]:text-xl [&_.fc-toolbar-title]:font-semibold [&_.fc-button]:bg-blue-500 [&_.fc-button]:border-blue-500 [&_.fc-button:hover]:bg-blue-600 [&_.fc-button:hover]:border-blue-600 ${isDragging ? 'cursor-grabbing' : ''}`}>
+                <div className={`calendar-container
+                  [&_.fc-toolbar-title]:text-sm [&_.fc-toolbar-title]:sm:text-base [&_.fc-toolbar-title]:md:text-xl [&_.fc-toolbar-title]:font-semibold
+                  [&_.fc-button]:bg-blue-500 [&_.fc-button]:border-blue-500 [&_.fc-button:hover]:bg-blue-600 [&_.fc-button:hover]:border-blue-600
+                  [&_.fc-button]:text-xs [&_.fc-button]:sm:text-sm [&_.fc-button]:px-1.5 [&_.fc-button]:sm:px-2 [&_.fc-button]:md:px-3 [&_.fc-button]:py-1 [&_.fc-button]:sm:py-1.5
+                  [&_.fc-toolbar]:flex-col [&_.fc-toolbar]:sm:flex-row [&_.fc-toolbar]:gap-2 [&_.fc-toolbar]:sm:gap-0
+                  [&_.fc-toolbar-chunk]:flex [&_.fc-toolbar-chunk]:justify-center [&_.fc-toolbar-chunk]:w-full [&_.fc-toolbar-chunk]:sm:w-auto
+                  [&_.fc-daygrid-day-number]:text-xs [&_.fc-daygrid-day-number]:sm:text-sm
+                  [&_.fc-col-header-cell-cushion]:text-xs [&_.fc-col-header-cell-cushion]:sm:text-sm
+                  [&_.fc-event]:text-[10px] [&_.fc-event]:sm:text-xs [&_.fc-event]:leading-tight
+                  [&_.fc-daygrid-event]:p-0.5 [&_.fc-daygrid-event]:sm:p-1
+                  [&_.fc-daygrid-more-link]:text-[10px] [&_.fc-daygrid-more-link]:sm:text-xs
+                  ${isDragging ? 'cursor-grabbing' : ''}`}>
                   <FullCalendar
                     ref={calendarRef}
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -282,7 +293,7 @@ export function BasicCalendar () {
                     buttonText={{
                       today: 'Hoy',
                       month: 'Mes',
-                      week: 'Semana',
+                      week: 'Sem',
                       day: 'Día'
                     }}
                     events={calendarEvents}
@@ -294,7 +305,8 @@ export function BasicCalendar () {
                     editable={true}
                     selectable={true}
                     selectMirror={true}
-                    dayMaxEvents={true}
+                    dayMaxEvents={2}
+                    dayMaxEventRows={2}
                     weekends={true}
                     height="auto"
                     locale="es"
@@ -309,52 +321,52 @@ export function BasicCalendar () {
         {/* Columna de próximas citas */}
         <div className="lg:col-span-1">
           <Card className="w-full">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg">Próximas Citas</CardTitle>
+            <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6">
+              <CardTitle className="text-base sm:text-lg">Próximas Citas</CardTitle>
             </CardHeader>
-            <CardContent className="pt-0">
+            <CardContent className="pt-0 px-3 sm:px-6">
               {appointmentsQuery.isLoading
                 ? (
                 <UpcomingAppointmentsSkeleton />
                   )
                 : appointmentsQuery.error
                   ? (
-                <div className="text-center py-8 text-red-500">
-                  <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Error al cargar las citas</p>
+                <div className="text-center py-4 sm:py-8 text-red-500">
+                  <Calendar className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-xs sm:text-sm">Error al cargar las citas</p>
                 </div>
                     )
                   : upcomingAppointments.length > 0
                     ? (
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3 max-h-[300px] sm:max-h-[400px] overflow-y-auto">
                   {upcomingAppointments.map((appointment) => (
                     <div
                       key={appointment.id}
-                      className="p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
+                      className="p-2 sm:p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
                       onClick={() => handleAppointmentClick(appointment.extendedProps.appointment_id)}
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h4 className="font-medium text-sm text-gray-900 mb-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-xs sm:text-sm text-gray-900 mb-0.5 sm:mb-1 truncate">
                             {appointment.title}
                           </h4>
-                          <div className="flex items-center gap-2 text-xs text-gray-600 mb-1">
+                          <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-gray-600 mb-0.5 sm:mb-1">
                             <span>{formatDate(appointment.start)}</span>
                             <span>•</span>
                             <span>{formatTime(appointment.start)}</span>
                             {appointment.end && (
                               <>
-                                <span>-</span>
-                                <span>{formatTime(appointment.end)}</span>
+                                <span className="hidden xs:inline">-</span>
+                                <span className="hidden xs:inline">{formatTime(appointment.end)}</span>
                               </>
                             )}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-[10px] sm:text-xs text-gray-500 truncate">
                             Barbero: {appointment.extendedProps.user_name}
                           </div>
                         </div>
                         <div
-                          className="w-3 h-3 rounded-full flex-shrink-0 mt-1"
+                          className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full flex-shrink-0 mt-1"
                           style={{ backgroundColor: appointment.backgroundColor }}
                         />
                       </div>
@@ -363,9 +375,9 @@ export function BasicCalendar () {
                 </div>
                       )
                     : (
-                <div className="text-center py-8 text-gray-500">
-                  <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No hay citas próximas</p>
+                <div className="text-center py-4 sm:py-8 text-gray-500">
+                  <Calendar className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-xs sm:text-sm">No hay citas próximas</p>
                 </div>
                       )}
             </CardContent>

@@ -95,3 +95,205 @@
     background-color: rgba(0, 0, 0, 0.3) !important;
   }
 }
+
+/* 🔔 Estilos para Toast - Compatible con Firefox y Chrome */
+/* Reset para todos los toasts - Fondo BLANCO forzado */
+[data-radix-toast-viewport] li,
+[data-radix-toast-viewport] [data-state="open"],
+[data-radix-toast-viewport] [role="status"],
+ol[data-radix-toast-viewport] > li,
+[data-sonner-toaster] [data-sonner-toast],
+[data-radix-toast-viewport] > *,
+ol.fixed li,
+li[data-state="open"][data-swipe-direction] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Forzar fondo blanco en modo oscuro también */
+.dark [data-radix-toast-viewport] li,
+.dark [data-radix-toast-viewport] [data-state="open"],
+.dark ol.fixed li,
+.dark li[data-state="open"][data-swipe-direction] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+/* Toast Default */
+[data-radix-toast-viewport] [data-state="open"].default-toast,
+[data-radix-toast-viewport] li.default-toast {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border: 2px solid #cbd5e1 !important;
+  color: #1e293b !important;
+}
+
+[data-radix-toast-viewport] [data-state="open"].default-toast [data-radix-toast-title],
+[data-radix-toast-viewport] .default-toast [data-radix-toast-title] {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  line-height: 1.25 !important;
+}
+
+[data-radix-toast-viewport] [data-state="open"].default-toast [data-radix-toast-description],
+[data-radix-toast-viewport] .default-toast [data-radix-toast-description] {
+  color: #334155 !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  margin-top: 0.25rem !important;
+}
+
+/* Toast Destructive */
+[data-radix-toast-viewport] [data-state="open"].destructive,
+[data-radix-toast-viewport] li.destructive {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border: 2px solid #f87171 !important;
+  color: #7f1d1d !important;
+}
+
+[data-radix-toast-viewport] [data-state="open"].destructive [data-radix-toast-title],
+[data-radix-toast-viewport] .destructive [data-radix-toast-title] {
+  color: #7f1d1d !important;
+  font-weight: 700 !important;
+  font-size: 1rem !important;
+  line-height: 1.25 !important;
+}
+
+[data-radix-toast-viewport] [data-state="open"].destructive [data-radix-toast-description],
+[data-radix-toast-viewport] .destructive [data-radix-toast-description] {
+  color: #991b1b !important;
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+  margin-top: 0.25rem !important;
+}
+
+/* Toast Close Button */
+[data-radix-toast-viewport] [data-state="open"] button[toast-close] {
+  opacity: 1 !important;
+  color: #64748b !important;
+}
+
+[data-radix-toast-viewport] [data-state="open"].destructive button[toast-close] {
+  color: #dc2626 !important;
+}
+
+[data-radix-toast-viewport] [data-state="open"] button[toast-close]:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+[data-radix-toast-viewport] [data-state="open"].destructive button[toast-close]:hover {
+  background-color: #fee2e2 !important;
+  color: #b91c1c !important;
+}
+
+/* 📅 FullCalendar - Estilos responsivos para móviles (iPhone 13: 390px) */
+@media (max-width: 640px) {
+  /* Toolbar responsiva */
+  .fc .fc-toolbar {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+  }
+  
+  .fc .fc-toolbar-chunk {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+  
+  .fc .fc-toolbar-title {
+    font-size: 1rem !important;
+    padding: 0.25rem 0 !important;
+  }
+  
+  /* Botones más pequeños */
+  .fc .fc-button {
+    padding: 0.25rem 0.5rem !important;
+    font-size: 0.75rem !important;
+  }
+  
+  .fc .fc-button-group > .fc-button {
+    padding: 0.25rem 0.4rem !important;
+  }
+  
+  /* Días del calendario */
+  .fc .fc-daygrid-day-number {
+    font-size: 0.7rem !important;
+    padding: 0.15rem !important;
+  }
+  
+  .fc .fc-col-header-cell-cushion {
+    font-size: 0.7rem !important;
+    padding: 0.25rem 0.15rem !important;
+  }
+  
+  /* Eventos */
+  .fc .fc-daygrid-event {
+    font-size: 0.6rem !important;
+    padding: 0.1rem 0.2rem !important;
+    margin: 0.05rem 0.1rem !important;
+    line-height: 1.2 !important;
+  }
+  
+  .fc .fc-event-title {
+    font-size: 0.6rem !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+  
+  .fc .fc-event-time {
+    font-size: 0.55rem !important;
+  }
+  
+  /* Más eventos link */
+  .fc .fc-daygrid-more-link {
+    font-size: 0.6rem !important;
+    padding: 0.1rem !important;
+  }
+  
+  /* Contenedor del día */
+  .fc .fc-daygrid-day-frame {
+    min-height: 60px !important;
+  }
+  
+  /* Vista de semana/día */
+  .fc .fc-timegrid-slot-label-cushion {
+    font-size: 0.65rem !important;
+    padding: 0.15rem !important;
+  }
+  
+  .fc .fc-timegrid-event .fc-event-main {
+    padding: 0.1rem !important;
+  }
+}
+
+/* Pantallas muy pequeñas (menos de 375px) */
+@media (max-width: 374px) {
+  .fc .fc-toolbar-title {
+    font-size: 0.85rem !important;
+  }
+  
+  .fc .fc-button {
+    padding: 0.2rem 0.35rem !important;
+    font-size: 0.65rem !important;
+  }
+  
+  .fc .fc-daygrid-day-number {
+    font-size: 0.6rem !important;
+  }
+  
+  .fc .fc-col-header-cell-cushion {
+    font-size: 0.6rem !important;
+  }
+  
+  .fc .fc-daygrid-event {
+    font-size: 0.55rem !important;
+  }
+}

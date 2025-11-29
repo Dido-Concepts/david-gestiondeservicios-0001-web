@@ -55,17 +55,17 @@ export function CalendarManagementContent () {
   }
 
   return (
-    <main className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-8">Gestión de Calendario</h1>
+    <main className="container mx-auto px-3 py-4 sm:p-6">
+      <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-8">Gestión de Calendario</h1>
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="location-select">Ubicación</Label>
+          <Label htmlFor="location-select" className="text-sm sm:text-base">Ubicación</Label>
           <Select
             value={selectedLocation}
             onValueChange={handleLocationChange}
           >
-            <SelectTrigger id="location-select" className="w-full max-w-sm">
+            <SelectTrigger id="location-select" className="w-full sm:max-w-sm text-sm sm:text-base">
               <SelectValue placeholder="Selecciona una ubicación" />
             </SelectTrigger>
             <SelectContent>
@@ -94,14 +94,14 @@ export function CalendarManagementContent () {
         {/* Card informativo - Solo mostrar si no hay ubicación seleccionada */}
         {!selectedLocation && (
           <Card className="w-full bg-yellow-50 border-yellow-200">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2 text-yellow-800">
-                <AlertCircle className="h-5 w-5 text-yellow-600" />
+            <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6">
+              <CardTitle className="flex items-center gap-2 text-yellow-800 text-sm sm:text-base">
+                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600 flex-shrink-0" />
                 Selecciona una ubicación
               </CardTitle>
             </CardHeader>
-            <CardContent className="pt-0">
-              <div className="space-y-2 text-sm text-yellow-700">
+            <CardContent className="pt-0 px-3 sm:px-6">
+              <div className="space-y-2 text-xs sm:text-sm text-yellow-700">
                 <p>
                   Para ver el calendario de citas, primero debes seleccionar una ubicación desde el selector de arriba.
                 </p>

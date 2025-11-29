@@ -67,8 +67,28 @@ export function handleApiError (error: unknown): ErrorInfo {
         // Error BadRequest - formato específico para 400
         const badRequestData = responseData as BadRequestErrorResponse
         if (badRequestData.error?.message) {
-          errorTitle = badRequestData.error.name || 'Error de solicitud'
-          errorDescription = badRequestData.error.message
+          // Detectar conflicto de horarios
+          if (badRequestData.error.message.includes('Conflicto de horarios detectado') ||
+              badRequestData.error.message.includes('se superpone con esta cita existente')) {
+            // Extraer información relevante del mensaje
+            const employeeMatch = badRequestData.error.message.match(/empleado '([^']+)'/)
+            const employeeName = employeeMatch ? employeeMatch[1] : 'el barbero seleccionado'
+
+            // Extraer horario del conflicto
+            const timeMatch = badRequestData.error.message.match(/desde (\d{4}-\d{2}-\d{2} \d{2}:\d{2}) hasta (\d{4}-\d{2}-\d{2} \d{2}:\d{2})/)
+            let timeInfo = ''
+            if (timeMatch) {
+              const startTime = timeMatch[1].split(' ')[1] // Obtener solo la hora
+              const endTime = timeMatch[2].split(' ')[1]
+              timeInfo = ` de ${startTime} a ${endTime}`
+            }
+
+            errorTitle = '⚠️ Horario no disponible'
+            errorDescription = `${employeeName} ya tiene una cita programada en ese horario${timeInfo}. Por favor, selecciona otro horario o elige otro barbero.`
+          } else {
+            errorTitle = badRequestData.error.name || 'Error de solicitud'
+            errorDescription = badRequestData.error.message
+          }
         } else {
           errorTitle = 'Error de solicitud'
           errorDescription = 'Solicitud inválida.'

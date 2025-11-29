@@ -236,18 +236,18 @@ export function NewAppointmentModal ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]" onInteractOutside={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
+      <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto p-4 sm:p-6" onInteractOutside={(e) => e.preventDefault()}>
+        <DialogHeader className="space-y-1">
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
             Nueva Cita
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs sm:text-sm">
             Completa los campos para crear una nueva cita en la fecha {formatSelectedDate(formData.fecha)}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-3 sm:space-y-4 py-2 sm:py-4">
           {/* Cliente */}
           <div className="space-y-2">
             <Label htmlFor="cliente">Cliente *</Label>
@@ -458,13 +458,14 @@ export function NewAppointmentModal ({
         </div>
 
         {/* Botones */}
-        <div className="flex justify-end gap-3 pt-4">
-          <Button variant="outline" onClick={onClose} disabled={createAppointmentMutation.isPending}>
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4">
+          <Button variant="outline" onClick={onClose} disabled={createAppointmentMutation.isPending} className="w-full sm:w-auto">
             Cancelar
           </Button>
           <Button
             onClick={handleSubmit}
             disabled={createAppointmentMutation.isPending}
+            className="w-full sm:w-auto"
           >
             {createAppointmentMutation.isPending ? 'Creando...' : 'Crear Cita'}
           </Button>

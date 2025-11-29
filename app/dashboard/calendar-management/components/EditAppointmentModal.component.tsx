@@ -120,7 +120,11 @@ export function EditAppointmentModal ({
     if (appointment) {
       // Extraer fecha y hora del start_datetime
       const startDate = new Date(appointment.start_datetime)
-      const fecha = startDate.toISOString().split('T')[0]
+      // Usar métodos locales para evitar desfase de zona horaria
+      const year = startDate.getFullYear()
+      const month = String(startDate.getMonth() + 1).padStart(2, '0')
+      const day = String(startDate.getDate()).padStart(2, '0')
+      const fecha = `${year}-${month}-${day}`
       const horaInicio = startDate.toTimeString().substring(0, 5) // HH:MM format
 
       setFormData({
@@ -305,18 +309,18 @@ export function EditAppointmentModal ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]" onInteractOutside={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Edit className="h-5 w-5" />
+      <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto p-4 sm:p-6" onInteractOutside={(e) => e.preventDefault()}>
+        <DialogHeader className="space-y-1">
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
             Editar Cita
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-xs sm:text-sm">
             Modifica los campos para actualizar la cita de {currentCustomerName}
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-3 sm:space-y-4 py-2 sm:py-4">
           {/* Cliente */}
           <div className="space-y-2">
             <Label htmlFor="cliente">Cliente *</Label>
@@ -542,26 +546,27 @@ export function EditAppointmentModal ({
         </div>
 
         {/* Botones */}
-        <div className="flex justify-between pt-4">
-          {/* Botón de eliminar a la izquierda */}
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0 pt-3 sm:pt-4">
+          {/* Botón de eliminar */}
           <Button
             variant="destructive"
             onClick={handleDeleteAppointment}
             disabled={updateAppointmentMutation.isPending || deleteAppointmentMutation.isPending}
-            className="flex items-center gap-2"
+            className="flex items-center justify-center gap-2 w-full sm:w-auto order-last sm:order-first"
           >
             <Trash2 className="h-4 w-4" />
             {deleteAppointmentMutation.isPending ? 'Eliminando...' : 'Eliminar'}
           </Button>
 
-          {/* Botones de acción a la derecha */}
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={onClose} disabled={updateAppointmentMutation.isPending || deleteAppointmentMutation.isPending}>
+          {/* Botones de acción */}
+          <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
+            <Button variant="outline" onClick={onClose} disabled={updateAppointmentMutation.isPending || deleteAppointmentMutation.isPending} className="w-full sm:w-auto">
               Cancelar
             </Button>
             <Button
               onClick={handleSubmit}
               disabled={updateAppointmentMutation.isPending || deleteAppointmentMutation.isPending}
+              className="w-full sm:w-auto"
             >
               {updateAppointmentMutation.isPending ? 'Actualizando...' : 'Actualizar Cita'}
             </Button>
@@ -571,28 +576,29 @@ export function EditAppointmentModal ({
 
       {/* Modal de confirmación de eliminación */}
       <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <DialogContent className="sm:max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-600">
-              <Trash2 className="h-5 w-5" />
+        <DialogContent className="w-[95vw] max-w-[400px] p-4 sm:p-6">
+          <DialogHeader className="space-y-1">
+            <DialogTitle className="flex items-center gap-2 text-red-600 text-base sm:text-lg">
+              <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
               Confirmar Eliminación
             </DialogTitle>
-            <DialogDescription className="pt-2">
+            <DialogDescription className="pt-2 text-xs sm:text-sm">
               ¿Estás seguro de que deseas eliminar la cita de{' '}
               <span className="font-semibold">{appointment?.customer_name}</span>?
               <br />
               <br />
-              <span className="text-sm text-gray-600">
+              <span className="text-xs sm:text-sm text-gray-600">
                 Esta acción no se puede deshacer.
               </span>
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 pt-3 sm:pt-4">
             <Button
               variant="outline"
               onClick={() => setShowDeleteConfirm(false)}
               disabled={deleteAppointmentMutation.isPending}
+              className="w-full sm:w-auto"
             >
               Cancelar
             </Button>
@@ -600,7 +606,7 @@ export function EditAppointmentModal ({
               variant="destructive"
               onClick={confirmDeleteAppointment}
               disabled={deleteAppointmentMutation.isPending}
-              className="flex items-center gap-2"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto"
             >
               <Trash2 className="h-4 w-4" />
               {deleteAppointmentMutation.isPending ? 'Eliminando...' : 'Eliminar Cita'}
