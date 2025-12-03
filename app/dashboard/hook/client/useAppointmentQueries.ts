@@ -135,19 +135,19 @@ export const useAppointments = (
  * Función helper para convertir citas de la API a eventos de FullCalendar
  */
 export const appointmentToCalendarEvent = (appointment: AppointmentResponseModel) => {
-  // Mapear colores basados en el estado
+  // Mapear colores basados en el estado (4 estados: reservada, confirmada, finalizado, cancelado)
   const getColorByStatus = (statusName: string) => {
     switch (statusName.toLowerCase()) {
-      case 'confirmada':
-        return '#10b981' // verde
       case 'reservada':
         return '#3b82f6' // azul
-      case 'cancelada':
-        return '#ef4444' // rojo
-      case 'completada':
+      case 'confirmada':
+        return '#10b981' // verde
+      case 'finalizado':
         return '#8b5cf6' // púrpura
+      case 'cancelado':
+        return '#ef4444' // rojo
       default:
-        return '#f59e0b' // amarillo
+        return '#6b7280' // gris (por si acaso)
     }
   }
 

@@ -14,17 +14,19 @@ export default function ReportQuotesPage () {
   const [filters, setFilters] = useState<{
     barber_id?: number
     location_id?: number
+    status_id?: number
   }>({})
 
   // Hook para obtener el blob del reporte (sin descarga automática)
   const getReportBlob = useGetReportExcelBlob()
   const { toast } = useToast()
 
-  const handleApplyFilters = (newFilters: { barbero_id?: number; sede_id?: number }) => {
+  const handleApplyFilters = (newFilters: { barbero_id?: number; sede_id?: number; status_id?: number }) => {
     // Mapear los nombres de los campos del FiltersPanel al formato esperado por la API
     const mappedFilters = {
       barber_id: newFilters.barbero_id,
-      location_id: newFilters.sede_id
+      location_id: newFilters.sede_id,
+      status_id: newFilters.status_id
     }
     setFilters(mappedFilters)
     console.log('Filtros aplicados:', mappedFilters)

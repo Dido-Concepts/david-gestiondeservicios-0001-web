@@ -8,7 +8,7 @@ import { FiltersPanel } from '@/app/dashboard/report-management/report-quotes/co
 
 interface FiltersPopoverProps {
   disabled?: boolean
-  onApplyFilters: (filters: { barbero_id?: number; sede_id?: number }) => void
+  onApplyFilters: (filters: { barbero_id?: number; sede_id?: number; status_id?: number }) => void
   onClearAllFilters: () => void
 }
 
@@ -17,7 +17,7 @@ export function FiltersPopover ({ disabled = false, onApplyFilters, onClearAllFi
 
   const handleFiltersClose = () => setFiltersOpen(false)
 
-  const handleApplyFilters = (filters: { barbero_id?: number; sede_id?: number }) => {
+  const handleApplyFilters = (filters: { barbero_id?: number; sede_id?: number; status_id?: number }) => {
     onApplyFilters(filters)
     handleFiltersClose()
   }

@@ -10,6 +10,7 @@ export type ReportParams = {
   end_date: string // Formato: YYYY-MM-DD HH:mm:ss (requerido)
   barber_id?: number // ID del barbero (opcional)
   location_id?: number // ID de la ubicación (opcional)
+  status_id?: number // ID del estado de la cita (opcional)
 }
 
 export type ReportResponseModel = {
@@ -49,6 +50,9 @@ export const useReportsExcel = (
       if (reportParams.location_id) {
         params.append('location_id', reportParams.location_id.toString())
       }
+      if (reportParams.status_id) {
+        params.append('status_id', reportParams.status_id.toString())
+      }
 
       const response = await axiosClientApi.get(`/api/v2/reports/excel?${params.toString()}`, {
         responseType: 'blob', // Importante para manejar archivos
@@ -85,6 +89,9 @@ export const useDownloadReportExcel = () => {
       }
       if (reportParams.location_id) {
         params.append('location_id', reportParams.location_id.toString())
+      }
+      if (reportParams.status_id) {
+        params.append('status_id', reportParams.status_id.toString())
       }
 
       const response = await axiosClientApi.get(`/api/v2/reports/excel?${params.toString()}`, {
@@ -151,6 +158,9 @@ export const useGetReportExcelBlob = () => {
       }
       if (reportParams.location_id) {
         params.append('location_id', reportParams.location_id.toString())
+      }
+      if (reportParams.status_id) {
+        params.append('status_id', reportParams.status_id.toString())
       }
 
       const response = await axiosClientApi.get(`/api/v2/reports/excel?${params.toString()}`, {

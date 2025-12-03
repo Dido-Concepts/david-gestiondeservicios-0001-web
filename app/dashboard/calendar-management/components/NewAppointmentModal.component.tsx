@@ -100,26 +100,56 @@ export function NewAppointmentModal ({
     enabled: isOpen
   })
 
+  // Función helper para extraer fecha y hora del selectedDate
+  const extractDateAndTime = useCallback((dateString?: string) => {
+    if (!dateString) {
+      return {
+        fecha: new Date().toISOString().split('T')[0],
+        horaInicio: '09:00'
+      }
+    }
+
+    // Si el dateString contiene 'T', significa que viene con hora (vistas semana/día)
+    if (dateString.includes('T')) {
+      const [datePart, timePart] = dateString.split('T')
+      // Extraer solo HH:mm de la hora
+      const hora = timePart ? timePart.substring(0, 5) : '09:00'
+      return {
+        fecha: datePart,
+        horaInicio: hora
+      }
+    }
+
+    // Si no tiene 'T', es solo fecha (vista mensual)
+    return {
+      fecha: dateString,
+      horaInicio: '09:00'
+    }
+  }, [])
+
+  const initialDateAndTime = extractDateAndTime(selectedDate)
+
   const [formData, setFormData] = useState<NewAppointmentData>({
     cliente: '',
     servicio: '',
     barbero: '',
-    horaInicio: '09:00',
+    horaInicio: initialDateAndTime.horaInicio,
     estado: '5', // Valor por defecto "5" que corresponde a "Reservada" (maintable_id)
-    fecha: selectedDate || new Date().toISOString().split('T')[0]
+    fecha: initialDateAndTime.fecha
   })
 
   // Limpiar datos cuando se abre el modal
   const resetFormData = useCallback(() => {
+    const { fecha, horaInicio } = extractDateAndTime(selectedDate)
     setFormData({
       cliente: '',
       servicio: '',
       barbero: '',
-      horaInicio: '09:00',
+      horaInicio,
       estado: '5', // Valor por defecto "5" que corresponde a "Reservada" (maintable_id)
-      fecha: selectedDate || new Date().toISOString().split('T')[0]
+      fecha
     })
-  }, [selectedDate])
+  }, [selectedDate, extractDateAndTime])
 
   // Ejecutar reset cuando se abre el modal
   useEffect(() => {

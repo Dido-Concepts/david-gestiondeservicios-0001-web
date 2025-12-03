@@ -14,10 +14,12 @@ import {
 import { Label } from '@/components/ui/label'
 import { useStaff } from '@/app/dashboard/hook/client/useStaffQueries'
 import { useLocations } from '@/app/dashboard/hook/client/useCalendarQueries'
+import { useStatus } from '@/app/dashboard/hook/client/useStatusQueries'
 
 interface FilterState {
   barbero_id?: number
   sede_id?: number
+  status_id?: number
 }
 
 interface FiltersPanelProps {
@@ -30,7 +32,8 @@ export function FiltersPanel ({ onClose, onApply, onClearAll }: FiltersPanelProp
   // Estado para manejar los filtros seleccionados
   const [filters, setFilters] = useState<FilterState>({
     barbero_id: undefined,
-    sede_id: undefined
+    sede_id: undefined,
+    status_id: undefined
   })
 
   // Consulta para obtener los barberos usando el hook
@@ -59,14 +62,30 @@ export function FiltersPanel ({ onClose, onApply, onClearAll }: FiltersPanelProp
     filters: { status: true } // Solo sedes activas
   })
 
+  // Consulta para obtener los estados de citas
+  const {
+    data: statusData,
+    isLoading: isLoadingStatus,
+    error: statusError
+  } = useStatus({
+    table_name: 'StatusCitaCalendario',
+    pageIndex: 1,
+    pageSize: 100,
+    orderBy: 'item_order',
+    sortBy: 'ASC',
+    enabled: true
+  })
+
   const barberos = staffData?.data || []
   const sedes = locationsData?.data || []
+  const estados = statusData?.data || []
 
   // Función para limpiar todos los filtros
   const handleClearAll = () => {
     setFilters({
       barbero_id: undefined,
-      sede_id: undefined
+      sede_id: undefined,
+      status_id: undefined
     })
     onClearAll()
   }
@@ -154,6 +173,42 @@ export function FiltersPanel ({ onClose, onApply, onClearAll }: FiltersPanelProp
               {barberos.map((barbero) => (
                 <SelectItem key={barbero.id} value={barbero.id.toString()}>
                   {barbero.user_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Estado de cita */}
+        <div>
+          <Label htmlFor="status">Estado de cita</Label>
+          <Select
+            value={filters.status_id?.toString() || ''}
+            onValueChange={(value) =>
+              setFilters(prev => ({
+                ...prev,
+                status_id: value === 'all' ? undefined : parseInt(value)
+              }))
+            }
+          >
+            <SelectTrigger id="status">
+              <SelectValue placeholder='Todos los estados' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos los estados</SelectItem>
+              {isLoadingStatus && (
+                <SelectItem value="loading" disabled>
+                  Cargando estados...
+                </SelectItem>
+              )}
+              {statusError && (
+                <SelectItem value="error" disabled>
+                  Error al cargar estados
+                </SelectItem>
+              )}
+              {estados.map((estado) => (
+                <SelectItem key={estado.maintable_id} value={estado.maintable_id.toString()}>
+                  {estado.item_text}
                 </SelectItem>
               ))}
             </SelectContent>
