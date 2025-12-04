@@ -71,11 +71,13 @@ export function AssignUsersToLocationModal ({
 
   // Inicializar estado cuando se abra el modal
   useEffect(() => {
-    if (isOpen) {
-      setSelectedUsers(new Set(assignedUserIds))
+    if (isOpen && assignedUserEvents.length >= 0) {
+      const ids = new Set(assignedUserEvents.map(event => event.user_id))
+      setSelectedUsers(ids)
       setPendingChanges(new Map())
     }
-  }, [isOpen, assignedUserIds])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, locationId])
 
   const handleUserToggle = (userId: number, isChecked: boolean) => {
     const newSelected = new Set(selectedUsers)

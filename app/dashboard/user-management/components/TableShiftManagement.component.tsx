@@ -1,5 +1,4 @@
 'use client'
-import { useState } from 'react'
 import { format, addDays, startOfWeek } from 'date-fns'
 import { es } from 'date-fns/locale/es'
 import Cell from '@/app/dashboard/user-management/components/CellShiftManagement.component'
@@ -9,8 +8,6 @@ import { getUserLocationEvents } from '@/modules/user-location/application/user-
 import { getLocationById } from '@/modules/location/application/actions/location.action'
 import { QUERY_KEYS_USER_LOCATION_MANAGEMENT, QUERY_KEYS_LOCATION_MANAGEMENT } from '@/modules/share/infra/constants/query-keys.constant'
 import { UserLocationEvent } from '@/modules/user-location/domain/repositories/user-location.repository'
-import { IconComponent } from '@/app/components/Icon.component'
-import { AssignUsersToLocationModal } from './AssignUsersToLocationModal.component'
 
 interface TableShiftManagementProps {
   selectedDate: number
@@ -33,10 +30,12 @@ interface ProcessedEmployee {
   dailyShifts: Record<string, ShiftEvent[]>
 }
 
-const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManagementProps) => {
-  const [openId, setOpenId] = useState<string | null>(null)
-  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false)
+interface TableShiftManagementPropsExtended extends TableShiftManagementProps {
+  openId: string | null
+  setOpenId: (id: string | null) => void
+}
 
+const TableShiftManagement = ({ selectedDate, locationFilter, openId, setOpenId }: TableShiftManagementPropsExtended) => {
   const start = startOfWeek(new Date(selectedDate), { weekStartsOn: 1 })
   const daysOfWeek = Array.from({ length: 7 }, (_, i) => addDays(start, i))
   const formattedDates = daysOfWeek.map(date => format(date, 'yyyy-MM-dd'))
@@ -191,16 +190,7 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
         <thead>
           <tr>
             <th className="p-3 text-left">
-              <div className="flex items-center gap-2">
-                <span>Miembro del equipo</span>
-                <button
-                  onClick={() => setIsAssignModalOpen(true)}
-                  className="p-1 hover:bg-gray-100 rounded transition-colors"
-                  title="Gestionar asignaciones de sede"
-                >
-                  <IconComponent name="pencil" className="w-5 h-5 text-gray-600 hover:text-gray-800" />
-                </button>
-              </div>
+              <span>Miembro del equipo</span>
             </th>
             {daysOfWeek.map((date, i) => (
               <th key={i} className="p-3">
@@ -303,13 +293,6 @@ const TableShiftManagement = ({ selectedDate, locationFilter }: TableShiftManage
           ))}
         </tbody>
       </table>
-
-      <AssignUsersToLocationModal
-        isOpen={isAssignModalOpen}
-        onClose={() => setIsAssignModalOpen(false)}
-        locationId={locationFilter}
-        locationName={location?.name}
-      />
     </div>
   )
 }
